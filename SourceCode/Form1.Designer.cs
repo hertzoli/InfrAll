@@ -43,13 +43,6 @@ namespace GerenciadorSistemas
             this.panel4 = new System.Windows.Forms.Panel();
             this.propertyGridItem = new System.Windows.Forms.PropertyGrid();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
-            this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
-            this.buttonNovaPropriedade = new System.Windows.Forms.Button();
-            this.buttonDuplicar = new System.Windows.Forms.Button();
-            this.buttonExcluirItem = new System.Windows.Forms.Button();
-            this.buttonNovoSubItem = new System.Windows.Forms.Button();
-            this.buttonNovoItem = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxNome = new System.Windows.Forms.TextBox();
@@ -61,12 +54,20 @@ namespace GerenciadorSistemas
             this.textBoxCategoria = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBoxLocal = new System.Windows.Forms.TextBox();
-            this.buttonSalvar = new System.Windows.Forms.Button();
             this.buttonRun = new System.Windows.Forms.Button();
             this.buttonCopy = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxReferenciaPropriedade = new System.Windows.Forms.TextBox();
             this.buttonCopyPlaceholder = new System.Windows.Forms.Button();
+            this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
+            this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
+            this.buttonNovaPropriedade = new System.Windows.Forms.Button();
+            this.buttonEditar = new System.Windows.Forms.Button();
+            this.buttonDuplicar = new System.Windows.Forms.Button();
+            this.buttonExcluirItem = new System.Windows.Forms.Button();
+            this.buttonNovoSubItem = new System.Windows.Forms.Button();
+            this.buttonNovoItem = new System.Windows.Forms.Button();
+            this.buttonSalvar = new System.Windows.Forms.Button();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -150,6 +151,7 @@ namespace GerenciadorSistemas
             this.treeViewItens.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeViewItens_ItemDrag);
             this.treeViewItens.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewItens_AfterSelect);
             this.treeViewItens.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewItens_NodeMouseClick);
+            this.treeViewItens.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewItens_NodeMouseDoubleClick);
             this.treeViewItens.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeViewItens_DragDrop);
             this.treeViewItens.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeViewItens_DragEnter);
             this.treeViewItens.DragOver += new System.Windows.Forms.DragEventHandler(this.treeViewItens_DragOver);
@@ -158,6 +160,7 @@ namespace GerenciadorSistemas
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.buttonEditar);
             this.panel6.Controls.Add(this.buttonDuplicar);
             this.panel6.Controls.Add(this.buttonExcluirItem);
             this.panel6.Controls.Add(this.buttonNovoSubItem);
@@ -212,76 +215,6 @@ namespace GerenciadorSistemas
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(411, 46);
             this.panel5.TabIndex = 0;
-            // 
-            // buttonNovaSubPropriedade
-            // 
-            this.buttonNovaSubPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_Sub_propriedade_32x32;
-            this.buttonNovaSubPropriedade.Location = new System.Drawing.Point(42, 2);
-            this.buttonNovaSubPropriedade.Name = "buttonNovaSubPropriedade";
-            this.buttonNovaSubPropriedade.Size = new System.Drawing.Size(40, 40);
-            this.buttonNovaSubPropriedade.TabIndex = 10;
-            this.buttonNovaSubPropriedade.UseVisualStyleBackColor = true;
-            this.buttonNovaSubPropriedade.Click += new System.EventHandler(this.buttonNovaSubPropriedade_Click);
-            // 
-            // buttonExcluirPropriedade
-            // 
-            this.buttonExcluirPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Excluir_propriedade_32x32;
-            this.buttonExcluirPropriedade.Location = new System.Drawing.Point(82, 2);
-            this.buttonExcluirPropriedade.Name = "buttonExcluirPropriedade";
-            this.buttonExcluirPropriedade.Size = new System.Drawing.Size(40, 40);
-            this.buttonExcluirPropriedade.TabIndex = 9;
-            this.buttonExcluirPropriedade.UseVisualStyleBackColor = true;
-            this.buttonExcluirPropriedade.Click += new System.EventHandler(this.buttonExcluirPropriedade_Click);
-            // 
-            // buttonNovaPropriedade
-            // 
-            this.buttonNovaPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_propriedade_32x32;
-            this.buttonNovaPropriedade.Location = new System.Drawing.Point(2, 2);
-            this.buttonNovaPropriedade.Name = "buttonNovaPropriedade";
-            this.buttonNovaPropriedade.Size = new System.Drawing.Size(40, 40);
-            this.buttonNovaPropriedade.TabIndex = 7;
-            this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
-            this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
-            // 
-            // buttonDuplicar
-            // 
-            this.buttonDuplicar.Image = global::GerenciadorSistemas.Properties.Resources.Duplicar_Item_32x32;
-            this.buttonDuplicar.Location = new System.Drawing.Point(82, 2);
-            this.buttonDuplicar.Name = "buttonDuplicar";
-            this.buttonDuplicar.Size = new System.Drawing.Size(40, 40);
-            this.buttonDuplicar.TabIndex = 9;
-            this.buttonDuplicar.UseVisualStyleBackColor = true;
-            this.buttonDuplicar.Click += new System.EventHandler(this.buttonDuplicar_Click);
-            // 
-            // buttonExcluirItem
-            // 
-            this.buttonExcluirItem.Image = global::GerenciadorSistemas.Properties.Resources.Excluir_Item_32x32;
-            this.buttonExcluirItem.Location = new System.Drawing.Point(122, 2);
-            this.buttonExcluirItem.Name = "buttonExcluirItem";
-            this.buttonExcluirItem.Size = new System.Drawing.Size(40, 40);
-            this.buttonExcluirItem.TabIndex = 8;
-            this.buttonExcluirItem.UseVisualStyleBackColor = true;
-            this.buttonExcluirItem.Click += new System.EventHandler(this.buttonExcluirItem_Click);
-            // 
-            // buttonNovoSubItem
-            // 
-            this.buttonNovoSubItem.Image = global::GerenciadorSistemas.Properties.Resources.New_sub_item_32x32_2;
-            this.buttonNovoSubItem.Location = new System.Drawing.Point(42, 2);
-            this.buttonNovoSubItem.Name = "buttonNovoSubItem";
-            this.buttonNovoSubItem.Size = new System.Drawing.Size(40, 40);
-            this.buttonNovoSubItem.TabIndex = 7;
-            this.buttonNovoSubItem.UseVisualStyleBackColor = true;
-            this.buttonNovoSubItem.Click += new System.EventHandler(this.buttonNovoSubItem_Click);
-            // 
-            // buttonNovoItem
-            // 
-            this.buttonNovoItem.Image = ((System.Drawing.Image)(resources.GetObject("buttonNovoItem.Image")));
-            this.buttonNovoItem.Location = new System.Drawing.Point(2, 2);
-            this.buttonNovoItem.Name = "buttonNovoItem";
-            this.buttonNovoItem.Size = new System.Drawing.Size(40, 40);
-            this.buttonNovoItem.TabIndex = 6;
-            this.buttonNovoItem.UseVisualStyleBackColor = true;
-            this.buttonNovoItem.Click += new System.EventHandler(this.buttonNovoItem_Click);
             // 
             // groupBox1
             // 
@@ -394,19 +327,6 @@ namespace GerenciadorSistemas
             this.textBoxLocal.Size = new System.Drawing.Size(174, 20);
             this.textBoxLocal.TabIndex = 9;
             // 
-            // buttonSalvar
-            // 
-            this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
-            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonSalvar.Location = new System.Drawing.Point(157, 501);
-            this.buttonSalvar.Name = "buttonSalvar";
-            this.buttonSalvar.Size = new System.Drawing.Size(70, 29);
-            this.buttonSalvar.TabIndex = 12;
-            this.buttonSalvar.Text = "Salvar";
-            this.buttonSalvar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.buttonSalvar.UseVisualStyleBackColor = true;
-            this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
-            // 
             // buttonRun
             // 
             this.buttonRun.Location = new System.Drawing.Point(315, 91);
@@ -450,6 +370,99 @@ namespace GerenciadorSistemas
             this.buttonCopyPlaceholder.TabIndex = 17;
             this.buttonCopyPlaceholder.Text = "Copy";
             this.buttonCopyPlaceholder.UseVisualStyleBackColor = true;
+            // 
+            // buttonNovaSubPropriedade
+            // 
+            this.buttonNovaSubPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_Sub_propriedade_32x32;
+            this.buttonNovaSubPropriedade.Location = new System.Drawing.Point(42, 2);
+            this.buttonNovaSubPropriedade.Name = "buttonNovaSubPropriedade";
+            this.buttonNovaSubPropriedade.Size = new System.Drawing.Size(40, 40);
+            this.buttonNovaSubPropriedade.TabIndex = 10;
+            this.buttonNovaSubPropriedade.UseVisualStyleBackColor = true;
+            this.buttonNovaSubPropriedade.Click += new System.EventHandler(this.buttonNovaSubPropriedade_Click);
+            // 
+            // buttonExcluirPropriedade
+            // 
+            this.buttonExcluirPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Excluir_propriedade_32x32;
+            this.buttonExcluirPropriedade.Location = new System.Drawing.Point(82, 2);
+            this.buttonExcluirPropriedade.Name = "buttonExcluirPropriedade";
+            this.buttonExcluirPropriedade.Size = new System.Drawing.Size(40, 40);
+            this.buttonExcluirPropriedade.TabIndex = 9;
+            this.buttonExcluirPropriedade.UseVisualStyleBackColor = true;
+            this.buttonExcluirPropriedade.Click += new System.EventHandler(this.buttonExcluirPropriedade_Click);
+            // 
+            // buttonNovaPropriedade
+            // 
+            this.buttonNovaPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_propriedade_32x32;
+            this.buttonNovaPropriedade.Location = new System.Drawing.Point(2, 2);
+            this.buttonNovaPropriedade.Name = "buttonNovaPropriedade";
+            this.buttonNovaPropriedade.Size = new System.Drawing.Size(40, 40);
+            this.buttonNovaPropriedade.TabIndex = 7;
+            this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
+            this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
+            // 
+            // buttonEditar
+            // 
+            this.buttonEditar.Image = global::GerenciadorSistemas.Properties.Resources.Edit_item_32x32;
+            this.buttonEditar.Location = new System.Drawing.Point(162, 2);
+            this.buttonEditar.Name = "buttonEditar";
+            this.buttonEditar.Size = new System.Drawing.Size(40, 40);
+            this.buttonEditar.TabIndex = 10;
+            this.buttonEditar.UseVisualStyleBackColor = true;
+            this.buttonEditar.Click += new System.EventHandler(this.buttonEditar_Click);
+            // 
+            // buttonDuplicar
+            // 
+            this.buttonDuplicar.Image = global::GerenciadorSistemas.Properties.Resources.Duplicar_Item_32x32;
+            this.buttonDuplicar.Location = new System.Drawing.Point(82, 2);
+            this.buttonDuplicar.Name = "buttonDuplicar";
+            this.buttonDuplicar.Size = new System.Drawing.Size(40, 40);
+            this.buttonDuplicar.TabIndex = 9;
+            this.buttonDuplicar.UseVisualStyleBackColor = true;
+            this.buttonDuplicar.Click += new System.EventHandler(this.buttonDuplicar_Click);
+            // 
+            // buttonExcluirItem
+            // 
+            this.buttonExcluirItem.Image = global::GerenciadorSistemas.Properties.Resources.Excluir_Item_32x32;
+            this.buttonExcluirItem.Location = new System.Drawing.Point(122, 2);
+            this.buttonExcluirItem.Name = "buttonExcluirItem";
+            this.buttonExcluirItem.Size = new System.Drawing.Size(40, 40);
+            this.buttonExcluirItem.TabIndex = 8;
+            this.buttonExcluirItem.UseVisualStyleBackColor = true;
+            this.buttonExcluirItem.Click += new System.EventHandler(this.buttonExcluirItem_Click);
+            // 
+            // buttonNovoSubItem
+            // 
+            this.buttonNovoSubItem.Image = global::GerenciadorSistemas.Properties.Resources.New_sub_item_32x32_2;
+            this.buttonNovoSubItem.Location = new System.Drawing.Point(42, 2);
+            this.buttonNovoSubItem.Name = "buttonNovoSubItem";
+            this.buttonNovoSubItem.Size = new System.Drawing.Size(40, 40);
+            this.buttonNovoSubItem.TabIndex = 7;
+            this.buttonNovoSubItem.UseVisualStyleBackColor = true;
+            this.buttonNovoSubItem.Click += new System.EventHandler(this.buttonNovoSubItem_Click);
+            // 
+            // buttonNovoItem
+            // 
+            this.buttonNovoItem.Image = ((System.Drawing.Image)(resources.GetObject("buttonNovoItem.Image")));
+            this.buttonNovoItem.Location = new System.Drawing.Point(2, 2);
+            this.buttonNovoItem.Name = "buttonNovoItem";
+            this.buttonNovoItem.Size = new System.Drawing.Size(40, 40);
+            this.buttonNovoItem.TabIndex = 6;
+            this.buttonNovoItem.UseVisualStyleBackColor = true;
+            this.buttonNovoItem.Click += new System.EventHandler(this.buttonNovoItem_Click);
+            // 
+            // buttonSalvar
+            // 
+            this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
+            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonSalvar.Location = new System.Drawing.Point(157, 501);
+            this.buttonSalvar.Name = "buttonSalvar";
+            this.buttonSalvar.Size = new System.Drawing.Size(70, 29);
+            this.buttonSalvar.TabIndex = 12;
+            this.buttonSalvar.Text = "Salvar";
+            this.buttonSalvar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.buttonSalvar.UseVisualStyleBackColor = true;
+            this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
             // 
             // Form1
             // 
@@ -515,6 +528,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TextBox textBoxLocal;
         private System.Windows.Forms.TextBox textBoxCategoria;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button buttonEditar;
     }
 }
 

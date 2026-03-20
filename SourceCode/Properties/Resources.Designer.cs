@@ -73,6 +73,16 @@ namespace GerenciadorSistemas.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Edit_item_32x32 {
+            get {
+                object obj = ResourceManager.GetObject("Edit_item_32x32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Excluir_Item_32x32 {
             get {
                 object obj = ResourceManager.GetObject("Excluir_Item_32x32", resourceCulture);

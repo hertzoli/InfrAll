@@ -1498,6 +1498,58 @@ namespace GerenciadorSistemas
                 Local = dynProp.Item.Path
             };
         }
+
+        private void buttonEditar_Click(object sender, EventArgs e)
+        {
+            TreeNode noSelecionado = treeViewItens.SelectedNode;
+            InfrastructureItem itemSelecionado = noSelecionado != null ? noSelecionado.Tag as InfrastructureItem : null;
+
+            if (noSelecionado == null || itemSelecionado == null)
+            {
+                MessageBox.Show("Selecione um item para editar.", "Editar item",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (FormNovoItem dialog = new FormNovoItem())
+            {
+                dialog.ConfigurarParaEdicao(
+                    itemSelecionado.NomeExibicao,
+                    itemSelecionado.Descricao,
+                    itemSelecionado.Observacao,
+                    itemSelecionado.IconeKey);
+
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                GarantirIconeCarregadoNoImageListPrincipal(dialog.IconeSelecionado);
+
+                itemSelecionado.NomeExibicao = dialog.ItemNome;
+                itemSelecionado.Descricao = dialog.ItemDescricao;
+                itemSelecionado.Observacao = dialog.Observacao;
+                itemSelecionado.IconeKey = dialog.IconeSelecionado;
+                itemSelecionado.SincronizarMetadados();
+
+                noSelecionado.Text = itemSelecionado.NomeExibicao;
+                noSelecionado.Name = itemSelecionado.NomeExibicao;
+                noSelecionado.ImageKey = itemSelecionado.IconeKey;
+                noSelecionado.SelectedImageKey = itemSelecionado.IconeKey;
+
+                AtualizarPropertyGrid(itemSelecionado);
+                treeViewItens.SelectedNode = noSelecionado;
+                noSelecionado.EnsureVisible();
+                PersistirCadastro();
+            }
+        }
+
+     
+        private void treeViewItens_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node != null)
+                treeViewItens.SelectedNode = e.Node;
+
+            buttonEditar_Click(sender, EventArgs.Empty);
+        }
     }
 
     internal sealed class InfrastructureItem

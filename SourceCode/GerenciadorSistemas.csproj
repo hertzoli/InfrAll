@@ -100,6 +100,7 @@
     <Content Include="Imagens\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Edit_item_32x32.png" />
     <None Include="Resources\Save.png" />
     <None Include="Resources\Excluir_propriedade_32x32.png" />
     <None Include="Resources\Nova_Sub-propriedade_32x32.png" />

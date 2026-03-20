@@ -2,9 +2,8 @@
 
 
 
- 9. ter uma forma de editar o ícone de um ítem existente sem alterar todas as suas propriedades existentes.
+selecionar um item em `treeViewItens` e disparar o evento `buttonEditar_Clic` deve abrir o formulário `FormNovoItem` para permitir o usuário editar o item selecionado. a edição deste item não pode comprometer todas a propriedades e sub-propriedades pré-existes deste item.
 
-arrastar `splitter3` não pode deixar `treeViewItens.Width` nem `propertyGridItem.Width` ficar menor que 200. arrastar `splitter4` não pode deixar `propertyGridItem.Width` ficar menor que 200 e nem `groupBox1.Width` ficar menor que 397. arrastar `splitter1` não pode deixar `treeViewItens.Width` nem `propertyGridItem.Height` ficar menor que 500. implemente isso no código.
 
  
 
@@ -15,7 +14,6 @@ em relação ao `treeViewItens` implementar os quatro itens abaixo:
  6. poder importar um item a partir de um arquivo.  (opção exibida no menu de contexto)
  7. Adicionar uma opção de criar "Nova Pasta" que vai criar um item já com o ícone de Pasta pré-selecionado.
  8. Adicioanr uma opção para expandir (+) e retrair (-) todos os nós.
-
 
 ajuste para que no `propertyGridItem` os nomes das Propriedades que possui outras sub-propriedades sejam exibidas em Negrito enquanto seus valores sejam exibidos sem negrito; para isso é necessário trocar o controle de propriedades.
 
@@ -68,6 +66,7 @@ resolver bug que se tentar deletar uma propriedade e cancelar, tentar deletar no
  os controles `treeViewItens` e `propertyGridItem` devem iniciar com a opção expandir (+) todos os nós habilitada por padrão.
 
 
+arrastar `splitter3` não pode deixar `treeViewItens.Width` nem `propertyGridItem.Width` ficar menor que 200. arrastar `splitter4` não pode deixar `propertyGridItem.Width` ficar menor que 200 e nem `groupBox1.Width` ficar menor que 397. arrastar `splitter1` não pode deixar `treeViewItens.Width` nem `propertyGridItem.Height` ficar menor que 500. implemente isso no código.
 
 
 

@@ -49,6 +49,17 @@ namespace GerenciadorSistemas
             get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens"); }
         }
 
+        public void ConfigurarParaEdicao(string nome, string descricao, string observacao, string iconeSelecionado)
+        {
+            Text = "Editar item";
+            _textBoxNome.Text = nome ?? string.Empty;
+            _textBoxDescricao.Text = descricao ?? string.Empty;
+            _textBoxObservacao.Text = observacao ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(iconeSelecionado))
+                SelecionarItemPorChave(iconeSelecionado);
+        }
+
         private void InicializarFormulario()
         {
             Text = "Novo item";
