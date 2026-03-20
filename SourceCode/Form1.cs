@@ -31,6 +31,7 @@ namespace GerenciadorSistemas
         public Form1()
         {
             InitializeComponent();
+            this.Text += "  v" + Application.ProductVersion;
             _toolTipBotoes = new ToolTip(components);
             FormClosing += Form1_FormClosing;
             buttonCopy.Click += buttonCopy_Click;

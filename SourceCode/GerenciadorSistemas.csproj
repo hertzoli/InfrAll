@@ -7,7 +7,7 @@
     <ProjectGuid>{470C5ABB-3D12-49B0-A087-8762F78FA5CA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>GerenciadorSistemas</RootNamespace>
-    <AssemblyName>GerenciadorSistemas</AssemblyName>
+    <AssemblyName>InfrAll</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -49,7 +49,8 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="YamlDotNet, Version=16.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
-      <HintPath>packages\YamlDotNet.16.3.0\lib\net47\YamlDotNet.dll</HintPath>
+      <HintPath>YamlDotNet.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +79,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YamlDotNet.dll">
+      <LogicalName>GerenciadorSistemas.Dependencies.YamlDotNet.dll</LogicalName>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

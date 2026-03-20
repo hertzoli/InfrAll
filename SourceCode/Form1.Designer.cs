@@ -35,45 +35,45 @@ namespace GerenciadorSistemas
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBoxNome = new System.Windows.Forms.TextBox();
+            this.buttonCopyPlaceholder = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBoxReferenciaPropriedade = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.buttonCopy = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.buttonRun = new System.Windows.Forms.Button();
+            this.textBoxValor = new System.Windows.Forms.TextBox();
+            this.buttonSalvar = new System.Windows.Forms.Button();
+            this.textBoxDescrição = new System.Windows.Forms.TextBox();
+            this.textBoxLocal = new System.Windows.Forms.TextBox();
+            this.textBoxCategoria = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.splitter4 = new System.Windows.Forms.Splitter();
             this.panel2 = new System.Windows.Forms.Panel();
             this.treeViewItens = new System.Windows.Forms.TreeView();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.splitter3 = new System.Windows.Forms.Splitter();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.propertyGridItem = new System.Windows.Forms.PropertyGrid();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxNome = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBoxValor = new System.Windows.Forms.TextBox();
-            this.textBoxDescrição = new System.Windows.Forms.TextBox();
-            this.textBoxCategoria = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBoxLocal = new System.Windows.Forms.TextBox();
-            this.buttonRun = new System.Windows.Forms.Button();
-            this.buttonCopy = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBoxReferenciaPropriedade = new System.Windows.Forms.TextBox();
-            this.buttonCopyPlaceholder = new System.Windows.Forms.Button();
-            this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
-            this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
-            this.buttonNovaPropriedade = new System.Windows.Forms.Button();
             this.buttonEditar = new System.Windows.Forms.Button();
             this.buttonDuplicar = new System.Windows.Forms.Button();
             this.buttonExcluirItem = new System.Windows.Forms.Button();
             this.buttonNovoSubItem = new System.Windows.Forms.Button();
             this.buttonNovoItem = new System.Windows.Forms.Button();
-            this.buttonSalvar = new System.Windows.Forms.Button();
+            this.splitter3 = new System.Windows.Forms.Splitter();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.propertyGridItem = new System.Windows.Forms.PropertyGrid();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
+            this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
+            this.buttonNovaPropriedade = new System.Windows.Forms.Button();
             this.panel3.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -114,6 +114,174 @@ namespace GerenciadorSistemas
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(422, 590);
             this.panel3.TabIndex = 15;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.textBoxNome);
+            this.groupBox1.Controls.Add(this.buttonCopyPlaceholder);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.textBoxReferenciaPropriedade);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.buttonCopy);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.buttonRun);
+            this.groupBox1.Controls.Add(this.textBoxValor);
+            this.groupBox1.Controls.Add(this.buttonSalvar);
+            this.groupBox1.Controls.Add(this.textBoxDescrição);
+            this.groupBox1.Controls.Add(this.textBoxLocal);
+            this.groupBox1.Controls.Add(this.textBoxCategoria);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Location = new System.Drawing.Point(13, 46);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(397, 518);
+            this.groupBox1.TabIndex = 18;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Propriedade";
+            // 
+            // textBoxNome
+            // 
+            this.textBoxNome.Location = new System.Drawing.Point(23, 41);
+            this.textBoxNome.Name = "textBoxNome";
+            this.textBoxNome.Size = new System.Drawing.Size(286, 20);
+            this.textBoxNome.TabIndex = 1;
+            // 
+            // buttonCopyPlaceholder
+            // 
+            this.buttonCopyPlaceholder.Location = new System.Drawing.Point(314, 426);
+            this.buttonCopyPlaceholder.Name = "buttonCopyPlaceholder";
+            this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 23);
+            this.buttonCopyPlaceholder.TabIndex = 17;
+            this.buttonCopyPlaceholder.Text = "Copy";
+            this.buttonCopyPlaceholder.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(20, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Nome:";
+            // 
+            // textBoxReferenciaPropriedade
+            // 
+            this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(23, 428);
+            this.textBoxReferenciaPropriedade.Name = "textBoxReferenciaPropriedade";
+            this.textBoxReferenciaPropriedade.ReadOnly = true;
+            this.textBoxReferenciaPropriedade.Size = new System.Drawing.Size(285, 20);
+            this.textBoxReferenciaPropriedade.TabIndex = 16;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(24, 75);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Valor:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(20, 412);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(62, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Referencia:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(22, 188);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 13);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Descrição:";
+            // 
+            // buttonCopy
+            // 
+            this.buttonCopy.Location = new System.Drawing.Point(315, 143);
+            this.buttonCopy.Name = "buttonCopy";
+            this.buttonCopy.Size = new System.Drawing.Size(47, 29);
+            this.buttonCopy.TabIndex = 14;
+            this.buttonCopy.Text = "Copy";
+            this.buttonCopy.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(20, 386);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(55, 13);
+            this.label4.TabIndex = 4;
+            this.label4.Text = "Categoria:";
+            // 
+            // buttonRun
+            // 
+            this.buttonRun.Location = new System.Drawing.Point(315, 91);
+            this.buttonRun.Name = "buttonRun";
+            this.buttonRun.Size = new System.Drawing.Size(47, 29);
+            this.buttonRun.TabIndex = 13;
+            this.buttonRun.Text = "Run";
+            this.buttonRun.UseVisualStyleBackColor = true;
+            // 
+            // textBoxValor
+            // 
+            this.textBoxValor.Location = new System.Drawing.Point(23, 91);
+            this.textBoxValor.Multiline = true;
+            this.textBoxValor.Name = "textBoxValor";
+            this.textBoxValor.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxValor.Size = new System.Drawing.Size(286, 81);
+            this.textBoxValor.TabIndex = 5;
+            // 
+            // buttonSalvar
+            // 
+            this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
+            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonSalvar.Location = new System.Drawing.Point(157, 465);
+            this.buttonSalvar.Name = "buttonSalvar";
+            this.buttonSalvar.Size = new System.Drawing.Size(70, 29);
+            this.buttonSalvar.TabIndex = 12;
+            this.buttonSalvar.Text = "Salvar";
+            this.buttonSalvar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.buttonSalvar.UseVisualStyleBackColor = true;
+            this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
+            // 
+            // textBoxDescrição
+            // 
+            this.textBoxDescrição.Location = new System.Drawing.Point(23, 204);
+            this.textBoxDescrição.Multiline = true;
+            this.textBoxDescrição.Name = "textBoxDescrição";
+            this.textBoxDescrição.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxDescrição.Size = new System.Drawing.Size(286, 108);
+            this.textBoxDescrição.TabIndex = 6;
+            // 
+            // textBoxLocal
+            // 
+            this.textBoxLocal.Location = new System.Drawing.Point(23, 357);
+            this.textBoxLocal.Name = "textBoxLocal";
+            this.textBoxLocal.Size = new System.Drawing.Size(285, 20);
+            this.textBoxLocal.TabIndex = 9;
+            // 
+            // textBoxCategoria
+            // 
+            this.textBoxCategoria.Location = new System.Drawing.Point(81, 381);
+            this.textBoxCategoria.Name = "textBoxCategoria";
+            this.textBoxCategoria.Size = new System.Drawing.Size(227, 20);
+            this.textBoxCategoria.TabIndex = 7;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(20, 341);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Local:";
             // 
             // splitter4
             // 
@@ -171,236 +339,6 @@ namespace GerenciadorSistemas
             this.panel6.Size = new System.Drawing.Size(339, 46);
             this.panel6.TabIndex = 1;
             // 
-            // splitter3
-            // 
-            this.splitter3.BackColor = System.Drawing.SystemColors.Control;
-            this.splitter3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitter3.Location = new System.Drawing.Point(339, 0);
-            this.splitter3.MinExtra = 10;
-            this.splitter3.MinSize = 5;
-            this.splitter3.Name = "splitter3";
-            this.splitter3.Size = new System.Drawing.Size(6, 590);
-            this.splitter3.TabIndex = 18;
-            this.splitter3.TabStop = false;
-            // 
-            // panel4
-            // 
-            this.panel4.Controls.Add(this.propertyGridItem);
-            this.panel4.Controls.Add(this.panel5);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(345, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(411, 590);
-            this.panel4.TabIndex = 19;
-            // 
-            // propertyGridItem
-            // 
-            this.propertyGridItem.Cursor = System.Windows.Forms.Cursors.WaitCursor;
-            this.propertyGridItem.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGridItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.propertyGridItem.Location = new System.Drawing.Point(0, 46);
-            this.propertyGridItem.Name = "propertyGridItem";
-            this.propertyGridItem.Size = new System.Drawing.Size(411, 544);
-            this.propertyGridItem.TabIndex = 19;
-            this.propertyGridItem.UseWaitCursor = true;
-            this.propertyGridItem.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propertyGridItem_SelectedGridItemChanged);
-            // 
-            // panel5
-            // 
-            this.panel5.Controls.Add(this.buttonNovaSubPropriedade);
-            this.panel5.Controls.Add(this.buttonExcluirPropriedade);
-            this.panel5.Controls.Add(this.buttonNovaPropriedade);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel5.Location = new System.Drawing.Point(0, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(411, 46);
-            this.panel5.TabIndex = 0;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.textBoxNome);
-            this.groupBox1.Controls.Add(this.buttonCopyPlaceholder);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBoxReferenciaPropriedade);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.buttonCopy);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.buttonRun);
-            this.groupBox1.Controls.Add(this.textBoxValor);
-            this.groupBox1.Controls.Add(this.buttonSalvar);
-            this.groupBox1.Controls.Add(this.textBoxDescrição);
-            this.groupBox1.Controls.Add(this.textBoxLocal);
-            this.groupBox1.Controls.Add(this.textBoxCategoria);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Location = new System.Drawing.Point(13, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(397, 555);
-            this.groupBox1.TabIndex = 18;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Propriedade";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Nome:";
-            // 
-            // textBoxNome
-            // 
-            this.textBoxNome.Location = new System.Drawing.Point(23, 41);
-            this.textBoxNome.Name = "textBoxNome";
-            this.textBoxNome.Size = new System.Drawing.Size(286, 20);
-            this.textBoxNome.TabIndex = 1;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 75);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Valor:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 188);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Descrição:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(20, 380);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(55, 13);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Categoria:";
-            // 
-            // textBoxValor
-            // 
-            this.textBoxValor.Location = new System.Drawing.Point(23, 91);
-            this.textBoxValor.Multiline = true;
-            this.textBoxValor.Name = "textBoxValor";
-            this.textBoxValor.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxValor.Size = new System.Drawing.Size(286, 81);
-            this.textBoxValor.TabIndex = 5;
-            // 
-            // textBoxDescrição
-            // 
-            this.textBoxDescrição.Location = new System.Drawing.Point(23, 204);
-            this.textBoxDescrição.Multiline = true;
-            this.textBoxDescrição.Name = "textBoxDescrição";
-            this.textBoxDescrição.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxDescrição.Size = new System.Drawing.Size(286, 108);
-            this.textBoxDescrição.TabIndex = 6;
-            // 
-            // textBoxCategoria
-            // 
-            this.textBoxCategoria.Location = new System.Drawing.Point(23, 396);
-            this.textBoxCategoria.Name = "textBoxCategoria";
-            this.textBoxCategoria.Size = new System.Drawing.Size(174, 20);
-            this.textBoxCategoria.TabIndex = 7;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 341);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(36, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Local:";
-            // 
-            // textBoxLocal
-            // 
-            this.textBoxLocal.Location = new System.Drawing.Point(23, 357);
-            this.textBoxLocal.Name = "textBoxLocal";
-            this.textBoxLocal.Size = new System.Drawing.Size(174, 20);
-            this.textBoxLocal.TabIndex = 9;
-            // 
-            // buttonRun
-            // 
-            this.buttonRun.Location = new System.Drawing.Point(315, 91);
-            this.buttonRun.Name = "buttonRun";
-            this.buttonRun.Size = new System.Drawing.Size(47, 29);
-            this.buttonRun.TabIndex = 13;
-            this.buttonRun.Text = "Run";
-            this.buttonRun.UseVisualStyleBackColor = true;
-            // 
-            // buttonCopy
-            // 
-            this.buttonCopy.Location = new System.Drawing.Point(315, 143);
-            this.buttonCopy.Name = "buttonCopy";
-            this.buttonCopy.Size = new System.Drawing.Size(47, 29);
-            this.buttonCopy.TabIndex = 14;
-            this.buttonCopy.Text = "Copy";
-            this.buttonCopy.UseVisualStyleBackColor = true;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(20, 433);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(62, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Referencia:";
-            // 
-            // textBoxReferenciaPropriedade
-            // 
-            this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(23, 449);
-            this.textBoxReferenciaPropriedade.Name = "textBoxReferenciaPropriedade";
-            this.textBoxReferenciaPropriedade.ReadOnly = true;
-            this.textBoxReferenciaPropriedade.Size = new System.Drawing.Size(285, 20);
-            this.textBoxReferenciaPropriedade.TabIndex = 16;
-            // 
-            // buttonCopyPlaceholder
-            // 
-            this.buttonCopyPlaceholder.Location = new System.Drawing.Point(314, 447);
-            this.buttonCopyPlaceholder.Name = "buttonCopyPlaceholder";
-            this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 23);
-            this.buttonCopyPlaceholder.TabIndex = 17;
-            this.buttonCopyPlaceholder.Text = "Copy";
-            this.buttonCopyPlaceholder.UseVisualStyleBackColor = true;
-            // 
-            // buttonNovaSubPropriedade
-            // 
-            this.buttonNovaSubPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_Sub_propriedade_32x32;
-            this.buttonNovaSubPropriedade.Location = new System.Drawing.Point(42, 2);
-            this.buttonNovaSubPropriedade.Name = "buttonNovaSubPropriedade";
-            this.buttonNovaSubPropriedade.Size = new System.Drawing.Size(40, 40);
-            this.buttonNovaSubPropriedade.TabIndex = 10;
-            this.buttonNovaSubPropriedade.UseVisualStyleBackColor = true;
-            this.buttonNovaSubPropriedade.Click += new System.EventHandler(this.buttonNovaSubPropriedade_Click);
-            // 
-            // buttonExcluirPropriedade
-            // 
-            this.buttonExcluirPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Excluir_propriedade_32x32;
-            this.buttonExcluirPropriedade.Location = new System.Drawing.Point(82, 2);
-            this.buttonExcluirPropriedade.Name = "buttonExcluirPropriedade";
-            this.buttonExcluirPropriedade.Size = new System.Drawing.Size(40, 40);
-            this.buttonExcluirPropriedade.TabIndex = 9;
-            this.buttonExcluirPropriedade.UseVisualStyleBackColor = true;
-            this.buttonExcluirPropriedade.Click += new System.EventHandler(this.buttonExcluirPropriedade_Click);
-            // 
-            // buttonNovaPropriedade
-            // 
-            this.buttonNovaPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_propriedade_32x32;
-            this.buttonNovaPropriedade.Location = new System.Drawing.Point(2, 2);
-            this.buttonNovaPropriedade.Name = "buttonNovaPropriedade";
-            this.buttonNovaPropriedade.Size = new System.Drawing.Size(40, 40);
-            this.buttonNovaPropriedade.TabIndex = 7;
-            this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
-            this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
-            // 
             // buttonEditar
             // 
             this.buttonEditar.Image = global::GerenciadorSistemas.Properties.Resources.Edit_item_32x32;
@@ -451,18 +389,80 @@ namespace GerenciadorSistemas
             this.buttonNovoItem.UseVisualStyleBackColor = true;
             this.buttonNovoItem.Click += new System.EventHandler(this.buttonNovoItem_Click);
             // 
-            // buttonSalvar
+            // splitter3
             // 
-            this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
-            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonSalvar.Location = new System.Drawing.Point(157, 501);
-            this.buttonSalvar.Name = "buttonSalvar";
-            this.buttonSalvar.Size = new System.Drawing.Size(70, 29);
-            this.buttonSalvar.TabIndex = 12;
-            this.buttonSalvar.Text = "Salvar";
-            this.buttonSalvar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.buttonSalvar.UseVisualStyleBackColor = true;
-            this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
+            this.splitter3.BackColor = System.Drawing.SystemColors.Control;
+            this.splitter3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitter3.Location = new System.Drawing.Point(339, 0);
+            this.splitter3.MinExtra = 10;
+            this.splitter3.MinSize = 5;
+            this.splitter3.Name = "splitter3";
+            this.splitter3.Size = new System.Drawing.Size(6, 590);
+            this.splitter3.TabIndex = 18;
+            this.splitter3.TabStop = false;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.propertyGridItem);
+            this.panel4.Controls.Add(this.panel5);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel4.Location = new System.Drawing.Point(345, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(411, 590);
+            this.panel4.TabIndex = 19;
+            // 
+            // propertyGridItem
+            // 
+            this.propertyGridItem.Cursor = System.Windows.Forms.Cursors.WaitCursor;
+            this.propertyGridItem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.propertyGridItem.Location = new System.Drawing.Point(0, 46);
+            this.propertyGridItem.Name = "propertyGridItem";
+            this.propertyGridItem.Size = new System.Drawing.Size(411, 544);
+            this.propertyGridItem.TabIndex = 19;
+            this.propertyGridItem.UseWaitCursor = true;
+            this.propertyGridItem.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propertyGridItem_SelectedGridItemChanged);
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.buttonNovaSubPropriedade);
+            this.panel5.Controls.Add(this.buttonExcluirPropriedade);
+            this.panel5.Controls.Add(this.buttonNovaPropriedade);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(0, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(411, 46);
+            this.panel5.TabIndex = 0;
+            // 
+            // buttonNovaSubPropriedade
+            // 
+            this.buttonNovaSubPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_Sub_propriedade_32x32;
+            this.buttonNovaSubPropriedade.Location = new System.Drawing.Point(42, 2);
+            this.buttonNovaSubPropriedade.Name = "buttonNovaSubPropriedade";
+            this.buttonNovaSubPropriedade.Size = new System.Drawing.Size(40, 40);
+            this.buttonNovaSubPropriedade.TabIndex = 10;
+            this.buttonNovaSubPropriedade.UseVisualStyleBackColor = true;
+            this.buttonNovaSubPropriedade.Click += new System.EventHandler(this.buttonNovaSubPropriedade_Click);
+            // 
+            // buttonExcluirPropriedade
+            // 
+            this.buttonExcluirPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Excluir_propriedade_32x32;
+            this.buttonExcluirPropriedade.Location = new System.Drawing.Point(82, 2);
+            this.buttonExcluirPropriedade.Name = "buttonExcluirPropriedade";
+            this.buttonExcluirPropriedade.Size = new System.Drawing.Size(40, 40);
+            this.buttonExcluirPropriedade.TabIndex = 9;
+            this.buttonExcluirPropriedade.UseVisualStyleBackColor = true;
+            this.buttonExcluirPropriedade.Click += new System.EventHandler(this.buttonExcluirPropriedade_Click);
+            // 
+            // buttonNovaPropriedade
+            // 
+            this.buttonNovaPropriedade.Image = global::GerenciadorSistemas.Properties.Resources.Nova_propriedade_32x32;
+            this.buttonNovaPropriedade.Location = new System.Drawing.Point(2, 2);
+            this.buttonNovaPropriedade.Name = "buttonNovaPropriedade";
+            this.buttonNovaPropriedade.Size = new System.Drawing.Size(40, 40);
+            this.buttonNovaPropriedade.TabIndex = 7;
+            this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
+            this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
             // 
             // Form1
             // 
@@ -481,12 +481,12 @@ namespace GerenciadorSistemas
             this.Name = "Form1";
             this.Text = "InfrAll";
             this.panel3.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
