@@ -1,15 +1,12 @@
 ### Implementar:
 
 
-Se quiser, eu posso fazer um segundo passe para deixar o README ainda mais orientado a usuário final, com uma seção “Como usar” passo a passo.
 
+ 9. ter uma forma de editar o ícone de um ítem existente sem alterar todas as suas propriedades existentes.
 
-
-
-resolver bug que se tentar deletar uma propriedade e cancelar, tentar deletar novamente a mesma dá erro
+arrastar `splitter3` não pode deixar `treeViewItens.Width` nem `propertyGridItem.Width` ficar menor que 200. arrastar `splitter4` não pode deixar `propertyGridItem.Width` ficar menor que 200 e nem `groupBox1.Width` ficar menor que 397. arrastar `splitter1` não pode deixar `treeViewItens.Width` nem `propertyGridItem.Height` ficar menor que 500. implemente isso no código.
 
  
- os controles `treeViewItens` e `propertyGridItem` devem iniciar com a opção expandir (+) todos os nós habilitada por padrão.
 
  
 ### Baixa Prioridade:
@@ -18,10 +15,10 @@ em relação ao `treeViewItens` implementar os quatro itens abaixo:
  6. poder importar um item a partir de um arquivo.  (opção exibida no menu de contexto)
  7. Adicionar uma opção de criar "Nova Pasta" que vai criar um item já com o ícone de Pasta pré-selecionado.
  8. Adicioanr uma opção para expandir (+) e retrair (-) todos os nós.
- 9. ter uma forma de editar o ícone de um ítem existente sem alterar todas as suas propriedades existentes.
+
 
 ajuste para que no `propertyGridItem` os nomes das Propriedades que possui outras sub-propriedades sejam exibidas em Negrito enquanto seus valores sejam exibidos sem negrito; para isso é necessário trocar o controle de propriedades.
-melhorar os ajustes de dimencionamento do formulário principal
+
 
 ### Feito:
 
@@ -59,12 +56,16 @@ então se eu colocar criar uma propriedade com o nome de "Commando Ping" com o `
 implemente um PRD para essa funcionalidade.
 
 
+atualise o Readme.md para deixar ainda mais orientado a usuário final, com uma seção “Como usar” passo a passo.
+
+ao `buttonSalvar_Click` alterando o `nomePropriedade` ou o `localPropriedade` faz remover todas as subpropriedaes que pertencem a ela. isso não pode ocorrer. faça as correções necessárias para ao editar uma propriedade preservar as sub-propriedades que ela possue.
 
 
 
+resolver bug que se tentar deletar uma propriedade e cancelar, tentar deletar novamente a mesma dá erro
 
 
-
+ os controles `treeViewItens` e `propertyGridItem` devem iniciar com a opção expandir (+) todos os nós habilitada por padrão.
 
 
 

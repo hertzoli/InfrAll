@@ -15,6 +15,11 @@ namespace GerenciadorSistemas
     public partial class Form1 : Form
     {
         private const int VersaoSchemaCadastro = 1;
+        private const int LarguraMinimaTreeView = 200;
+        private const int LarguraMinimaPropertyGrid = 200;
+        private const int LarguraMinimaGroupBoxPropriedade = 397;
+        private const int AlturaMinimaTreeView = 500;
+        private const int AlturaMinimaPropertyGrid = 500;
         private string _nomePropriedadeSelecionadaOriginal;
         private string _localPropriedadeSelecionadaOriginal;
         private ContextMenuStrip _menuContextoTreeView;
@@ -31,6 +36,9 @@ namespace GerenciadorSistemas
             buttonCopy.Click += buttonCopy_Click;
             buttonRun.Click += buttonRun_Click;
             buttonCopyPlaceholder.Click += buttonCopyPlaceholder_Click;
+            splitter1.SplitterMoved += splitter1_SplitterMoved;
+            splitter3.SplitterMoved += splitter3_SplitterMoved;
+            splitter4.SplitterMoved += splitter4_SplitterMoved;
             imageList1.ImageSize = new System.Drawing.Size(16, 16);   // tamanho dos Ã­cones
 
             InicializarTela();
@@ -66,6 +74,43 @@ namespace GerenciadorSistemas
             _toolTipBotoes.SetToolTip(buttonSalvar, "Salvar as alteracoes da propriedade atual.");
             _toolTipBotoes.SetToolTip(textBoxLocal, "Informar o local associado a propriedade selecionada.");
             _toolTipBotoes.SetToolTip(textBoxCategoria, "Informar a categoria usada para organizar a propriedade.");
+        }
+
+        private void splitter3_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            int larguraPainelEsquerdo = panel2.Width;
+            int larguraPainelDireito = panel4.Width;
+
+            if (larguraPainelEsquerdo < LarguraMinimaTreeView)
+                panel2.Width = LarguraMinimaTreeView;
+            else if (larguraPainelDireito < LarguraMinimaPropertyGrid)
+                panel2.Width = ClientSize.Width - panel3.Width - splitter4.Width - splitter3.Width - LarguraMinimaPropertyGrid;
+        }
+
+        private void splitter4_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            int larguraPainelDireito = panel3.Width;
+            int larguraPainelCentral = panel4.Width;
+            int larguraMinimaPainelDireito = LarguraMinimaGroupBoxPropriedade + (panel3.Width - groupBox1.Width);
+
+            if (larguraPainelCentral < LarguraMinimaPropertyGrid)
+                panel3.Width = ClientSize.Width - panel2.Width - splitter3.Width - splitter4.Width - LarguraMinimaPropertyGrid;
+            else if (larguraPainelDireito < larguraMinimaPainelDireito)
+                panel3.Width = larguraMinimaPainelDireito;
+        }
+
+        private void splitter1_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            int alturaAreaSuperior = ClientSize.Height - panel1.Height - splitter1.Height;
+            int alturaMinimaNecessaria = Math.Max(
+                panel6.Height + AlturaMinimaTreeView,
+                panel5.Height + AlturaMinimaPropertyGrid);
+
+            if (alturaAreaSuperior < alturaMinimaNecessaria)
+                panel1.Height = ClientSize.Height - splitter1.Height - alturaMinimaNecessaria;
+
+            if (panel1.Height < 60)
+                panel1.Height = 60;
         }
 
         private void buttonNovoItem_Click(object sender, EventArgs e)
