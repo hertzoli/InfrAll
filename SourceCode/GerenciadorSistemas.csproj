@@ -122,4 +122,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(OneDrive)\Programacao\C#\Tools\Assinar_e_ofuscar_exe.exe" "$(TargetDir)" "$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

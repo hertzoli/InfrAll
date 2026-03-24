@@ -4,16 +4,15 @@ melhor Concorrente com vários recursos: https://devolutions.net/products/remote
 outro concorrente: https://mobaxterm.mobatek.net/
 outro concorrente: https://www.royalapps.com/ts/win/features
     ícones bons para copiar aqui.
+    icones interessantes: https://dashboardicons.com/icons?q=linux
+    
 
-
-
-
-fazer o código reconhecer e executar scripts diretos do campo de comando.
-
+ter uma função para gerar icones a partir de um PNG (pode ser pelo caminho local ou online) 
+Organizar os icones em uma estrutura de arvore (usar o treeview) onde tem as pastas (infra, sistemas, applications, conexões, etc) e exibe cada pasta
 
 Funcionalidade Online:
  - Fazer o Infrall buscar arquivos de dados "cadastro.yaml" na internet (ftp). a ideia é permitir que ele funcione com várias pessoas usando ao mesmo tempo. talvez o ideal é implementar um banco de dados MariaDB.
- - Permitir pesquisar e baixar templates Online na pela internet.
+ - Permitir pesquisar e baixar templates Online pela internet.
  - criar uma forma de simplificar a adição de comandos de ferramentas externas. exemplo: ao adicionar um comando, listar as ferramentas compatíveis e os comandos padrão. se a ferramenta não existir no computador o programa baixa ela e já deixa ela disponível em uma pasta tools. Exemplo: suponha que quer executar um teste de velocidade de rede. então o programa mostra a opção do executar o "iperf" onde o usuário pode apontar o caminho ou baixar automaticamente o "iperf"; 
  - Criar um repositório online onde usuário podem publicar templates e ou comandos que podem ser baixados por outros usuários. 
 
@@ -44,15 +43,45 @@ em vez de usar o `propertyGridItem` usar um `ListView` que exibe todos as propri
 ### Feito:
 
 
+v1.3
+reconhece e executar scripts diretos do campo de comando.
+implemente um código necessário para que se o `textBoxValor` tenha o conteúdo de um script batch e `comboBoxTipo` seja do tipo `script` então ao pressionar `buttonRun` esse script deve ser executado da mesma maneira que se o usuário tivesse executado o arquivo *.bat direto do explorer.exe.
+
+o conteúdo do `textBoxValor` pode ser o mesmo conteúdo de um arquivo de script *.bat como o exemplo abaixo.
+
+``` batch
+@echo off
+pushd "%~dp0"
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set OS=32BIT || set OS=64BIT
+
+IF %OS%==32BIT (
+   pushd DPInst\X32
+   DPInst.exe /q /a
+) ELSE (   
+   pushd DPInst\X64
+   DPInst.exe /q /a
+)
+
+popd 
+start EnterpriseDU.exe
+```
+
+esse conteúdo do tipo script deve suportar os placeholders.
+uma sugesão é gerar um arquivo *.bat temporário com os placeholders já resolvidos e em seguida executar o arquivo *.bat gerado.
+implemente essa funcionalidade.
+
+v1.2.1
+Adicionei o controle `comboBoxTipo` que deve receber um Enun com os tipos (texto, comando, script) que será usado para distinguir o tipo de dado do `textBoxValor` e habilitar ou não o `buttonRun`. lembre que o usuário deve poder editar o tipo de dado.
+Fazer o botão `buttonRun` só ficar acessíveis (Enable) se o valor da propriedade for do tipo Comando ou script
+
+
 v1.2
 Implementar atualização automática.
 pressionando [F2] abre o formulário de edição para renomear o item selecionado.
 alterar para que a resolução de placeholders buscar propriedades em qualquer item e não ficar restrita ao item atual. para implementar isso será necessário que o caminho do placeholders passar a ser um caminho completo de toda a arvore de itens e não só do item atual.
 
-Adicionei o controle `comboBoxTipo` que deve receber um Enun com os tipos (texto, comando, script) que será usado para distinguir o tipo de dado do `textBoxValor` e habilitar ou não o `buttonRun`. lembre que o usuário deve poder editar o tipo de dado.
 
 
-Fazer o botão `buttonRun` só ficar acessíveis (Enable) se o valor da propriedade for do tipo Comando ou script
 
 v1.1
 Adiciona a versão no título do formulário:  this.Text += "  v" + Application.ProductVersion;

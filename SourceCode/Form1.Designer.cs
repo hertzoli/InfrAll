@@ -473,16 +473,16 @@ namespace GerenciadorSistemas
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(22, 180);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.Size = new System.Drawing.Size(31, 13);
             this.label7.TabIndex = 18;
-            this.label7.Text = "Categoria:";
+            this.label7.Text = "Tipo:";
             // 
             // comboBoxTipo
             // 
             this.comboBoxTipo.FormattingEnabled = true;
-            this.comboBoxTipo.Location = new System.Drawing.Point(81, 176);
+            this.comboBoxTipo.Location = new System.Drawing.Point(59, 176);
             this.comboBoxTipo.Name = "comboBoxTipo";
-            this.comboBoxTipo.Size = new System.Drawing.Size(227, 21);
+            this.comboBoxTipo.Size = new System.Drawing.Size(249, 21);
             this.comboBoxTipo.TabIndex = 19;
             // 
             // Form1
