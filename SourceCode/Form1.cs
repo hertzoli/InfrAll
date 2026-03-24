@@ -32,6 +32,10 @@ namespace GerenciadorSistemas
         {
             InitializeComponent();
             this.Text += "  v" + Application.ProductVersion;
+
+            //---------------- Verifica update online    
+            OnlineAutoUpdate.OnlineAutoUpdateAsync.OnlineAutoUpdateAsync2();
+            //------------------------------------
             _toolTipBotoes = new ToolTip(components);
             FormClosing += Form1_FormClosing;
             buttonCopy.Click += buttonCopy_Click;
@@ -180,11 +184,10 @@ namespace GerenciadorSistemas
 
         private void buttonCopy_Click(object sender, EventArgs e)
         {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
             string valorResolvido;
             string erro;
 
-            if (!TryResolverTextoComReferencias(itemSelecionado, textBoxValor.Text, out valorResolvido, out erro))
+            if (!TryResolverTextoComReferencias(textBoxValor.Text, out valorResolvido, out erro))
             {
                 MessageBox.Show(erro, "Referencia invalida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -195,11 +198,10 @@ namespace GerenciadorSistemas
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
             string valorResolvido;
             string erro;
 
-            if (!TryResolverTextoComReferencias(itemSelecionado, textBoxValor.Text, out valorResolvido, out erro))
+            if (!TryResolverTextoComReferencias(textBoxValor.Text, out valorResolvido, out erro))
             {
                 MessageBox.Show(erro, "Referencia invalida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -587,7 +589,7 @@ namespace GerenciadorSistemas
             textBoxDescri\u00E7\u00E3o.Text = info.Descricao;
             textBoxCategoria.Text = info.Categoria;
             textBoxLocal.Text = info.Local;
-            textBoxReferenciaPropriedade.Text = MontarPlaceholderDaPropriedade(info);
+            textBoxReferenciaPropriedade.Text = MontarPlaceholderDaPropriedade(info, treeViewItens.SelectedNode);
             AtualizarContextoDaPropriedadeSelecionada(info.Nome, info.Local);
         }
 
@@ -613,6 +615,14 @@ namespace GerenciadorSistemas
 
         private void treeViewItens_KeyDown(object sender, KeyEventArgs e)
         {
+
+            if (e.KeyCode == Keys.F2)
+            {
+                buttonEditar_Click(sender, EventArgs.Empty);
+                e.Handled = true;
+                return;
+            }
+
             if (e.KeyCode != Keys.Delete)
                 return;
 
@@ -1349,35 +1359,22 @@ namespace GerenciadorSistemas
             textBoxReferenciaPropriedade.Text = string.Empty;
         }
 
-        private static string MontarPlaceholderDaPropriedade(PropertyGridSelectionInfo info)
+        private string MontarPlaceholderDaPropriedade(PropertyGridSelectionInfo info, TreeNode noItem)
         {
-            if (info == null)
+            if (info == null || noItem == null)
                 return string.Empty;
 
-            string local = (info.Local ?? string.Empty).Trim();
-            string nome = (info.Nome ?? string.Empty).Trim();
-            string referencia;
+            string caminhoItem = ObterCaminhoCompletoDoNo(noItem);
+            string referenciaPropriedade = MontarReferenciaDaPropriedade(info.Local, info.Nome);
+            string referenciaCompleta = MontarReferenciaCompleta(caminhoItem, referenciaPropriedade);
 
-            if (string.IsNullOrWhiteSpace(local))
-                referencia = nome;
-            else if (string.IsNullOrWhiteSpace(nome))
-                referencia = local;
-            else
-                referencia = string.Concat(local, "/", nome);
-
-            return string.IsNullOrWhiteSpace(referencia) ? string.Empty : "{" + referencia + "}";
+            return string.IsNullOrWhiteSpace(referenciaCompleta) ? string.Empty : "{" + referenciaCompleta + "}";
         }
 
-        private static bool TryResolverTextoComReferencias(InfrastructureItem item, string template, out string valorResolvido, out string erro)
+        private bool TryResolverTextoComReferencias(string template, out string valorResolvido, out string erro)
         {
             valorResolvido = template ?? string.Empty;
             erro = null;
-
-            if (item == null)
-            {
-                erro = "Selecione um item na arvore antes de resolver referencias.";
-                return false;
-            }
 
             MatchCollection matches = Regex.Matches(valorResolvido, @"\{([^{}]+)\}");
 
@@ -1386,9 +1383,8 @@ namespace GerenciadorSistemas
                 string referencia = match.Groups[1].Value.Trim();
                 DynamicPropertyItem propriedadeReferenciada;
 
-                if (!item.Builder.TryGetPropriedadePorReferencia(referencia, out propriedadeReferenciada))
+                if (!TryResolverPropriedadePorReferencia(referencia, out propriedadeReferenciada, out erro))
                 {
-                    erro = "Referencia nao encontrada: {" + referencia + "}";
                     return false;
                 }
 
@@ -1398,6 +1394,193 @@ namespace GerenciadorSistemas
             }
 
             return true;
+        }
+
+        private bool TryResolverPropriedadePorReferencia(string referencia, out DynamicPropertyItem propriedadeReferenciada, out string erro)
+        {
+            propriedadeReferenciada = null;
+            erro = null;
+
+            string referenciaNormalizada = NormalizarReferencia(referencia);
+            if (string.IsNullOrWhiteSpace(referenciaNormalizada))
+            {
+                erro = "Referencia invalida: {" + (referencia ?? string.Empty).Trim() + "}";
+                return false;
+            }
+
+            TreeNode noAtual = treeViewItens.SelectedNode;
+            if (noAtual != null)
+            {
+                InfrastructureItem itemAtual = noAtual.Tag as InfrastructureItem;
+                if (itemAtual != null && itemAtual.Builder.TryGetPropriedadePorReferencia(referenciaNormalizada, out propriedadeReferenciada))
+                    return true;
+            }
+
+            TreeNode noReferenciado;
+            string referenciaDaPropriedade;
+
+            if (!TryEncontrarNoEReferenciaDaPropriedade(referenciaNormalizada, out noReferenciado, out referenciaDaPropriedade))
+            {
+                erro = "Item referenciado nao encontrado: {" + referenciaNormalizada + "}";
+                return false;
+            }
+
+            InfrastructureItem itemReferenciado = noReferenciado.Tag as InfrastructureItem;
+            if (itemReferenciado == null)
+            {
+                erro = "Item referenciado nao encontrado: {" + referenciaNormalizada + "}";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(referenciaDaPropriedade))
+            {
+                erro = "Propriedade referenciada nao encontrada: {" + referenciaNormalizada + "}";
+                return false;
+            }
+
+            if (!itemReferenciado.Builder.TryGetPropriedadePorReferencia(referenciaDaPropriedade, out propriedadeReferenciada))
+            {
+                erro = "Propriedade referenciada nao encontrada: {" + referenciaNormalizada + "}";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool TryEncontrarNoEReferenciaDaPropriedade(string referencia, out TreeNode noEncontrado, out string referenciaDaPropriedade)
+        {
+            noEncontrado = null;
+            referenciaDaPropriedade = string.Empty;
+
+            string[] partesReferencia = ObterPartesDaReferencia(referencia);
+            if (partesReferencia.Length < 2)
+                return false;
+
+            int melhorQuantidadePartes = -1;
+
+            foreach (TreeNode no in EnumerarTodosOsNos())
+            {
+                string[] partesNo = ObterPartesDoCaminhoDoNo(no);
+                if (partesNo.Length == 0 || partesNo.Length >= partesReferencia.Length)
+                    continue;
+
+                if (!ReferenciaComecaComCaminhoDoNo(partesReferencia, partesNo))
+                    continue;
+
+                if (partesNo.Length <= melhorQuantidadePartes)
+                    continue;
+
+                melhorQuantidadePartes = partesNo.Length;
+                noEncontrado = no;
+                referenciaDaPropriedade = string.Join("/", partesReferencia.Skip(partesNo.Length));
+            }
+
+            return noEncontrado != null;
+        }
+
+        private IEnumerable<TreeNode> EnumerarTodosOsNos()
+        {
+            foreach (TreeNode no in treeViewItens.Nodes)
+            {
+                foreach (TreeNode descendente in EnumerarNoESeusDescendentes(no))
+                    yield return descendente;
+            }
+        }
+
+        private IEnumerable<TreeNode> EnumerarNoESeusDescendentes(TreeNode no)
+        {
+            if (no == null)
+                yield break;
+
+            yield return no;
+
+            foreach (TreeNode filho in no.Nodes)
+            {
+                foreach (TreeNode descendente in EnumerarNoESeusDescendentes(filho))
+                    yield return descendente;
+            }
+        }
+
+        private static bool ReferenciaComecaComCaminhoDoNo(string[] partesReferencia, string[] partesNo)
+        {
+            if (partesNo.Length > partesReferencia.Length)
+                return false;
+
+            for (int i = 0; i < partesNo.Length; i++)
+            {
+                if (!string.Equals(partesReferencia[i], partesNo[i], StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static string ObterCaminhoCompletoDoNo(TreeNode no)
+        {
+            if (no == null)
+                return string.Empty;
+
+            return string.Join("/", ObterPartesDoCaminhoDoNo(no));
+        }
+
+        private static string[] ObterPartesDoCaminhoDoNo(TreeNode no)
+        {
+            List<string> partes = new List<string>();
+            TreeNode atual = no;
+
+            while (atual != null)
+            {
+                string nome = (atual.Text ?? string.Empty).Trim();
+                if (!string.IsNullOrWhiteSpace(nome))
+                    partes.Add(nome);
+
+                atual = atual.Parent;
+            }
+
+            partes.Reverse();
+            return partes.ToArray();
+        }
+
+        private static string MontarReferenciaDaPropriedade(string local, string nome)
+        {
+            string localNormalizado = NormalizarReferencia(local);
+            string nomeNormalizado = NormalizarReferencia(nome);
+
+            if (string.IsNullOrWhiteSpace(localNormalizado))
+                return nomeNormalizado;
+
+            if (string.IsNullOrWhiteSpace(nomeNormalizado))
+                return localNormalizado;
+
+            return string.Concat(localNormalizado, "/", nomeNormalizado);
+        }
+
+        private static string MontarReferenciaCompleta(string caminhoItem, string referenciaDaPropriedade)
+        {
+            string caminhoItemNormalizado = NormalizarReferencia(caminhoItem);
+            string referenciaPropriedadeNormalizada = NormalizarReferencia(referenciaDaPropriedade);
+
+            if (string.IsNullOrWhiteSpace(caminhoItemNormalizado))
+                return referenciaPropriedadeNormalizada;
+
+            if (string.IsNullOrWhiteSpace(referenciaPropriedadeNormalizada))
+                return caminhoItemNormalizado;
+
+            return string.Concat(caminhoItemNormalizado, "/", referenciaPropriedadeNormalizada);
+        }
+
+        private static string NormalizarReferencia(string referencia)
+        {
+            return string.Join("/", ObterPartesDaReferencia(referencia));
+        }
+
+        private static string[] ObterPartesDaReferencia(string referencia)
+        {
+            return (referencia ?? string.Empty)
+                .Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(parte => parte.Trim())
+                .Where(parte => !string.IsNullOrWhiteSpace(parte))
+                .ToArray();
         }
 
         private string ObterLocalParaNovaPropriedade(InfrastructureItem itemSelecionado, PropertyGridSelectionInfo propriedadeSelecionada)

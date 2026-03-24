@@ -498,7 +498,6 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Splitter splitter4;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.TreeView treeViewItens;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Button buttonExcluirItem;
         private System.Windows.Forms.Button buttonNovoSubItem;
@@ -529,6 +528,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TextBox textBoxCategoria;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonEditar;
+        private System.Windows.Forms.TreeView treeViewItens;
     }
 }
 
