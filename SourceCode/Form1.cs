@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using YamlDotNet.Serialization;
@@ -234,7 +235,7 @@ namespace GerenciadorSistemas
 
             try
             {
-                ProcessStartInfo processInfo = CriarProcessStartInfoParaComando(valorResolvido);
+                ProcessStartInfo processInfo = CriarProcessStartInfoParaExecucao(valorResolvido, ObterTipoSelecionado());
                 Process.Start(processInfo);
             }
             catch (Exception ex)
@@ -289,6 +290,49 @@ namespace GerenciadorSistemas
             processInfoCmd.Arguments = "/S /C \"" + comandoNormalizado.Replace("\"", "\\\"") + "\"";
             processInfoCmd.UseShellExecute = true;
             return processInfoCmd;
+        }
+
+        private static ProcessStartInfo CriarProcessStartInfoParaExecucao(string conteudoResolvido, TipoValorPropriedade tipo)
+        {
+            if (tipo == TipoValorPropriedade.Script)
+                return CriarProcessStartInfoParaScriptBatchTemporario(conteudoResolvido);
+
+            return CriarProcessStartInfoParaComando(conteudoResolvido);
+        }
+
+        private static ProcessStartInfo CriarProcessStartInfoParaScriptBatchTemporario(string conteudoScript)
+        {
+            string conteudoNormalizado = NormalizarConteudoDeScriptBatch(conteudoScript);
+            if (string.IsNullOrWhiteSpace(conteudoNormalizado))
+                throw new InvalidOperationException("Nao ha script para executar.");
+
+            string pastaTemporaria = Path.Combine(Path.GetTempPath(), "GerenciadorSistemas", "Scripts");
+            Directory.CreateDirectory(pastaTemporaria);
+
+            string nomeArquivo = string.Format(
+                "script_{0}_{1}.bat",
+                DateTime.Now.ToString("yyyyMMdd_HHmmss"),
+                Guid.NewGuid().ToString("N"));
+
+            string caminhoArquivo = Path.Combine(pastaTemporaria, nomeArquivo);
+            File.WriteAllText(caminhoArquivo, conteudoNormalizado, Encoding.Default);
+
+            ProcessStartInfo processInfo = CriarProcessStartInfoShell(caminhoArquivo);
+            processInfo.WorkingDirectory = pastaTemporaria;
+            return processInfo;
+        }
+
+        private static string NormalizarConteudoDeScriptBatch(string conteudoScript)
+        {
+            string conteudo = conteudoScript ?? string.Empty;
+
+            conteudo = conteudo.Replace("\r\n", "\n").Replace("\r", "\n");
+            conteudo = conteudo.Replace("\n", "\r\n");
+
+            if (!conteudo.EndsWith("\r\n", StringComparison.Ordinal))
+                conteudo += "\r\n";
+
+            return conteudo;
         }
 
         private static ProcessStartInfo CriarProcessStartInfoParaArquivoOuScript(string arquivo, string argumentos)
