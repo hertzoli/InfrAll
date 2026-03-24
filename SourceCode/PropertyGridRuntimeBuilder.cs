@@ -10,6 +10,14 @@ public class PropertyGridSelectionInfo
     public string Descricao { get; set; }
     public string Categoria { get; set; }
     public string Local { get; set; }
+    public TipoValorPropriedade Tipo { get; set; }
+}
+
+public enum TipoValorPropriedade
+{
+    Texto = 0,
+    Comando = 1,
+    Script = 2
 }
 
 public class PropertyGridRuntimeBuilder
@@ -21,7 +29,8 @@ public class PropertyGridRuntimeBuilder
         object valorPropriedade,
         string descricaoPropriedade = "",
         string categoriaPropriedade = "",
-        string localPropriedade = "")
+        string localPropriedade = "",
+        TipoValorPropriedade tipoValorPropriedade = TipoValorPropriedade.Texto)
     {
         if (string.IsNullOrWhiteSpace(nomePropriedade))
             throw new ArgumentException("O nome da propriedade não pode ser vazio.", nameof(nomePropriedade));
@@ -34,6 +43,7 @@ public class PropertyGridRuntimeBuilder
         item.Description = descricaoPropriedade ?? string.Empty;
         item.Category = categoriaPropriedade ?? string.Empty;
         item.Path = localNormalizado;
+        item.Tipo = tipoValorPropriedade;
     }
 
     public bool RemoverPropriedade(string nomePropriedade, string localPropriedade = "")
@@ -65,6 +75,7 @@ public class PropertyGridRuntimeBuilder
         string novaDescricaoPropriedade,
         string novaCategoriaPropriedade,
         string novoLocalPropriedade,
+        TipoValorPropriedade novoTipoValorPropriedade,
         out bool conflitoDestino)
     {
         conflitoDestino = false;
@@ -106,6 +117,7 @@ public class PropertyGridRuntimeBuilder
         item.Description = novaDescricaoPropriedade ?? string.Empty;
         item.Category = novaCategoriaPropriedade ?? string.Empty;
         item.Path = novoLocalNormalizado;
+        item.Tipo = novoTipoValorPropriedade;
         AtualizarCaminhoDosDescendentes(item);
         return true;
     }
@@ -121,7 +133,8 @@ public class PropertyGridRuntimeBuilder
                 item.Value,
                 item.Description,
                 item.Category,
-                item.Path);
+                item.Path,
+                item.Tipo);
         }
 
         return clone;
@@ -274,7 +287,8 @@ public class DynamicPropertyBag : ICustomTypeDescriptor
                 Value = string.Empty,
                 Description = string.Empty,
                 Category = string.Empty,
-                Path = pathPai ?? string.Empty
+                Path = pathPai ?? string.Empty,
+                Tipo = TipoValorPropriedade.Texto
             };
 
             _properties[name] = item;
@@ -406,6 +420,7 @@ public class DynamicPropertyItem : ICustomTypeDescriptor
     public string Description { get; set; }
     public string Category { get; set; }
     public string Path { get; set; }
+    public TipoValorPropriedade Tipo { get; set; }
     public DynamicPropertyBag Children { get; }
 
     public override string ToString()

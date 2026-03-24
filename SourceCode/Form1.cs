@@ -41,6 +41,8 @@ namespace GerenciadorSistemas
             buttonCopy.Click += buttonCopy_Click;
             buttonRun.Click += buttonRun_Click;
             buttonCopyPlaceholder.Click += buttonCopyPlaceholder_Click;
+            textBoxValor.TextChanged += CampoTipoOuValorAlterado;
+            comboBoxTipo.SelectedIndexChanged += CampoTipoOuValorAlterado;
             splitter1.SplitterMoved += splitter1_SplitterMoved;
             splitter3.SplitterMoved += splitter3_SplitterMoved;
             splitter4.SplitterMoved += splitter4_SplitterMoved;
@@ -59,9 +61,18 @@ namespace GerenciadorSistemas
             propertyGridItem.UseWaitCursor = false;
             propertyGridItem.SelectedObject = null;
             ConfigurarMenuContextoTreeView();
+            ConfigurarComboBoxTipo();
             ConfigurarToolTips();
             LimparCamposEdicao();
             CarregarCadastroPersistido();
+        }
+
+        private void ConfigurarComboBoxTipo()
+        {
+            comboBoxTipo.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxTipo.DataSource = Enum.GetValues(typeof(TipoValorPropriedade));
+            comboBoxTipo.SelectedItem = TipoValorPropriedade.Texto;
+            AtualizarEstadoButtonRun();
         }
 
         private void ConfigurarToolTips()
@@ -79,6 +90,7 @@ namespace GerenciadorSistemas
             _toolTipBotoes.SetToolTip(buttonSalvar, "Salvar as alteracoes da propriedade atual.");
             _toolTipBotoes.SetToolTip(textBoxLocal, "Informar o local associado a propriedade selecionada.");
             _toolTipBotoes.SetToolTip(textBoxCategoria, "Informar a categoria usada para organizar a propriedade.");
+            _toolTipBotoes.SetToolTip(comboBoxTipo, "Definir se o valor da propriedade e um texto, comando ou script.");
         }
 
         private void splitter3_SplitterMoved(object sender, SplitterEventArgs e)
@@ -198,6 +210,13 @@ namespace GerenciadorSistemas
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
+            if (!PodeExecutarTipoSelecionado())
+            {
+                MessageBox.Show("O tipo da propriedade atual nao permite execucao.", "Run",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             string valorResolvido;
             string erro;
 
@@ -566,7 +585,8 @@ namespace GerenciadorSistemas
                     textBoxValor.Text,
                     textBoxDescri\u00E7\u00E3o.Text,
                     textBoxCategoria.Text,
-                    localPropriedade);
+                    localPropriedade,
+                    ObterTipoSelecionado());
             }
 
             AtualizarPropertyGrid(itemSelecionado);
@@ -589,8 +609,10 @@ namespace GerenciadorSistemas
             textBoxDescri\u00E7\u00E3o.Text = info.Descricao;
             textBoxCategoria.Text = info.Categoria;
             textBoxLocal.Text = info.Local;
+            SelecionarTipoNoCombo(info.Tipo);
             textBoxReferenciaPropriedade.Text = MontarPlaceholderDaPropriedade(info, treeViewItens.SelectedNode);
             AtualizarContextoDaPropriedadeSelecionada(info.Nome, info.Local);
+            AtualizarEstadoButtonRun();
         }
 
         private void treeViewItens_AfterSelect(object sender, TreeViewEventArgs e)
@@ -603,6 +625,7 @@ namespace GerenciadorSistemas
                 LimparCamposEdicao();
                 LimparContextoDaPropriedadeSelecionada();
                 textBoxReferenciaPropriedade.Text = string.Empty;
+                AtualizarEstadoButtonRun();
                 return;
             }
 
@@ -611,6 +634,7 @@ namespace GerenciadorSistemas
             LimparCamposEdicao();
             LimparContextoDaPropriedadeSelecionada();
             textBoxReferenciaPropriedade.Text = string.Empty;
+            AtualizarEstadoButtonRun();
         }
 
         private void treeViewItens_KeyDown(object sender, KeyEventArgs e)
@@ -1011,7 +1035,8 @@ namespace GerenciadorSistemas
                         propriedade.Valor,
                         propriedade.Descricao,
                         propriedade.Categoria,
-                        propriedade.Local);
+                        propriedade.Local,
+                        ConverterTextoParaTipoValor(propriedade.Tipo));
                 }
             }
 
@@ -1060,7 +1085,8 @@ namespace GerenciadorSistemas
                 Valor = Convert.ToString(propriedade.Value) ?? string.Empty,
                 Descricao = propriedade.Description ?? string.Empty,
                 Categoria = propriedade.Category ?? string.Empty,
-                Local = propriedade.Path ?? string.Empty
+                Local = propriedade.Path ?? string.Empty,
+                Tipo = propriedade.Tipo.ToString()
             };
         }
 
@@ -1357,6 +1383,50 @@ namespace GerenciadorSistemas
             textBoxCategoria.Text = string.Empty;
             textBoxLocal.Text = string.Empty;
             textBoxReferenciaPropriedade.Text = string.Empty;
+            SelecionarTipoNoCombo(TipoValorPropriedade.Texto);
+            AtualizarEstadoButtonRun();
+        }
+
+        private void CampoTipoOuValorAlterado(object sender, EventArgs e)
+        {
+            AtualizarEstadoButtonRun();
+        }
+
+        private void AtualizarEstadoButtonRun()
+        {
+            buttonRun.Enabled = PodeExecutarTipoSelecionado() && !string.IsNullOrWhiteSpace(textBoxValor.Text);
+        }
+
+        private bool PodeExecutarTipoSelecionado()
+        {
+            TipoValorPropriedade tipoSelecionado = ObterTipoSelecionado();
+            return tipoSelecionado == TipoValorPropriedade.Comando
+                || tipoSelecionado == TipoValorPropriedade.Script;
+        }
+
+        private TipoValorPropriedade ObterTipoSelecionado()
+        {
+            object valorSelecionado = comboBoxTipo.SelectedItem;
+
+            if (valorSelecionado is TipoValorPropriedade)
+                return (TipoValorPropriedade)valorSelecionado;
+
+            return TipoValorPropriedade.Texto;
+        }
+
+        private void SelecionarTipoNoCombo(TipoValorPropriedade tipo)
+        {
+            comboBoxTipo.SelectedItem = tipo;
+        }
+
+        private static TipoValorPropriedade ConverterTextoParaTipoValor(string tipo)
+        {
+            TipoValorPropriedade tipoConvertido;
+
+            if (Enum.TryParse(tipo ?? string.Empty, true, out tipoConvertido))
+                return tipoConvertido;
+
+            return TipoValorPropriedade.Texto;
         }
 
         private string MontarPlaceholderDaPropriedade(PropertyGridSelectionInfo info, TreeNode noItem)
@@ -1644,6 +1714,7 @@ namespace GerenciadorSistemas
                 textBoxDescri\u00E7\u00E3o.Text,
                 textBoxCategoria.Text,
                 novoLocalPropriedade,
+                ObterTipoSelecionado(),
                 out conflitoDestino);
 
             if (conflitoDestino)
@@ -1679,7 +1750,8 @@ namespace GerenciadorSistemas
                 Valor = dynProp.Item.Value,
                 Descricao = dynProp.Item.Description,
                 Categoria = dynProp.Item.Category,
-                Local = dynProp.Item.Path
+                Local = dynProp.Item.Path,
+                Tipo = dynProp.Item.Tipo
             };
         }
 
@@ -1810,5 +1882,6 @@ namespace GerenciadorSistemas
         public string Descricao { get; set; }
         public string Categoria { get; set; }
         public string Local { get; set; }
+        public string Tipo { get; set; }
     }
 }

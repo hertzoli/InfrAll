@@ -6,27 +6,25 @@ outro concorrente: https://www.royalapps.com/ts/win/features
     ícones bons para copiar aqui.
 
 
-Fazer o Infrall buscar arquivos de dados "cadastro.yaml" na internet (ftp). a ideia é permitir que ele funcione com várias pessoas usando ao mesmo tempo. talvez o ideal é implementar um banco de dados MariaDB.
 
-Implementar atualização automática.
+
+fazer o código reconhecer e executar scripts diretos do campo de comando.
+
+
+Funcionalidade Online:
+ - Fazer o Infrall buscar arquivos de dados "cadastro.yaml" na internet (ftp). a ideia é permitir que ele funcione com várias pessoas usando ao mesmo tempo. talvez o ideal é implementar um banco de dados MariaDB.
+ - Permitir pesquisar e baixar templates Online na pela internet.
+ - criar uma forma de simplificar a adição de comandos de ferramentas externas. exemplo: ao adicionar um comando, listar as ferramentas compatíveis e os comandos padrão. se a ferramenta não existir no computador o programa baixa ela e já deixa ela disponível em uma pasta tools. Exemplo: suponha que quer executar um teste de velocidade de rede. então o programa mostra a opção do executar o "iperf" onde o usuário pode apontar o caminho ou baixar automaticamente o "iperf"; 
+ - Criar um repositório online onde usuário podem publicar templates e ou comandos que podem ser baixados por outros usuários. 
+
 
 Implementar um sitema de pesquisa para pesquisar dentro das propriedades de todos os itens.
-
-Permitir renomear um item apenas pressionando [F2] e escrevendo o nome e dando enter. 
-Permitir pesquisar e baixar templates Online na pela internet.
-criar uma forma de simplificar a adição de comandos de ferramentas externas. exemplo: ao adicionar um comando, listar as ferramentas compatíveis e os comandos padrão. se a ferramenta não existir no computador o programa baixa ela e já deixa ela disponível em uma pasta tools. Exemplo: suponha que quer executar um teste de velocidade de rede. então o programa mostra a opção do executar o "iperf" onde o usuário pode apontar o caminho ou baixar automaticamente o "iperf"; 
-
-Fazer o botão buttonRun e `buttonCopy` só ficar acessíveis (Enable) se a propriedade selecionada for uma sub-propriedade da propriedade com o nome "Comandos" ou "Commands"
  
 Talvez uma boa prática seria adicionar um botão para entrar no modo de edição de uma propriedade. enquanto não tiver no modo edição, os controles textbox das propriedades ficam bloqueadas para edição mas permite cópia.
- 
- Criar um método bem seguro de deixar as senha salvas localmente:
- 
-Criar um repositório online onde usuário podem publicar templates e ou comandos que podem ser baixados por outros usuários. 
 
-no `propertyGridItem` Exibir o ícone do item em vez do nome do arquivo do icone. 
 
-Implementar multi-linguagem
+
+
 
  
 ##### Baixa Prioridade:
@@ -36,10 +34,25 @@ em relação ao `treeViewItens` implementar os quatro itens abaixo:
  7. Adicionar uma opção de criar "Nova Pasta" que vai criar um item já com o ícone de Pasta pré-selecionado.
  8. Adicioanr uma opção para expandir (+) e retrair (-) todos os nós.
 
+Implementar multi-linguagem
+ Criar um método bem seguro de deixar as senha salvas localmente:
+
 ajuste para que no `propertyGridItem` os nomes das Propriedades que possui outras sub-propriedades sejam exibidas em Negrito enquanto seus valores sejam exibidos sem negrito; para isso é necessário trocar o controle de propriedades.
 
+em vez de usar o `propertyGridItem` usar um `ListView` que exibe todos as propriedades de um item selecionado podendo exibir imagem para cada propriedade e exibir se uma propriedade possui outras subproprieades(click duplo em uma subpropriedade, seleciona essa propriedades para mostrar suas subpropriedades.(criando uma especie de navegação)).
 
 ### Feito:
+
+
+v1.2
+Implementar atualização automática.
+pressionando [F2] abre o formulário de edição para renomear o item selecionado.
+alterar para que a resolução de placeholders buscar propriedades em qualquer item e não ficar restrita ao item atual. para implementar isso será necessário que o caminho do placeholders passar a ser um caminho completo de toda a arvore de itens e não só do item atual.
+
+Adicionei o controle `comboBoxTipo` que deve receber um Enun com os tipos (texto, comando, script) que será usado para distinguir o tipo de dado do `textBoxValor` e habilitar ou não o `buttonRun`. lembre que o usuário deve poder editar o tipo de dado.
+
+
+Fazer o botão `buttonRun` só ficar acessíveis (Enable) se o valor da propriedade for do tipo Comando ou script
 
 v1.1
 Adiciona a versão no título do formulário:  this.Text += "  v" + Application.ProductVersion;

@@ -68,6 +68,8 @@ namespace GerenciadorSistemas
             this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
             this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
             this.buttonNovaPropriedade = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.comboBoxTipo = new System.Windows.Forms.ComboBox();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -119,6 +121,8 @@ namespace GerenciadorSistemas
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.comboBoxTipo);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.textBoxNome);
             this.groupBox1.Controls.Add(this.buttonCopyPlaceholder);
             this.groupBox1.Controls.Add(this.label1);
@@ -196,7 +200,7 @@ namespace GerenciadorSistemas
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 188);
+            this.label3.Location = new System.Drawing.Point(22, 206);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(58, 13);
             this.label3.TabIndex = 3;
@@ -253,7 +257,7 @@ namespace GerenciadorSistemas
             // 
             // textBoxDescrição
             // 
-            this.textBoxDescrição.Location = new System.Drawing.Point(23, 204);
+            this.textBoxDescrição.Location = new System.Drawing.Point(23, 222);
             this.textBoxDescrição.Multiline = true;
             this.textBoxDescrição.Name = "textBoxDescrição";
             this.textBoxDescrição.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -464,6 +468,23 @@ namespace GerenciadorSistemas
             this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
             this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(22, 180);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(55, 13);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Categoria:";
+            // 
+            // comboBoxTipo
+            // 
+            this.comboBoxTipo.FormattingEnabled = true;
+            this.comboBoxTipo.Location = new System.Drawing.Point(81, 176);
+            this.comboBoxTipo.Name = "comboBoxTipo";
+            this.comboBoxTipo.Size = new System.Drawing.Size(227, 21);
+            this.comboBoxTipo.TabIndex = 19;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -529,6 +550,8 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonEditar;
         private System.Windows.Forms.TreeView treeViewItens;
+        private System.Windows.Forms.ComboBox comboBoxTipo;
+        private System.Windows.Forms.Label label7;
     }
 }
 
