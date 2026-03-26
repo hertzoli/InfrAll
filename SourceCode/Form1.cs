@@ -27,7 +27,12 @@ namespace GerenciadorSistemas
         private TreeNode _noDropHover;
         private TreeDropPosition? _posicaoDropHover;
         private bool _suspenderPersistencia;
+        private bool _suspenderMonitoramentoCamposEdicao;
         private readonly ToolTip _toolTipBotoes;
+        private readonly Dictionary<TextBox, string> _snapshotCamposEdicao;
+        private readonly List<TextBox> _camposTextoEditaveis;
+        private readonly Color _corCampoEdicaoPadrao;
+        private readonly Color _corCampoEdicaoNaoSalvo = Color.LightYellow;
 
         public Form1()
         {
@@ -38,6 +43,16 @@ namespace GerenciadorSistemas
             OnlineAutoUpdate.OnlineAutoUpdateAsync.OnlineAutoUpdateAsync2();
             //------------------------------------
             _toolTipBotoes = new ToolTip(components);
+            _snapshotCamposEdicao = new Dictionary<TextBox, string>();
+            _camposTextoEditaveis = new List<TextBox>
+            {
+                textBoxNome,
+                textBoxValor,
+                textBoxDescrição,
+                textBoxCategoria,
+                textBoxLocal
+            };
+            _corCampoEdicaoPadrao = textBoxNome.BackColor;
             FormClosing += Form1_FormClosing;
             buttonCopy.Click += buttonCopy_Click;
             buttonRun.Click += buttonRun_Click;
@@ -48,6 +63,7 @@ namespace GerenciadorSistemas
             splitter3.SplitterMoved += splitter3_SplitterMoved;
             splitter4.SplitterMoved += splitter4_SplitterMoved;
             imageList1.ImageSize = new System.Drawing.Size(16, 16);   // tamanho dos Ã­cones
+            InicializarMonitoramentoCamposEdicao();
 
             InicializarTela();
         }
@@ -92,6 +108,65 @@ namespace GerenciadorSistemas
             _toolTipBotoes.SetToolTip(textBoxLocal, "Informar o local associado a propriedade selecionada.");
             _toolTipBotoes.SetToolTip(textBoxCategoria, "Informar a categoria usada para organizar a propriedade.");
             _toolTipBotoes.SetToolTip(comboBoxTipo, "Definir se o valor da propriedade e um texto, comando ou script.");
+        }
+
+        private void InicializarMonitoramentoCamposEdicao()
+        {
+            foreach (TextBox campo in _camposTextoEditaveis)
+            {
+                _snapshotCamposEdicao[campo] = string.Empty;
+                campo.TextChanged += CampoEdicao_TextChanged;
+            }
+        }
+
+        private void CampoEdicao_TextChanged(object sender, EventArgs e)
+        {
+            if (_suspenderMonitoramentoCamposEdicao)
+                return;
+
+            TextBox campo = sender as TextBox;
+
+            if (campo == null)
+                return;
+
+            AtualizarDestaqueCampoEdicao(campo);
+        }
+
+        private void ExecutarSemMonitoramentoCamposEdicao(Action acao)
+        {
+            bool suspensaoAnterior = _suspenderMonitoramentoCamposEdicao;
+            _suspenderMonitoramentoCamposEdicao = true;
+
+            try
+            {
+                acao();
+            }
+            finally
+            {
+                _suspenderMonitoramentoCamposEdicao = suspensaoAnterior;
+            }
+        }
+
+        private void SincronizarEstadoCamposEdicao()
+        {
+            foreach (TextBox campo in _camposTextoEditaveis)
+            {
+                _snapshotCamposEdicao[campo] = campo.Text ?? string.Empty;
+                campo.BackColor = _corCampoEdicaoPadrao;
+            }
+        }
+
+        private void AtualizarDestaqueCampoEdicao(TextBox campo)
+        {
+            string valorBase;
+
+            if (!_snapshotCamposEdicao.TryGetValue(campo, out valorBase))
+                valorBase = string.Empty;
+
+            string valorAtual = campo.Text ?? string.Empty;
+            campo.BackColor = string.Equals(valorAtual, valorBase ?? string.Empty, StringComparison.Ordinal)
+                ? _corCampoEdicaoPadrao
+                : _corCampoEdicaoNaoSalvo;
         }
 
         private void splitter3_SplitterMoved(object sender, SplitterEventArgs e)
@@ -493,10 +568,14 @@ namespace GerenciadorSistemas
 
             LimparCamposEdicao();
             LimparContextoDaPropriedadeSelecionada();
-            textBoxCategoria.Text = "";
-            textBoxLocal.Text = ObterLocalParaNovaPropriedade(itemSelecionado, propriedadeSelecionada);
-            if (propriedadeSelecionada != null && !string.IsNullOrWhiteSpace(propriedadeSelecionada.Categoria))
-                textBoxCategoria.Text = "";
+            ExecutarSemMonitoramentoCamposEdicao(() =>
+            {
+                textBoxCategoria.Text = string.Empty;
+                textBoxLocal.Text = ObterLocalParaNovaPropriedade(itemSelecionado, propriedadeSelecionada);
+                if (propriedadeSelecionada != null && !string.IsNullOrWhiteSpace(propriedadeSelecionada.Categoria))
+                    textBoxCategoria.Text = string.Empty;
+            });
+            SincronizarEstadoCamposEdicao();
             textBoxNome.Focus();
         }
 
@@ -522,8 +601,12 @@ namespace GerenciadorSistemas
 
             LimparCamposEdicao();
             LimparContextoDaPropriedadeSelecionada();
-            textBoxCategoria.Text = "";
-            textBoxLocal.Text = ObterLocalParaNovaSubpropriedade(propriedadeSelecionada);
+            ExecutarSemMonitoramentoCamposEdicao(() =>
+            {
+                textBoxCategoria.Text = string.Empty;
+                textBoxLocal.Text = ObterLocalParaNovaSubpropriedade(propriedadeSelecionada);
+            });
+            SincronizarEstadoCamposEdicao();
             textBoxNome.Focus();
         }
 
@@ -607,7 +690,10 @@ namespace GerenciadorSistemas
             bool propriedadeSelecionadaEmEdicao = !string.IsNullOrWhiteSpace(_nomePropriedadeSelecionadaOriginal);
 
             if (EhPropriedadeProtegida(nomePropriedade, localPropriedade))
-                AtualizarMetadadoDoItem(itemSelecionado, nomePropriedade, textBoxValor.Text);
+            {
+                if (!AtualizarMetadadoDoItem(itemSelecionado, nomePropriedade, textBoxValor.Text))
+                    return;
+            }
             else
             {
                 if (!propriedadeSelecionadaEmEdicao && propriedadeExistente)
@@ -635,6 +721,7 @@ namespace GerenciadorSistemas
 
             AtualizarPropertyGrid(itemSelecionado);
             AtualizarContextoDaPropriedadeSelecionada(nomePropriedade, localPropriedade);
+            SincronizarEstadoCamposEdicao();
             PersistirCadastro();
         }
 
@@ -648,14 +735,18 @@ namespace GerenciadorSistemas
                 return;
             }
 
-            textBoxNome.Text = info.Nome;
-            textBoxValor.Text = Convert.ToString(info.Valor);
-            textBoxDescri\u00E7\u00E3o.Text = info.Descricao;
-            textBoxCategoria.Text = info.Categoria;
-            textBoxLocal.Text = info.Local;
-            SelecionarTipoNoCombo(info.Tipo);
-            textBoxReferenciaPropriedade.Text = MontarPlaceholderDaPropriedade(info, treeViewItens.SelectedNode);
+            ExecutarSemMonitoramentoCamposEdicao(() =>
+            {
+                textBoxNome.Text = info.Nome;
+                textBoxValor.Text = Convert.ToString(info.Valor);
+                textBoxDescri\u00E7\u00E3o.Text = info.Descricao;
+                textBoxCategoria.Text = info.Categoria;
+                textBoxLocal.Text = info.Local;
+                SelecionarTipoNoCombo(info.Tipo);
+                textBoxReferenciaPropriedade.Text = MontarPlaceholderDaPropriedade(info, treeViewItens.SelectedNode);
+            });
             AtualizarContextoDaPropriedadeSelecionada(info.Nome, info.Local);
+            SincronizarEstadoCamposEdicao();
             AtualizarEstadoButtonRun();
         }
 
@@ -1366,7 +1457,7 @@ namespace GerenciadorSistemas
                 || string.Equals(nomePropriedade, "Observacao/Local", StringComparison.OrdinalIgnoreCase);
         }
 
-        private void AtualizarMetadadoDoItem(InfrastructureItem item, string nomePropriedade, string valor)
+        private bool AtualizarMetadadoDoItem(InfrastructureItem item, string nomePropriedade, string valor)
         {
             TreeNode noSelecionado = treeViewItens.SelectedNode;
 
@@ -1378,7 +1469,7 @@ namespace GerenciadorSistemas
                 {
                     MessageBox.Show("O nome do item nao pode ficar vazio.", "Salvar propriedade",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    return false;
                 }
 
                 item.NomeExibicao = nomeAtualizado;
@@ -1417,17 +1508,22 @@ namespace GerenciadorSistemas
                 item.TipoItem = valor ?? string.Empty;
 
             item.SincronizarMetadados();
+            return true;
         }
 
         private void LimparCamposEdicao()
         {
-            textBoxNome.Text = string.Empty;
-            textBoxValor.Text = string.Empty;
-            textBoxDescri\u00E7\u00E3o.Text = string.Empty;
-            textBoxCategoria.Text = string.Empty;
-            textBoxLocal.Text = string.Empty;
-            textBoxReferenciaPropriedade.Text = string.Empty;
-            SelecionarTipoNoCombo(TipoValorPropriedade.Texto);
+            ExecutarSemMonitoramentoCamposEdicao(() =>
+            {
+                textBoxNome.Text = string.Empty;
+                textBoxValor.Text = string.Empty;
+                textBoxDescri\u00E7\u00E3o.Text = string.Empty;
+                textBoxCategoria.Text = string.Empty;
+                textBoxLocal.Text = string.Empty;
+                textBoxReferenciaPropriedade.Text = string.Empty;
+                SelecionarTipoNoCombo(TipoValorPropriedade.Texto);
+            });
+            SincronizarEstadoCamposEdicao();
             AtualizarEstadoButtonRun();
         }
 

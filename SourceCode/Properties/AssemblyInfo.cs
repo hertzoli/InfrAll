@@ -32,11 +32,14 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3")]
-[assembly: AssemblyFileVersion("1.3")]
+[assembly: AssemblyVersion("1.4")]
+[assembly: AssemblyFileVersion("1.4")]
 
 /*
 
+
+v1.4
+   implementado PRD_007_Destaque_visual_de_campos_nao_salvos.md
 
 v1.2.1
 Adicionei o controle `comboBoxTipo` que deve receber um Enun com os tipos (texto, comando, script) que será usado para distinguir o tipo de dado do `textBoxValor` e habilitar ou não o `buttonRun`. lembre que o usuário deve poder editar o tipo de dado.

@@ -7,8 +7,11 @@ outro concorrente: https://www.royalapps.com/ts/win/features
     icones interessantes: https://dashboardicons.com/icons?q=linux
     
 
-ter uma função para gerar icones a partir de um PNG (pode ser pelo caminho local ou online) 
-Organizar os icones em uma estrutura de arvore (usar o treeview) onde tem as pastas (infra, sistemas, applications, conexões, etc) e exibe cada pasta
+
+ao criar um novo item, o ícone padrão deve ser o icone do cubo colorido. (esse é icone que simboliza o item)
+
+
+Organizar a exibição dos icones (no formulário novo item) em uma estrutura de arvore (usar o treeview) onde tem as pastas (infra, sistemas, applications, conexões, etc) e exibe cada pasta
 
 Funcionalidade Online:
  - Fazer o Infrall buscar arquivos de dados "cadastro.yaml" na internet (ftp). a ideia é permitir que ele funcione com várias pessoas usando ao mesmo tempo. talvez o ideal é implementar um banco de dados MariaDB.
@@ -32,6 +35,7 @@ em relação ao `treeViewItens` implementar os quatro itens abaixo:
  6. poder importar um item a partir de um arquivo.  (opção exibida no menu de contexto)
  7. Adicionar uma opção de criar "Nova Pasta" que vai criar um item já com o ícone de Pasta pré-selecionado.
  8. Adicioanr uma opção para expandir (+) e retrair (-) todos os nós.
+ter uma função para gerar icones a partir de um PNG (pode ser pelo caminho local ou online) 
 
 Implementar multi-linguagem
  Criar um método bem seguro de deixar as senha salvas localmente:
@@ -42,6 +46,8 @@ em vez de usar o `propertyGridItem` usar um `ListView` que exibe todos as propri
 
 ### Feito:
 
+v1.4
+Editar algum valor dos campos textos e não salvar deve mantar o fundo do campo texto na cor amarela. (para facilitar a visualização de que não foi salvo)
 
 v1.3
 reconhece e executar scripts diretos do campo de comando.
