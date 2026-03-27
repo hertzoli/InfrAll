@@ -1,0 +1,7 @@
+interface:
+  display_name: "WinForms NetFx Implementation"
+  short_description: "Implementa WinForms legado com baixo risco"
+  default_prompt: "Use $winforms-netfx-csharp73-implementation to implement or refactor a .NET Framework 4.6 or 4.7.2 feature in a WinForms-centered solution without breaking the existing stack."
+
+policy:
+  allow_implicit_invocation: true

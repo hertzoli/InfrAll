@@ -1,4 +1,4 @@
-﻿---
+---
 name: gerenciador-sistemas-winforms
 description: Desenvolver, corrigir e refatorar o projeto GerenciadorSistemas em C# WinForms/.NET Framework 4.7.2. Use quando Codex estiver trabalhando neste repositório para adicionar funcionalidades, corrigir bugs, reorganizar `Form1.cs`, separar responsabilidades em arquivos e classes menores, atualizar o `.csproj` antigo com novos arquivos `.cs`, preservar o comportamento do WinForms Designer e manter a nomenclatura de domínio em português.
 ---

@@ -1221,7 +1221,7 @@ namespace GerenciadorSistemas
                 Descricao = propriedade.Description ?? string.Empty,
                 Categoria = propriedade.Category ?? string.Empty,
                 Local = propriedade.Path ?? string.Empty,
-                Tipo = propriedade.Tipo.ToString()
+                Tipo = TipoValorPropriedadePersistencia.ParaPersistencia(propriedade.Tipo)
             };
         }
 
@@ -1562,6 +1562,9 @@ namespace GerenciadorSistemas
         private static TipoValorPropriedade ConverterTextoParaTipoValor(string tipo)
         {
             TipoValorPropriedade tipoConvertido;
+
+            if (TipoValorPropriedadePersistencia.TryParse(tipo, out tipoConvertido))
+                return tipoConvertido;
 
             if (Enum.TryParse(tipo ?? string.Empty, true, out tipoConvertido))
                 return tipoConvertido;
@@ -1996,32 +1999,4 @@ namespace GerenciadorSistemas
         Below
     }
 
-    internal sealed class CadastroPersistido
-    {
-        public int SchemaVersion { get; set; }
-        public string SavedAt { get; set; }
-        public List<ItemPersistido> Items { get; set; }
-    }
-
-    internal sealed class ItemPersistido
-    {
-        public string NomeExibicao { get; set; }
-        public string Descricao { get; set; }
-        public string IconeKey { get; set; }
-        public string Observacao { get; set; }
-        public string CriadoEm { get; set; }
-        public string TipoItem { get; set; }
-        public List<PropriedadePersistida> Propriedades { get; set; }
-        public List<ItemPersistido> Children { get; set; }
-    }
-
-    internal sealed class PropriedadePersistida
-    {
-        public string Nome { get; set; }
-        public string Valor { get; set; }
-        public string Descricao { get; set; }
-        public string Categoria { get; set; }
-        public string Local { get; set; }
-        public string Tipo { get; set; }
-    }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 public class PropertyGridSelectionInfo
 {
@@ -13,6 +14,51 @@ public class PropertyGridSelectionInfo
     public TipoValorPropriedade Tipo { get; set; }
 }
 
+public static class TipoValorPropriedadePersistencia
+{
+    public const string Texto = "Texto";
+    public const string Comando = "Comando";
+    public const string Script = "Script";
+
+    public static string ParaPersistencia(TipoValorPropriedade tipo)
+    {
+        switch (tipo)
+        {
+            case TipoValorPropriedade.Comando:
+                return Comando;
+            case TipoValorPropriedade.Script:
+                return Script;
+            default:
+                return Texto;
+        }
+    }
+
+    public static bool TryParse(string valor, out TipoValorPropriedade tipo)
+    {
+        if (string.Equals(valor, Comando, StringComparison.OrdinalIgnoreCase))
+        {
+            tipo = TipoValorPropriedade.Comando;
+            return true;
+        }
+
+        if (string.Equals(valor, Script, StringComparison.OrdinalIgnoreCase))
+        {
+            tipo = TipoValorPropriedade.Script;
+            return true;
+        }
+
+        if (string.Equals(valor, Texto, StringComparison.OrdinalIgnoreCase))
+        {
+            tipo = TipoValorPropriedade.Texto;
+            return true;
+        }
+
+        tipo = TipoValorPropriedade.Texto;
+        return false;
+    }
+}
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public enum TipoValorPropriedade
 {
     Texto = 0,

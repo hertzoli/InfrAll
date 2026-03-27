@@ -1,0 +1,7 @@
+interface:
+  display_name: "WinForms Async Patterns"
+  short_description: "Async e Task seguros para WinForms legado"
+  default_prompt: "Use $winforms-csharp73-async-patterns to implement or review async Task-based code in a WinForms .NET Framework 4.6 or 4.7.2 project without introducing deadlocks or UI issues."
+
+policy:
+  allow_implicit_invocation: true

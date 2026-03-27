@@ -1,0 +1,7 @@
+interface:
+  display_name: "WinForms PRD Task Execution"
+  short_description: "Planeja e atualiza PRD com rigor"
+  default_prompt: "Use $winforms-prd-task-execution to turn a WinForms feature request into a nested PRD task list and update task status correctly after implementation."
+
+policy:
+  allow_implicit_invocation: true

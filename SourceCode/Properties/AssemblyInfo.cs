@@ -32,11 +32,15 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.4")]
-[assembly: AssemblyFileVersion("1.4")]
+[assembly: AssemblyVersion("1.5")]
+[assembly: AssemblyFileVersion("1.5")]
 
 /*
 
+
+v1.5
+ - Retirado a obfuscação de classes para não quebrar o arquivo YAML
+ - adicionao os skill agent no projeto
 
 v1.4
    implementado PRD_007_Destaque_visual_de_campos_nao_salvos.md
