@@ -1949,6 +1949,11 @@ namespace GerenciadorSistemas
 
             buttonEditar_Click(sender, EventArgs.Empty);
         }
+
+        private void buttonIssue_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/hertzoli/InfrAll/issues");
+        }
     }
 
     internal sealed class InfrastructureItem

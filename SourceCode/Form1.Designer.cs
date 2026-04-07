@@ -70,6 +70,7 @@ namespace GerenciadorSistemas
             this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
             this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
             this.buttonNovaPropriedade = new System.Windows.Forms.Button();
+            this.buttonIssue = new System.Windows.Forms.Button();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -110,6 +111,7 @@ namespace GerenciadorSistemas
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.buttonIssue);
             this.panel3.Controls.Add(this.groupBox1);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel3.Location = new System.Drawing.Point(768, 0);
@@ -502,6 +504,17 @@ namespace GerenciadorSistemas
             this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
             this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
             // 
+            // buttonIssue
+            // 
+            this.buttonIssue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonIssue.Location = new System.Drawing.Point(362, 10);
+            this.buttonIssue.Name = "buttonIssue";
+            this.buttonIssue.Size = new System.Drawing.Size(41, 22);
+            this.buttonIssue.TabIndex = 19;
+            this.buttonIssue.Text = "Issue";
+            this.buttonIssue.UseVisualStyleBackColor = true;
+            this.buttonIssue.Click += new System.EventHandler(this.buttonIssue_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -569,6 +582,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TreeView treeViewItens;
         private System.Windows.Forms.ComboBox comboBoxTipo;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button buttonIssue;
     }
 }
 
