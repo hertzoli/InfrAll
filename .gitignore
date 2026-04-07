@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Pastas locais do repositório que não devem ser sincronizadas
+.agents/
+Documentacao/
+
 # User-specific files
 *.rsuser
 *.suo
