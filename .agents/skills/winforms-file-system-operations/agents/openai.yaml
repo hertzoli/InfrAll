@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms File System Ops"
-  short_description: "Arquivos e sistema com seguranca no desktop"
-  default_prompt: "Use $winforms-file-system-operations to implement or review secure file, directory, and system operations in a WinForms .NET Framework 4.6 or 4.7.2 application."
-
-policy:
-  allow_implicit_invocation: true

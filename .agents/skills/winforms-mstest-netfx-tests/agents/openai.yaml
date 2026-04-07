@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms MSTest NetFx"
-  short_description: "Testa logica extraida da UI WinForms"
-  default_prompt: "Use $winforms-mstest-netfx-tests to write or review MSTest coverage for logic extracted from a WinForms .NET Framework 4.6 or 4.7.2 application."
-
-policy:
-  allow_implicit_invocation: true

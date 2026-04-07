@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms Win32 PInvoke"
-  short_description: "Interop Win32 seguro para WinForms legado"
-  default_prompt: "Use $winforms-win32-pinvoke to implement or review safe Win32 P/Invoke integration in a WinForms .NET Framework 4.6 or 4.7.2 application."
-
-policy:
-  allow_implicit_invocation: true

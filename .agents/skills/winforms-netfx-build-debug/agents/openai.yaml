@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms NetFx Build Debug"
-  short_description: "Diagnostica build legado com MSBuild.exe"
-  default_prompt: "Use $winforms-netfx-build-debug to diagnose a .NET Framework 4.6 or 4.7.2 WinForms build failure using MSBuild.exe and legacy project conventions."
-
-policy:
-  allow_implicit_invocation: true

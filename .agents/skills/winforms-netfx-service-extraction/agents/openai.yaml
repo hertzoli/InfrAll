@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms Service Extraction"
-  short_description: "Extrai logica WinForms sem quebrar UI"
-  default_prompt: "Use $winforms-netfx-service-extraction to extract reusable logic from WinForms code into safe, incremental .NET Framework architecture changes."
-
-policy:
-  allow_implicit_invocation: true

@@ -1,4 +1,0 @@
-﻿interface:
-  display_name: "Gerenciador Sistemas"
-  short_description: "Desenvolvimento WinForms do projeto"
-  default_prompt: "Use $gerenciador-sistemas-winforms para evoluir este projeto WinForms separando responsabilidades em arquivos e classes menores."

@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms Exception Logging"
-  short_description: "Padroniza excecoes e logging em WinForms"
-  default_prompt: "Use $winforms-exception-logging-policy to add robust exception handling, logging, and safe user-facing error messages to a WinForms .NET Framework 4.6 or 4.7.2 flow."
-
-policy:
-  allow_implicit_invocation: true

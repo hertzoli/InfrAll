@@ -1,7 +1,0 @@
-interface:
-  display_name: "WinForms UI Event Safety"
-  short_description: "Protege eventos e async na UI WinForms"
-  default_prompt: "Use $winforms-ui-event-safety to make a WinForms event flow safer, responsive, and ready for async work."
-
-policy:
-  allow_implicit_invocation: true
