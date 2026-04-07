@@ -6,7 +6,9 @@ outro concorrente: https://www.royalapps.com/ts/win/features
     ícones bons para copiar aqui.
     icones interessantes: https://dashboardicons.com/icons?q=linux
     
+Ter um botão da parte de propriedades que cria uma arvore de propriedades padrão e o usuário apaga o que ele não quer. exemplo: já cria por padrão Usuários (usuário, Senha), Rede (MAC, IP), Hardware (placa, CPU, Memoria, Serial, Firmware, Modelo), Comandos (acesso SSH, Acesso RDP, Acesso a uma pasta, Ping, etc} a vantagem principal disso é garantir que o caminho das das variáveis fiquem no mesmo caminho. talvez o melhor é criar templates de propriedades (uma janela que o usuário abre e escolhe uma propriedade ou uma estrutura de propriedade já com valores pré-preenchidos ou não)
 
+implementar a funcionalidade das variáveis funcionar com caminhos locais também além dos caminhos absolutos. exemplo. se o caminho tiver {./Users/Usuário Admin} o sistema entende que deve buscar o valor da propriedade `Usuário Admin` dentros das propriedades do item atual(selecionado). e se o caminho tiver {Servidores Físicos/SuperPX05/Users/Usuário Admin} o sistema entende que deve buscar a variável `Usuário Admin` dentros do caminho absoluto como já está implementado atualmente.
 
 ao criar um novo item, o ícone padrão deve ser o icone do cubo colorido. (esse é icone que simboliza o item)
 

@@ -36,6 +36,8 @@ namespace GerenciadorSistemas
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel3 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.comboBoxTipo = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.textBoxNome = new System.Windows.Forms.TextBox();
             this.buttonCopyPlaceholder = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -68,8 +70,6 @@ namespace GerenciadorSistemas
             this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
             this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
             this.buttonNovaPropriedade = new System.Windows.Forms.Button();
-            this.label7 = new System.Windows.Forms.Label();
-            this.comboBoxTipo = new System.Windows.Forms.ComboBox();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -112,9 +112,9 @@ namespace GerenciadorSistemas
             // 
             this.panel3.Controls.Add(this.groupBox1);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(762, 0);
+            this.panel3.Location = new System.Drawing.Point(768, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(422, 590);
+            this.panel3.Size = new System.Drawing.Size(416, 590);
             this.panel3.TabIndex = 15;
             // 
             // groupBox1
@@ -141,13 +141,34 @@ namespace GerenciadorSistemas
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Location = new System.Drawing.Point(13, 46);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(397, 518);
+            this.groupBox1.Size = new System.Drawing.Size(391, 518);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Propriedade";
             // 
+            // comboBoxTipo
+            // 
+            this.comboBoxTipo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxTipo.FormattingEnabled = true;
+            this.comboBoxTipo.Location = new System.Drawing.Point(59, 176);
+            this.comboBoxTipo.Name = "comboBoxTipo";
+            this.comboBoxTipo.Size = new System.Drawing.Size(249, 21);
+            this.comboBoxTipo.TabIndex = 19;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(22, 180);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(31, 13);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Tipo:";
+            // 
             // textBoxNome
             // 
+            this.textBoxNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxNome.Location = new System.Drawing.Point(23, 41);
             this.textBoxNome.Name = "textBoxNome";
             this.textBoxNome.Size = new System.Drawing.Size(286, 20);
@@ -155,6 +176,7 @@ namespace GerenciadorSistemas
             // 
             // buttonCopyPlaceholder
             // 
+            this.buttonCopyPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCopyPlaceholder.Location = new System.Drawing.Point(314, 426);
             this.buttonCopyPlaceholder.Name = "buttonCopyPlaceholder";
             this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 23);
@@ -173,6 +195,8 @@ namespace GerenciadorSistemas
             // 
             // textBoxReferenciaPropriedade
             // 
+            this.textBoxReferenciaPropriedade.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(23, 428);
             this.textBoxReferenciaPropriedade.Name = "textBoxReferenciaPropriedade";
             this.textBoxReferenciaPropriedade.ReadOnly = true;
@@ -208,6 +232,7 @@ namespace GerenciadorSistemas
             // 
             // buttonCopy
             // 
+            this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCopy.Location = new System.Drawing.Point(315, 143);
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(47, 29);
@@ -226,6 +251,7 @@ namespace GerenciadorSistemas
             // 
             // buttonRun
             // 
+            this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRun.Location = new System.Drawing.Point(315, 91);
             this.buttonRun.Name = "buttonRun";
             this.buttonRun.Size = new System.Drawing.Size(47, 29);
@@ -235,6 +261,8 @@ namespace GerenciadorSistemas
             // 
             // textBoxValor
             // 
+            this.textBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxValor.Location = new System.Drawing.Point(23, 91);
             this.textBoxValor.Multiline = true;
             this.textBoxValor.Name = "textBoxValor";
@@ -257,6 +285,8 @@ namespace GerenciadorSistemas
             // 
             // textBoxDescrição
             // 
+            this.textBoxDescrição.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxDescrição.Location = new System.Drawing.Point(23, 222);
             this.textBoxDescrição.Multiline = true;
             this.textBoxDescrição.Name = "textBoxDescrição";
@@ -266,6 +296,8 @@ namespace GerenciadorSistemas
             // 
             // textBoxLocal
             // 
+            this.textBoxLocal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLocal.Location = new System.Drawing.Point(23, 357);
             this.textBoxLocal.Name = "textBoxLocal";
             this.textBoxLocal.Size = new System.Drawing.Size(285, 20);
@@ -273,6 +305,8 @@ namespace GerenciadorSistemas
             // 
             // textBoxCategoria
             // 
+            this.textBoxCategoria.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxCategoria.Location = new System.Drawing.Point(81, 381);
             this.textBoxCategoria.Name = "textBoxCategoria";
             this.textBoxCategoria.Size = new System.Drawing.Size(227, 20);
@@ -292,7 +326,7 @@ namespace GerenciadorSistemas
             this.splitter4.BackColor = System.Drawing.SystemColors.Control;
             this.splitter4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitter4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.splitter4.Location = new System.Drawing.Point(756, 0);
+            this.splitter4.Location = new System.Drawing.Point(762, 0);
             this.splitter4.Name = "splitter4";
             this.splitter4.Size = new System.Drawing.Size(6, 590);
             this.splitter4.TabIndex = 16;
@@ -412,7 +446,7 @@ namespace GerenciadorSistemas
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(345, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(411, 590);
+            this.panel4.Size = new System.Drawing.Size(417, 590);
             this.panel4.TabIndex = 19;
             // 
             // propertyGridItem
@@ -422,7 +456,7 @@ namespace GerenciadorSistemas
             this.propertyGridItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.propertyGridItem.Location = new System.Drawing.Point(0, 46);
             this.propertyGridItem.Name = "propertyGridItem";
-            this.propertyGridItem.Size = new System.Drawing.Size(411, 544);
+            this.propertyGridItem.Size = new System.Drawing.Size(417, 544);
             this.propertyGridItem.TabIndex = 19;
             this.propertyGridItem.UseWaitCursor = true;
             this.propertyGridItem.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propertyGridItem_SelectedGridItemChanged);
@@ -435,7 +469,7 @@ namespace GerenciadorSistemas
             this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(411, 46);
+            this.panel5.Size = new System.Drawing.Size(417, 46);
             this.panel5.TabIndex = 0;
             // 
             // buttonNovaSubPropriedade
@@ -467,23 +501,6 @@ namespace GerenciadorSistemas
             this.buttonNovaPropriedade.TabIndex = 7;
             this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
             this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 180);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(31, 13);
-            this.label7.TabIndex = 18;
-            this.label7.Text = "Tipo:";
-            // 
-            // comboBoxTipo
-            // 
-            this.comboBoxTipo.FormattingEnabled = true;
-            this.comboBoxTipo.Location = new System.Drawing.Point(59, 176);
-            this.comboBoxTipo.Name = "comboBoxTipo";
-            this.comboBoxTipo.Size = new System.Drawing.Size(249, 21);
-            this.comboBoxTipo.TabIndex = 19;
             // 
             // Form1
             // 
