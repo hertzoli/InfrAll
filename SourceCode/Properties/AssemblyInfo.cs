@@ -32,11 +32,16 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.1")]
-[assembly: AssemblyFileVersion("1.6.1")]
+[assembly: AssemblyVersion("1.6.2")]
+[assembly: AssemblyFileVersion("1.6.2")]
 
 /*
 
+
+v1.6.2
+ - corrigido bug que retorna bug ao executar comando que começa com: `cmd.exe /k ....."
+ - corrigido bug que ao executar o evento de comando em um executável que requer "elevação" para ser executado. dá o erro abaixo:
+ex > Valor: = "A operação solicitada requer elevação"
 
 v1.6.1
  - adicionado o botão superior direito para acessar o issus do github direto para registrar bugs e melhorias

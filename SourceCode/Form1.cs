@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
@@ -311,10 +312,15 @@ namespace GerenciadorSistemas
             try
             {
                 ProcessStartInfo processInfo = CriarProcessStartInfoParaExecucao(valorResolvido, ObterTipoSelecionado());
-                Process.Start(processInfo);
+                IniciarProcessoComElevacaoQuandoNecessario(processInfo);
             }
             catch (Exception ex)
             {
+                Logger.LogWriter.LogErroDetalhado(ex, "Erro ao executar comando", new
+                {
+                    ValorResolvido = valorResolvido,
+                    Tipo = ObterTipoSelecionado().ToString()
+                });
                 MessageBox.Show("Nao foi possivel executar o comando.\r\n" + ex.Message,
                     "Erro ao executar comando", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -361,8 +367,16 @@ namespace GerenciadorSistemas
             }
 
             ProcessStartInfo processInfoCmd = new ProcessStartInfo();
+
             processInfoCmd.FileName = "cmd.exe";
-            processInfoCmd.Arguments = "/S /C \"" + comandoNormalizado.Replace("\"", "\\\"") + "\"";
+            if (arquivoExecutavel == "cmd.exe")
+            {
+                processInfoCmd.Arguments = argumentos;
+            }
+            else
+            {
+                processInfoCmd.Arguments = "/S /C \"" + comandoNormalizado.Replace("\"", "\\\"") + "\"";
+            }
             processInfoCmd.UseShellExecute = true;
             return processInfoCmd;
         }
@@ -373,6 +387,47 @@ namespace GerenciadorSistemas
                 return CriarProcessStartInfoParaScriptBatchTemporario(conteudoResolvido);
 
             return CriarProcessStartInfoParaComando(conteudoResolvido);
+        }
+
+        private static void IniciarProcessoComElevacaoQuandoNecessario(ProcessStartInfo processInfo)
+        {
+            try
+            {
+                Process.Start(processInfo);
+            }
+            catch (Win32Exception ex) when (ExigeElevacao(ex) && !JaSolicitaElevacao(processInfo))
+            {
+                ProcessStartInfo processInfoElevado = CriarProcessStartInfoElevado(processInfo);
+                Process.Start(processInfoElevado);
+            }
+        }
+
+        private static bool ExigeElevacao(Win32Exception ex)
+        {
+            return ex != null
+                && ex.NativeErrorCode == 740;
+        }
+
+        private static bool JaSolicitaElevacao(ProcessStartInfo processInfo)
+        {
+            return processInfo != null
+                && string.Equals(processInfo.Verb, "runas", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static ProcessStartInfo CriarProcessStartInfoElevado(ProcessStartInfo processInfoOriginal)
+        {
+            if (processInfoOriginal == null)
+                throw new ArgumentNullException("processInfoOriginal");
+
+            ProcessStartInfo processInfoElevado = new ProcessStartInfo();
+            processInfoElevado.FileName = processInfoOriginal.FileName;
+            processInfoElevado.Arguments = processInfoOriginal.Arguments;
+            processInfoElevado.WorkingDirectory = processInfoOriginal.WorkingDirectory;
+            processInfoElevado.WindowStyle = processInfoOriginal.WindowStyle;
+            processInfoElevado.ErrorDialog = processInfoOriginal.ErrorDialog;
+            processInfoElevado.UseShellExecute = true;
+            processInfoElevado.Verb = "runas";
+            return processInfoElevado;
         }
 
         private static ProcessStartInfo CriarProcessStartInfoParaScriptBatchTemporario(string conteudoScript)
