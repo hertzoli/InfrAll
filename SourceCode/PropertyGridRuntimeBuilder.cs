@@ -453,7 +453,7 @@ public class DynamicPropertyBag : ICustomTypeDescriptor
     }
 }
 
-[TypeConverter(typeof(ExpandableObjectConverter))]
+[TypeConverter(typeof(DynamicPropertyItemValueConverter))]
 public class DynamicPropertyItem : ICustomTypeDescriptor
 {
     public DynamicPropertyItem()
@@ -491,7 +491,7 @@ public class DynamicPropertyItem : ICustomTypeDescriptor
 
     public TypeConverter GetConverter()
     {
-        return new ExpandableObjectConverter();
+        return new DynamicPropertyItemValueConverter();
     }
 
     public EventDescriptor GetDefaultEvent()
@@ -535,6 +535,53 @@ public class DynamicPropertyItem : ICustomTypeDescriptor
     }
 }
 
+public class DynamicPropertyItemValueConverter : ExpandableObjectConverter
+{
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+    {
+        if (sourceType == typeof(string))
+            return true;
+
+        return base.CanConvertFrom(context, sourceType);
+    }
+
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+    {
+        if (destinationType == typeof(string))
+            return true;
+
+        return base.CanConvertTo(context, destinationType);
+    }
+
+    public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+    {
+        string valorTexto = value as string;
+
+        if (valorTexto != null)
+        {
+            return new DynamicPropertyItem
+            {
+                Value = valorTexto
+            };
+        }
+
+        return base.ConvertFrom(context, culture, value);
+    }
+
+    public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType == typeof(string))
+        {
+            DynamicPropertyItem item = value as DynamicPropertyItem;
+
+            if (item != null)
+                return Convert.ToString(item.Value) ?? string.Empty;
+        }
+
+        return base.ConvertTo(context, culture, value, destinationType);
+    }
+}
+
 public class DynamicNodePropertyDescriptor : PropertyDescriptor
 {
     private readonly DynamicPropertyItem _item;
@@ -554,7 +601,7 @@ public class DynamicNodePropertyDescriptor : PropertyDescriptor
     {
         List<Attribute> attrs = new List<Attribute>
         {
-            new TypeConverterAttribute(typeof(ExpandableObjectConverter))
+            new TypeConverterAttribute(typeof(DynamicPropertyItemValueConverter))
         };
 
         if (!string.IsNullOrWhiteSpace(item.Description))
@@ -597,7 +644,8 @@ public class DynamicNodePropertyDescriptor : PropertyDescriptor
 
     public override void SetValue(object component, object value)
     {
-        _item.Value = value;
+        DynamicPropertyItem itemConvertido = value as DynamicPropertyItem;
+        _item.Value = itemConvertido != null ? itemConvertido.Value : value;
         OnValueChanged(component, EventArgs.Empty);
     }
 

@@ -7,8 +7,10 @@ The main application lives in `SourceCode/` as a Windows Forms project targeting
 Run commands from the repository root or `SourceCode/`.
 
 - `msbuild SourceCode\GerenciadorSistemas.sln /p:Configuration=Debug` builds the app for local development.
-- `msbuild SourceCode\GerenciadorSistemas.sln /p:Configuration=Release` produces the optimized portable build.
+- `msbuild SourceCode\GerenciadorSistemas.csproj /p:Configuration=Debug /p:PostBuildEvent=` validates compilation without running the post-build signing/obfuscation step.
 - `devenv SourceCode\GerenciadorSistemas.sln` opens the solution in Visual Studio when available.
+
+Compilation validation must always use the `Debug` configuration and must never run the post-build command.
 
 There is no automated test suite in the current tree, so validation is primarily manual through the WinForms UI.
 
@@ -18,7 +20,7 @@ Follow the existing C# style in the repository: 4-space indentation, braces on t
 ## Testing Guidelines
 Because there is no `*.Tests` project yet, test changes manually before submitting:
 
-- Build in `Debug` and confirm the application launches.
+- Build in `Debug` with the post-build command disabled, then confirm the application launches when manual UI validation is needed.
 - Exercise property add, remove, refresh, and selection flows in `Form1`.
 - Verify image and config changes still load from `SourceCode/Imagens/` and `App.config`.
 

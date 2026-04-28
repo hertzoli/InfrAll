@@ -29,6 +29,9 @@ namespace GerenciadorSistemas
         private TreeDropPosition? _posicaoDropHover;
         private bool _suspenderPersistencia;
         private bool _suspenderMonitoramentoCamposEdicao;
+        private bool _suspenderConfirmacaoSaidaPropriedade;
+        private bool _restaurandoSelecaoPropertyGrid;
+        private TipoValorPropriedade _tipoPropriedadeSelecionadaOriginal;
         private readonly ToolTip _toolTipBotoes;
         private readonly Dictionary<TextBox, string> _snapshotCamposEdicao;
         private readonly List<TextBox> _camposTextoEditaveis;
@@ -58,6 +61,8 @@ namespace GerenciadorSistemas
             buttonCopyPlaceholder.Click += buttonCopyPlaceholder_Click;
             textBoxValor.TextChanged += CampoTipoOuValorAlterado;
             comboBoxTipo.SelectedIndexChanged += CampoTipoOuValorAlterado;
+            treeViewItens.BeforeSelect += treeViewItens_BeforeSelect;
+            propertyGridItem.PropertyValueChanged += propertyGridItem_PropertyValueChanged;
             splitter1.SplitterMoved += splitter1_SplitterMoved;
             splitter3.SplitterMoved += splitter3_SplitterMoved;
             splitter4.SplitterMoved += splitter4_SplitterMoved;
@@ -153,6 +158,58 @@ namespace GerenciadorSistemas
                 _snapshotCamposEdicao[campo] = campo.Text ?? string.Empty;
                 campo.BackColor = _corCampoEdicaoPadrao;
             }
+
+            _tipoPropriedadeSelecionadaOriginal = ObterTipoSelecionado();
+        }
+
+        private bool ExistemAlteracoesNaoSalvasNaPropriedadeSelecionada()
+        {
+            if (_suspenderConfirmacaoSaidaPropriedade || string.IsNullOrWhiteSpace(_nomePropriedadeSelecionadaOriginal))
+                return false;
+
+            foreach (TextBox campo in _camposTextoEditaveis)
+            {
+                string valorBase;
+
+                if (!_snapshotCamposEdicao.TryGetValue(campo, out valorBase))
+                    valorBase = string.Empty;
+
+                string valorAtual = campo.Text ?? string.Empty;
+                if (!string.Equals(valorAtual, valorBase ?? string.Empty, StringComparison.Ordinal))
+                    return true;
+            }
+
+            return ObterTipoSelecionado() != _tipoPropriedadeSelecionadaOriginal;
+        }
+
+        private bool ConfirmarSaidaDaPropriedadeComAlteracoes()
+        {
+            if (!ExistemAlteracoesNaoSalvasNaPropriedadeSelecionada())
+                return true;
+
+            DialogResult resultado = MessageBox.Show(
+                "A propriedade selecionada possui alteracoes nao salvas. Deseja sair sem salvar a modificacao?",
+                "Alteracoes nao salvas",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            return resultado == DialogResult.Yes;
+        }
+
+        private void ExecutarSemConfirmacaoSaidaPropriedade(Action acao)
+        {
+            bool suspensaoAnterior = _suspenderConfirmacaoSaidaPropriedade;
+            _suspenderConfirmacaoSaidaPropriedade = true;
+
+            try
+            {
+                acao();
+            }
+            finally
+            {
+                _suspenderConfirmacaoSaidaPropriedade = suspensaoAnterior;
+            }
         }
 
         private void AtualizarDestaqueCampoEdicao(TextBox campo)
@@ -212,6 +269,12 @@ namespace GerenciadorSistemas
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+            {
+                e.Cancel = true;
+                return;
+            }
+
             PersistirCadastro();
         }
 
@@ -771,7 +834,10 @@ namespace GerenciadorSistemas
                     ObterTipoSelecionado());
             }
 
-            AtualizarPropertyGrid(itemSelecionado);
+            ExecutarSemConfirmacaoSaidaPropriedade(() =>
+            {
+                AtualizarPropertyGrid(itemSelecionado);
+            });
             AtualizarContextoDaPropriedadeSelecionada(nomePropriedade, localPropriedade);
             SincronizarEstadoCamposEdicao();
             PersistirCadastro();
@@ -779,6 +845,15 @@ namespace GerenciadorSistemas
 
         private void propertyGridItem_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
         {
+            if (_restaurandoSelecaoPropertyGrid)
+                return;
+
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+            {
+                RestaurarSelecaoPropertyGrid(e.OldSelection);
+                return;
+            }
+
             PropertyGridSelectionInfo info = ObterPropriedadeSelecionada(propertyGridItem);
 
             if (info == null)
@@ -786,6 +861,49 @@ namespace GerenciadorSistemas
                 LimparCamposEdicao();
                 return;
             }
+
+            CarregarPropriedadeNosCamposEdicao(info);
+        }
+
+        private void propertyGridItem_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            InfrastructureItem itemSelecionado = ObterItemSelecionado();
+
+            if (itemSelecionado == null || e == null || e.ChangedItem == null)
+                return;
+
+            DynamicNodePropertyDescriptor propriedadeAlterada =
+                e.ChangedItem.PropertyDescriptor as DynamicNodePropertyDescriptor;
+
+            if (propriedadeAlterada == null)
+                return;
+
+            string valorAtual = Convert.ToString(propriedadeAlterada.Item.Value) ?? string.Empty;
+
+            if (EhPropriedadeProtegida(propriedadeAlterada.Item.Name, propriedadeAlterada.Item.Path))
+            {
+                if (!AtualizarMetadadoDoItem(itemSelecionado, propriedadeAlterada.Item.Name, valorAtual))
+                {
+                    propriedadeAlterada.Item.Value = ObterValorAtualPropriedadeProtegida(
+                        itemSelecionado,
+                        propriedadeAlterada.Item.Name,
+                        e.OldValue);
+                    itemSelecionado.SincronizarMetadados();
+                    AtualizarPropertyGrid(itemSelecionado);
+                    return;
+                }
+
+                AtualizarPropertyGrid(itemSelecionado);
+            }
+
+            CarregarPropriedadeNosCamposEdicao(CriarInfoDaPropriedade(propriedadeAlterada.Item));
+            PersistirCadastro();
+        }
+
+        private void CarregarPropriedadeNosCamposEdicao(PropertyGridSelectionInfo info)
+        {
+            if (info == null)
+                return;
 
             ExecutarSemMonitoramentoCamposEdicao(() =>
             {
@@ -800,6 +918,29 @@ namespace GerenciadorSistemas
             AtualizarContextoDaPropriedadeSelecionada(info.Nome, info.Local);
             SincronizarEstadoCamposEdicao();
             AtualizarEstadoButtonRun();
+        }
+
+        private void RestaurarSelecaoPropertyGrid(GridItem item)
+        {
+            if (item == null)
+                return;
+
+            _restaurandoSelecaoPropertyGrid = true;
+
+            try
+            {
+                item.Select();
+            }
+            finally
+            {
+                _restaurandoSelecaoPropertyGrid = false;
+            }
+        }
+
+        private void treeViewItens_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+                e.Cancel = true;
         }
 
         private void treeViewItens_AfterSelect(object sender, TreeViewEventArgs e)
@@ -1948,6 +2089,61 @@ namespace GerenciadorSistemas
                 Local = dynProp.Item.Path,
                 Tipo = dynProp.Item.Tipo
             };
+        }
+
+        private static PropertyGridSelectionInfo CriarInfoDaPropriedade(DynamicPropertyItem item)
+        {
+            if (item == null)
+                return null;
+
+            return new PropertyGridSelectionInfo
+            {
+                Nome = item.Name,
+                Valor = item.Value,
+                Descricao = item.Description,
+                Categoria = item.Category,
+                Local = item.Path,
+                Tipo = item.Tipo
+            };
+        }
+
+        private static string ObterValorTextoPropertyGrid(object valor)
+        {
+            DynamicPropertyItem item = valor as DynamicPropertyItem;
+
+            if (item != null)
+                return Convert.ToString(item.Value) ?? string.Empty;
+
+            return Convert.ToString(valor) ?? string.Empty;
+        }
+
+        private static string ObterValorAtualPropriedadeProtegida(
+            InfrastructureItem item,
+            string nomePropriedade,
+            object valorFallback)
+        {
+            if (item == null)
+                return ObterValorTextoPropertyGrid(valorFallback);
+
+            if (string.Equals(nomePropriedade, "Nome", StringComparison.OrdinalIgnoreCase))
+                return item.NomeExibicao ?? string.Empty;
+
+            if (string.Equals(nomePropriedade, "Descricao Item", StringComparison.OrdinalIgnoreCase))
+                return item.Descricao ?? string.Empty;
+
+            if (string.Equals(nomePropriedade, "Imagem/Icone", StringComparison.OrdinalIgnoreCase))
+                return item.IconeKey ?? string.Empty;
+
+            if (string.Equals(nomePropriedade, "Criado em", StringComparison.OrdinalIgnoreCase))
+                return item.CriadoEm.ToString("dd/MM/yyyy HH:mm:ss");
+
+            if (string.Equals(nomePropriedade, "Observacao/Local", StringComparison.OrdinalIgnoreCase))
+                return item.Observacao ?? string.Empty;
+
+            if (string.Equals(nomePropriedade, "Tipo do Item", StringComparison.OrdinalIgnoreCase))
+                return item.TipoItem ?? string.Empty;
+
+            return ObterValorTextoPropertyGrid(valorFallback);
         }
 
         private void buttonEditar_Click(object sender, EventArgs e)
