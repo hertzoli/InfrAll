@@ -15,6 +15,16 @@ namespace GerenciadorSistemas
 
         [YamlMember(Alias = "items")]
         public List<ItemPersistido> Items { get; set; }
+
+        [YamlMember(Alias = "configuracoes")]
+        public ConfiguracoesPersistidas Configuracoes { get; set; }
+    }
+
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
+    internal sealed class ConfiguracoesPersistidas
+    {
+        [YamlMember(Alias = "iconePadrao")]
+        public string IconePadrao { get; set; }
     }
 
     [Obfuscation(Exclude = true, ApplyToMembers = true)]

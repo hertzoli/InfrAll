@@ -4,6 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace GerenciadorSistemas
 {
@@ -37,10 +39,12 @@ namespace GerenciadorSistemas
         {
             get
             {
-                if (listViewImages.SelectedItems.Count == 0)
+                TreeNode noSelecionado = TreeViewImages.SelectedNode;
+
+                if (noSelecionado == null || !_arquivosPorChave.ContainsKey(noSelecionado.Name))
                     return string.Empty;
 
-                return listViewImages.SelectedItems[0].Name;
+                return noSelecionado.Name;
             }
         }
 
@@ -72,9 +76,7 @@ namespace GerenciadorSistemas
             _imageListIcons.ColorDepth = ColorDepth.Depth32Bit;
             _imageListIcons.ImageSize = new Size(16, 16);
 
-            listViewImages.View = View.SmallIcon;
-            listViewImages.MultiSelect = false;
-            listViewImages.SmallImageList = _imageListIcons;
+            TreeViewImages.ImageList = _imageListIcons;
 
             botaoOk.DialogResult = DialogResult.OK;
             botaoCancelar.DialogResult = DialogResult.Cancel;
@@ -118,7 +120,7 @@ namespace GerenciadorSistemas
                 try
                 {
                     string arquivoDestino = CopiarImagemParaPastaDoPrograma(dialog.FileName);
-                    string chave = AdicionarImagemAoListView(arquivoDestino, true);
+                    string chave = AdicionarImagemAoTreeView(arquivoDestino, true);
 
                     if (!string.IsNullOrWhiteSpace(chave))
                         _textBoxNome.Focus();
@@ -137,17 +139,28 @@ namespace GerenciadorSistemas
 
             _imageListIcons.Images.Clear();
             _arquivosPorChave.Clear();
-            listViewImages.Items.Clear();
+            TreeViewImages.Nodes.Clear();
 
-            foreach (string arquivo in Directory.GetFiles(PastaImagens)
-                .Where(EhArquivoDeImagemValido)
-                .OrderBy(Path.GetFileName))
+            foreach (string pasta in Directory.GetDirectories(PastaImagens, "*", SearchOption.AllDirectories)
+                .OrderBy(ObterChaveRelativaDaImagem))
             {
-                AdicionarImagemAoListView(arquivo, false);
+                AdicionarPastaAoTreeView(ObterChaveRelativaDaImagem(pasta));
             }
 
-            if (listViewImages.Items.Count > 0)
-                SelecionarItemPorChave(listViewImages.Items[0].Name);
+            foreach (string arquivo in Directory.GetFiles(PastaImagens, "*.*", SearchOption.AllDirectories)
+                .Where(EhArquivoDeImagemValido)
+                .OrderBy(ObterChaveRelativaDaImagem))
+            {
+                AdicionarImagemAoTreeView(arquivo, false);
+            }
+
+            TreeViewImages.ExpandAll();
+
+            string iconePadrao = CarregarIconePadraoPersistido();
+            if (!string.IsNullOrWhiteSpace(iconePadrao) && _arquivosPorChave.ContainsKey(iconePadrao))
+                SelecionarItemPorChave(iconePadrao);
+            else
+                SelecionarPrimeiraImagemDisponivel();
         }
 
         private string CopiarImagemParaPastaDoPrograma(string arquivoOrigem)
@@ -178,9 +191,27 @@ namespace GerenciadorSistemas
             return destino;
         }
 
-        private string AdicionarImagemAoListView(string caminhoArquivo, bool selecionarAoFinal)
+        private TreeNodeCollection AdicionarPastaAoTreeView(string chavePasta)
         {
-            string chave = Path.GetFileName(caminhoArquivo);
+            TreeNodeCollection colecao = TreeViewImages.Nodes;
+            string[] partes = (chavePasta ?? string.Empty).Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < partes.Length; i++)
+            {
+                string caminhoPasta = string.Join("/", partes.Take(i + 1).ToArray());
+                TreeNode noPasta = colecao.ContainsKey(caminhoPasta)
+                    ? colecao[caminhoPasta]
+                    : colecao.Add(caminhoPasta, partes[i]);
+
+                colecao = noPasta.Nodes;
+            }
+
+            return colecao;
+        }
+
+        private string AdicionarImagemAoTreeView(string caminhoArquivo, bool selecionarAoFinal)
+        {
+            string chave = ObterChaveRelativaDaImagem(caminhoArquivo);
 
             if (_arquivosPorChave.ContainsKey(chave))
             {
@@ -203,11 +234,17 @@ namespace GerenciadorSistemas
 
             _arquivosPorChave[chave] = caminhoArquivo;
 
-            ListViewItem item = new ListViewItem(chave);
-            item.Name = chave;
+            string[] partes = chave.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            string chavePasta = partes.Length > 1
+                ? string.Join("/", partes.Take(partes.Length - 1).ToArray())
+                : string.Empty;
+            TreeNodeCollection colecao = AdicionarPastaAoTreeView(chavePasta);
+
+            string nomeArquivo = partes.Length > 0 ? partes[partes.Length - 1] : Path.GetFileName(caminhoArquivo);
+            TreeNode item = colecao.Add(chave, nomeArquivo);
             item.ImageKey = chave;
+            item.SelectedImageKey = chave;
             item.ToolTipText = caminhoArquivo;
-            listViewImages.Items.Add(item);
 
             if (selecionarAoFinal)
                 SelecionarItemPorChave(chave);
@@ -217,15 +254,41 @@ namespace GerenciadorSistemas
 
         private void SelecionarItemPorChave(string chave)
         {
-            if (!listViewImages.Items.ContainsKey(chave))
+            TreeNode item = EncontrarNoPorChave(TreeViewImages.Nodes, chave);
+
+            if (item == null)
                 return;
 
-            listViewImages.SelectedItems.Clear();
-
-            ListViewItem item = listViewImages.Items[chave];
-            item.Selected = true;
-            item.Focused = true;
+            TreeViewImages.SelectedNode = item;
             item.EnsureVisible();
+        }
+
+        private void SelecionarPrimeiraImagemDisponivel()
+        {
+            foreach (string chave in _arquivosPorChave.Keys.OrderBy(k => k))
+            {
+                SelecionarItemPorChave(chave);
+                return;
+            }
+        }
+
+        private static TreeNode EncontrarNoPorChave(TreeNodeCollection nos, string chave)
+        {
+            if (nos == null || string.IsNullOrWhiteSpace(chave))
+                return null;
+
+            if (nos.ContainsKey(chave))
+                return nos[chave];
+
+            foreach (TreeNode no in nos)
+            {
+                TreeNode encontrado = EncontrarNoPorChave(no.Nodes, chave);
+
+                if (encontrado != null)
+                    return encontrado;
+            }
+
+            return null;
         }
 
         private static bool EhArquivoDeImagemValido(string caminhoArquivo)
@@ -255,6 +318,133 @@ namespace GerenciadorSistemas
             using (FileStream stream = new FileStream(caminhoArquivo, FileMode.Open, FileAccess.Read))
             {
                 return Image.FromStream(stream);
+            }
+        }
+
+        private void buttonDefinirIconePadrao_Click(object sender, EventArgs e)
+        {
+            string iconeSelecionado = IconeSelecionado;
+
+            if (string.IsNullOrWhiteSpace(iconeSelecionado))
+            {
+                MessageBox.Show("Selecione uma imagem para definir como icone padrao.", "Icone padrao",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                SalvarIconePadraoPersistido(iconeSelecionado);
+                MessageBox.Show("Icone padrao salvo.", "Icone padrao",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel salvar o icone padrao.\r\n" + ex.Message,
+                    "Icone padrao", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private string ObterChaveRelativaDaImagem(string caminhoArquivo)
+        {
+            string caminhoBase = Path.GetFullPath(PastaImagens).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string caminhoCompleto = Path.GetFullPath(caminhoArquivo);
+
+            if (!caminhoCompleto.StartsWith(caminhoBase, StringComparison.OrdinalIgnoreCase))
+                return Path.GetFileName(caminhoArquivo);
+
+            string relativo = caminhoCompleto.Substring(caminhoBase.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            return relativo.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/');
+        }
+
+        private static string ObterCaminhoArquivoCadastro()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cadastro.yaml");
+        }
+
+        public static string CarregarIconePadraoPersistido()
+        {
+            try
+            {
+                string caminhoArquivo = ObterCaminhoArquivoCadastro();
+
+                if (!File.Exists(caminhoArquivo))
+                    return string.Empty;
+
+                IDeserializer deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .IgnoreUnmatchedProperties()
+                    .Build();
+
+                using (StreamReader reader = new StreamReader(caminhoArquivo))
+                {
+                    CadastroPersistido cadastro = deserializer.Deserialize<CadastroPersistido>(reader);
+                    return cadastro != null && cadastro.Configuracoes != null
+                        ? cadastro.Configuracoes.IconePadrao ?? string.Empty
+                        : string.Empty;
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static void SalvarIconePadraoPersistido(string iconePadrao)
+        {
+            CadastroPersistido cadastro = CarregarCadastroPersistidoParaConfiguracao();
+
+            if (cadastro.Configuracoes == null)
+                cadastro.Configuracoes = new ConfiguracoesPersistidas();
+
+            cadastro.Configuracoes.IconePadrao = iconePadrao ?? string.Empty;
+            cadastro.SavedAt = DateTime.Now.ToString("o");
+
+            ISerializer serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            string caminhoArquivo = ObterCaminhoArquivoCadastro();
+            string caminhoTemporario = caminhoArquivo + ".tmp";
+
+            using (StreamWriter writer = new StreamWriter(caminhoTemporario, false))
+                serializer.Serialize(writer, cadastro);
+
+            if (File.Exists(caminhoArquivo))
+                File.Delete(caminhoArquivo);
+
+            File.Move(caminhoTemporario, caminhoArquivo);
+        }
+
+        private static CadastroPersistido CarregarCadastroPersistidoParaConfiguracao()
+        {
+            string caminhoArquivo = ObterCaminhoArquivoCadastro();
+
+            if (!File.Exists(caminhoArquivo))
+            {
+                return new CadastroPersistido
+                {
+                    SchemaVersion = 1,
+                    Items = new List<ItemPersistido>()
+                };
+            }
+
+            IDeserializer deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties()
+                .Build();
+
+            using (StreamReader reader = new StreamReader(caminhoArquivo))
+            {
+                CadastroPersistido cadastro = deserializer.Deserialize<CadastroPersistido>(reader);
+
+                if (cadastro == null)
+                    cadastro = new CadastroPersistido();
+
+                if (cadastro.Items == null)
+                    cadastro.Items = new List<ItemPersistido>();
+
+                return cadastro;
             }
         }
     }

@@ -36,10 +36,11 @@ namespace GerenciadorSistemas
             this._textBoxNome = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.listViewImages = new System.Windows.Forms.ListView();
+            this.TreeViewImages = new System.Windows.Forms.TreeView();
             this.buttonNovoIcone = new System.Windows.Forms.Button();
             this.botaoOk = new System.Windows.Forms.Button();
             this.botaoCancelar = new System.Windows.Forms.Button();
+            this.buttonDefinirIconePadrao = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // _textBoxObservacao
@@ -103,14 +104,13 @@ namespace GerenciadorSistemas
             this.label3.TabIndex = 18;
             this.label3.Text = "Icone:";
             // 
-            // listViewImages
+            // TreeViewImages
             // 
-            this.listViewImages.HideSelection = false;
-            this.listViewImages.Location = new System.Drawing.Point(15, 79);
-            this.listViewImages.Name = "listViewImages";
-            this.listViewImages.Size = new System.Drawing.Size(376, 199);
-            this.listViewImages.TabIndex = 20;
-            this.listViewImages.UseCompatibleStateImageBehavior = false;
+            this.TreeViewImages.HideSelection = false;
+            this.TreeViewImages.Location = new System.Drawing.Point(15, 79);
+            this.TreeViewImages.Name = "TreeViewImages";
+            this.TreeViewImages.Size = new System.Drawing.Size(376, 199);
+            this.TreeViewImages.TabIndex = 20;
             // 
             // buttonNovoIcone
             // 
@@ -139,15 +139,26 @@ namespace GerenciadorSistemas
             this.botaoCancelar.Text = "Cancelar";
             this.botaoCancelar.UseVisualStyleBackColor = true;
             // 
+            // buttonDefinirIconePadrao
+            // 
+            this.buttonDefinirIconePadrao.Location = new System.Drawing.Point(15, 281);
+            this.buttonDefinirIconePadrao.Name = "buttonDefinirIconePadrao";
+            this.buttonDefinirIconePadrao.Size = new System.Drawing.Size(121, 22);
+            this.buttonDefinirIconePadrao.TabIndex = 24;
+            this.buttonDefinirIconePadrao.Text = "Definir Icone Padrão";
+            this.buttonDefinirIconePadrao.UseVisualStyleBackColor = true;
+            this.buttonDefinirIconePadrao.Click += new System.EventHandler(this.buttonDefinirIconePadrao_Click);
+            // 
             // FormNovoItem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(399, 575);
+            this.Controls.Add(this.buttonDefinirIconePadrao);
             this.Controls.Add(this.botaoCancelar);
             this.Controls.Add(this.botaoOk);
             this.Controls.Add(this.buttonNovoIcone);
-            this.Controls.Add(this.listViewImages);
+            this.Controls.Add(this.TreeViewImages);
             this.Controls.Add(this.label3);
             this.Controls.Add(this._textBoxObservacao);
             this.Controls.Add(this._textBoxDescricao);
@@ -171,9 +182,10 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TextBox _textBoxNome;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ListView listViewImages;
+        private System.Windows.Forms.TreeView TreeViewImages;
         private System.Windows.Forms.Button buttonNovoIcone;
         private System.Windows.Forms.Button botaoOk;
         private System.Windows.Forms.Button botaoCancelar;
+        private System.Windows.Forms.Button buttonDefinirIconePadrao;
     }
 }

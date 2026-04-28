@@ -32,11 +32,20 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.4")]
-[assembly: AssemblyFileVersion("1.6.4")]
+[assembly: AssemblyVersion("1.6.5")]
+[assembly: AssemblyFileVersion("1.6.5")]
 
 /*
 
+
+
+v1.6.5
+ - listViewImages foi substituído por TreeViewImages em /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/FormNovoItem.Designer.cs:39.
+  - /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/FormNovoItem.cs:135 agora lê Imagens recursivamente e monta a árvore conforme a hierarquia real de pastas.
+  - As imagens são salvas/selecionadas por caminho relativo, por exemplo Hardware/Memoria.png, preservando subpastas.
+  - buttonDefinirIconePadrao_Click agora salva configuracoes.iconePadrao em cadastro.yaml.
+  - /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/Form1.cs:1671 agora carrega ícones recursivamente da pasta Imagens, para que itens com ícones em subpastas também apareçam corretamente na árvore principal.
+  - /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/Models/CadastroYamlContract.cs:20 recebeu o bloco configuracoes.
 
 v1.6.4
  - substituir o controle textBoxValor por um controle RichTextBox para definir cores diferentes caso seja um comando.

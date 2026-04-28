@@ -103,10 +103,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\Debug\Imagens\Folder.png" />
     <Content Include="Icon.ico" />
     <Content Include="Imagens\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Folder.png" />
     <None Include="Resources\Edit_item_32x32.png" />
     <None Include="Resources\Save.png" />
     <None Include="Resources\Excluir_propriedade_32x32.png" />

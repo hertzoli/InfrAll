@@ -1385,6 +1385,10 @@ namespace GerenciadorSistemas
                 {
                     SchemaVersion = VersaoSchemaCadastro,
                     SavedAt = DateTime.Now.ToString("o"),
+                    Configuracoes = new ConfiguracoesPersistidas
+                    {
+                        IconePadrao = FormNovoItem.CarregarIconePadraoPersistido()
+                    },
                     Items = treeViewItens.Nodes.Cast<TreeNode>()
                         .Select(MapearNoParaPersistencia)
                         .ToList()
@@ -1671,8 +1675,11 @@ namespace GerenciadorSistemas
 
             Directory.CreateDirectory(pastaImagens);
 
-            foreach (string arquivo in Directory.GetFiles(pastaImagens))
-                GarantirIconeCarregadoNoImageListPrincipal(Path.GetFileName(arquivo));
+            foreach (string arquivo in Directory.GetFiles(pastaImagens, "*.*", SearchOption.AllDirectories))
+            {
+                if (EhArquivoDeImagemValido(arquivo))
+                    GarantirIconeCarregadoNoImageListPrincipal(ObterChaveRelativaDaImagem(arquivo, pastaImagens));
+            }
         }
 
         private void GarantirIconeCarregadoNoImageListPrincipal(string chaveIcone)
@@ -1680,7 +1687,10 @@ namespace GerenciadorSistemas
             if (string.IsNullOrWhiteSpace(chaveIcone) || imageList1.Images.ContainsKey(chaveIcone))
                 return;
 
-            string caminhoArquivo = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens", chaveIcone);
+            string caminhoArquivo = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Imagens",
+                chaveIcone.Replace('/', Path.DirectorySeparatorChar));
 
             if (!File.Exists(caminhoArquivo))
                 return;
@@ -1716,6 +1726,30 @@ namespace GerenciadorSistemas
                     return new Bitmap(imagem);
                 }
             }
+        }
+
+        private static bool EhArquivoDeImagemValido(string caminhoArquivo)
+        {
+            string extensao = Path.GetExtension(caminhoArquivo);
+
+            return string.Equals(extensao, ".bmp", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(extensao, ".jpg", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(extensao, ".png", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(extensao, ".ico", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(extensao, ".gif", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(extensao, ".jpeg", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string ObterChaveRelativaDaImagem(string caminhoArquivo, string pastaImagens)
+        {
+            string caminhoBase = Path.GetFullPath(pastaImagens).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string caminhoCompleto = Path.GetFullPath(caminhoArquivo);
+
+            if (!caminhoCompleto.StartsWith(caminhoBase, StringComparison.OrdinalIgnoreCase))
+                return Path.GetFileName(caminhoArquivo);
+
+            string relativo = caminhoCompleto.Substring(caminhoBase.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            return relativo.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/');
         }
 
         private static bool EhPropriedadeProtegida(string nomePropriedade, string localPropriedade)
