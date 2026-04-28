@@ -55,8 +55,6 @@ namespace GerenciadorSistemas
             };
             _corCampoEdicaoPadrao = textBoxNome.BackColor;
             FormClosing += Form1_FormClosing;
-            buttonCopy.Click += buttonCopy_Click;
-            buttonRun.Click += buttonRun_Click;
             buttonCopyPlaceholder.Click += buttonCopyPlaceholder_Click;
             textBoxValor.TextChanged += CampoTipoOuValorAlterado;
             comboBoxTipo.SelectedIndexChanged += CampoTipoOuValorAlterado;
@@ -308,8 +306,7 @@ namespace GerenciadorSistemas
                 MessageBox.Show("Nao ha comando para executar.", "Run", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
-            try
+                try
             {
                 ProcessStartInfo processInfo = CriarProcessStartInfoParaExecucao(valorResolvido, ObterTipoSelecionado());
                 IniciarProcessoComElevacaoQuandoNecessario(processInfo);
@@ -1655,7 +1652,7 @@ namespace GerenciadorSistemas
                 {
                     return false;
                 }
-
+                
                 valorResolvido = valorResolvido.Replace(
                     match.Value,
                     Convert.ToString(propriedadeReferenciada.Value) ?? string.Empty);
@@ -2009,6 +2006,7 @@ namespace GerenciadorSistemas
         {
             Process.Start("https://github.com/hertzoli/InfrAll/issues");
         }
+
     }
 
     internal sealed class InfrastructureItem

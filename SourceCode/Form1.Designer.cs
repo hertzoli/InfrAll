@@ -35,6 +35,7 @@ namespace GerenciadorSistemas
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.buttonIssue = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBoxTipo = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -70,7 +71,6 @@ namespace GerenciadorSistemas
             this.buttonNovaSubPropriedade = new System.Windows.Forms.Button();
             this.buttonExcluirPropriedade = new System.Windows.Forms.Button();
             this.buttonNovaPropriedade = new System.Windows.Forms.Button();
-            this.buttonIssue = new System.Windows.Forms.Button();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -118,6 +118,17 @@ namespace GerenciadorSistemas
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(416, 590);
             this.panel3.TabIndex = 15;
+            // 
+            // buttonIssue
+            // 
+            this.buttonIssue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonIssue.Location = new System.Drawing.Point(362, 10);
+            this.buttonIssue.Name = "buttonIssue";
+            this.buttonIssue.Size = new System.Drawing.Size(41, 22);
+            this.buttonIssue.TabIndex = 19;
+            this.buttonIssue.Text = "Issue";
+            this.buttonIssue.UseVisualStyleBackColor = true;
+            this.buttonIssue.Click += new System.EventHandler(this.buttonIssue_Click);
             // 
             // groupBox1
             // 
@@ -241,6 +252,7 @@ namespace GerenciadorSistemas
             this.buttonCopy.TabIndex = 14;
             this.buttonCopy.Text = "Copy";
             this.buttonCopy.UseVisualStyleBackColor = true;
+            this.buttonCopy.Click += new System.EventHandler(this.buttonCopy_Click);
             // 
             // label4
             // 
@@ -260,6 +272,7 @@ namespace GerenciadorSistemas
             this.buttonRun.TabIndex = 13;
             this.buttonRun.Text = "Run";
             this.buttonRun.UseVisualStyleBackColor = true;
+            this.buttonRun.Click += new System.EventHandler(this.buttonRun_Click);
             // 
             // textBoxValor
             // 
@@ -503,17 +516,6 @@ namespace GerenciadorSistemas
             this.buttonNovaPropriedade.TabIndex = 7;
             this.buttonNovaPropriedade.UseVisualStyleBackColor = true;
             this.buttonNovaPropriedade.Click += new System.EventHandler(this.buttonNovaPropriedade_Click);
-            // 
-            // buttonIssue
-            // 
-            this.buttonIssue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonIssue.Location = new System.Drawing.Point(362, 10);
-            this.buttonIssue.Name = "buttonIssue";
-            this.buttonIssue.Size = new System.Drawing.Size(41, 22);
-            this.buttonIssue.TabIndex = 19;
-            this.buttonIssue.Text = "Issue";
-            this.buttonIssue.UseVisualStyleBackColor = true;
-            this.buttonIssue.Click += new System.EventHandler(this.buttonIssue_Click);
             // 
             // Form1
             // 
