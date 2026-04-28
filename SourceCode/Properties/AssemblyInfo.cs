@@ -50,6 +50,14 @@ v1.6.5
   - imagens continuam usando suas próprias miniaturas
   - o ícone de pasta é reaplicado após limpar/recarregar o ImageList
 
+ Agora, ao criar/carregar/editar um InfrastructureItem:
+  - tenta usar o IconeKey atual;
+  - se o arquivo não existir nesse caminho, procura recursivamente em Imagens por um arquivo com o mesmo nome;
+  - se encontrar, atualiza item.IconeKey para o caminho relativo correto encontrado;
+  - se não encontrar, usa o recurso Properties.Resources.ErrorSmall como ícone visual de fallback.
+
+  Também ajustei a edição da propriedade Imagem/Icone e a edição via FormNovoItem para passarem pela mesma resolução.
+
 v1.6.4
  - substituir o controle textBoxValor por um controle RichTextBox para definir cores diferentes caso seja um comando.
 

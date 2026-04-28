@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\Imagens\Folder.png" />
+    <None Include="bin\Debug\Imagens\ErrorSmall.png" />
     <Content Include="Icon.ico" />
     <Content Include="Imagens\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

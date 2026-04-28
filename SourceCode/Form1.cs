@@ -22,6 +22,7 @@ namespace GerenciadorSistemas
         private const int LarguraMinimaGroupBoxPropriedade = 397;
         private const int AlturaMinimaTreeView = 500;
         private const int AlturaMinimaPropertyGrid = 500;
+        private const string ChaveIconeErro = "__error__";
         private string _nomePropriedadeSelecionadaOriginal;
         private string _localPropriedadeSelecionadaOriginal;
         private ContextMenuStrip _menuContextoTreeView;
@@ -1246,11 +1247,12 @@ namespace GerenciadorSistemas
 
         private TreeNode CriarNoParaItem(InfrastructureItem item)
         {
+            string chaveIcone = ResolverIconeDoItem(item);
             TreeNode no = new TreeNode(item.NomeExibicao);
             no.Name = item.NomeExibicao;
             no.Tag = item;
-            no.ImageKey = item.IconeKey;
-            no.SelectedImageKey = item.IconeKey;
+            no.ImageKey = chaveIcone;
+            no.SelectedImageKey = chaveIcone;
             return no;
         }
 
@@ -1674,12 +1676,21 @@ namespace GerenciadorSistemas
             string pastaImagens = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens");
 
             Directory.CreateDirectory(pastaImagens);
+            GarantirIconeErroCarregado();
 
             foreach (string arquivo in Directory.GetFiles(pastaImagens, "*.*", SearchOption.AllDirectories))
             {
                 if (EhArquivoDeImagemValido(arquivo))
                     GarantirIconeCarregadoNoImageListPrincipal(ObterChaveRelativaDaImagem(arquivo, pastaImagens));
             }
+        }
+
+        private void GarantirIconeErroCarregado()
+        {
+            if (imageList1.Images.ContainsKey(ChaveIconeErro))
+                return;
+
+            imageList1.Images.Add(ChaveIconeErro, new Bitmap(Properties.Resources.ErrorSmall, new Size(16, 16)));
         }
 
         private void GarantirIconeCarregadoNoImageListPrincipal(string chaveIcone)
@@ -1726,6 +1737,62 @@ namespace GerenciadorSistemas
                     return new Bitmap(imagem);
                 }
             }
+        }
+
+        private string ResolverIconeDoItem(InfrastructureItem item)
+        {
+            if (item == null)
+                return ChaveIconeErro;
+
+            string chaveIcone = (item.IconeKey ?? string.Empty).Trim();
+
+            if (!string.IsNullOrWhiteSpace(chaveIcone))
+            {
+                GarantirIconeCarregadoNoImageListPrincipal(chaveIcone);
+
+                if (imageList1.Images.ContainsKey(chaveIcone))
+                    return chaveIcone;
+            }
+
+            string chaveEncontrada = ProcurarIconePorNomeDeArquivo(chaveIcone);
+
+            if (!string.IsNullOrWhiteSpace(chaveEncontrada))
+            {
+                GarantirIconeCarregadoNoImageListPrincipal(chaveEncontrada);
+
+                if (imageList1.Images.ContainsKey(chaveEncontrada))
+                {
+                    item.IconeKey = chaveEncontrada;
+                    item.SincronizarMetadados();
+                    return chaveEncontrada;
+                }
+            }
+
+            GarantirIconeErroCarregado();
+            return ChaveIconeErro;
+        }
+
+        private string ProcurarIconePorNomeDeArquivo(string chaveIcone)
+        {
+            string nomeArquivo = Path.GetFileName((chaveIcone ?? string.Empty).Replace('/', Path.DirectorySeparatorChar));
+
+            if (string.IsNullOrWhiteSpace(nomeArquivo))
+                return string.Empty;
+
+            string pastaImagens = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens");
+
+            if (!Directory.Exists(pastaImagens))
+                return string.Empty;
+
+            foreach (string arquivo in Directory.GetFiles(pastaImagens, "*.*", SearchOption.AllDirectories)
+                .Where(EhArquivoDeImagemValido)
+                .OrderBy(a => a))
+            {
+                if (string.Equals(Path.GetFileName(arquivo), nomeArquivo, StringComparison.OrdinalIgnoreCase))
+                    return ObterChaveRelativaDaImagem(arquivo, pastaImagens);
+            }
+
+            return string.Empty;
         }
 
         private static bool EhArquivoDeImagemValido(string caminhoArquivo)
@@ -1792,15 +1859,13 @@ namespace GerenciadorSistemas
             else if (string.Equals(nomePropriedade, "Imagem/Icone", StringComparison.OrdinalIgnoreCase))
             {
                 string icone = (valor ?? string.Empty).Trim();
-                if (!string.IsNullOrWhiteSpace(icone) && imageList1.Images.ContainsKey(icone))
-                {
-                    item.IconeKey = icone;
+                item.IconeKey = icone;
+                string chaveIcone = ResolverIconeDoItem(item);
 
-                    if (noSelecionado != null)
-                    {
-                        noSelecionado.ImageKey = icone;
-                        noSelecionado.SelectedImageKey = icone;
-                    }
+                if (noSelecionado != null)
+                {
+                    noSelecionado.ImageKey = chaveIcone;
+                    noSelecionado.SelectedImageKey = chaveIcone;
                 }
             }
             else if (string.Equals(nomePropriedade, "Criado em", StringComparison.OrdinalIgnoreCase))
@@ -2291,11 +2356,12 @@ namespace GerenciadorSistemas
                 itemSelecionado.Observacao = dialog.Observacao;
                 itemSelecionado.IconeKey = dialog.IconeSelecionado;
                 itemSelecionado.SincronizarMetadados();
+                string chaveIcone = ResolverIconeDoItem(itemSelecionado);
 
                 noSelecionado.Text = itemSelecionado.NomeExibicao;
                 noSelecionado.Name = itemSelecionado.NomeExibicao;
-                noSelecionado.ImageKey = itemSelecionado.IconeKey;
-                noSelecionado.SelectedImageKey = itemSelecionado.IconeKey;
+                noSelecionado.ImageKey = chaveIcone;
+                noSelecionado.SelectedImageKey = chaveIcone;
 
                 AtualizarPropertyGrid(itemSelecionado);
                 treeViewItens.SelectedNode = noSelecionado;
