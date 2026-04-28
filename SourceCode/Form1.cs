@@ -31,12 +31,17 @@ namespace GerenciadorSistemas
         private bool _suspenderMonitoramentoCamposEdicao;
         private bool _suspenderConfirmacaoSaidaPropriedade;
         private bool _restaurandoSelecaoPropertyGrid;
+        private bool _suspenderFormatacaoRichTextBoxValor;
         private TipoValorPropriedade _tipoPropriedadeSelecionadaOriginal;
         private readonly ToolTip _toolTipBotoes;
-        private readonly Dictionary<TextBox, string> _snapshotCamposEdicao;
-        private readonly List<TextBox> _camposTextoEditaveis;
+        private readonly Dictionary<Control, string> _snapshotCamposEdicao;
+        private readonly List<Control> _camposTextoEditaveis;
         private readonly Color _corCampoEdicaoPadrao;
         private readonly Color _corCampoEdicaoNaoSalvo = Color.LightYellow;
+        private readonly Font _fonteValorPadrao;
+        private readonly Font _fonteValorComando;
+        private readonly Color _corFundoValorPadrao;
+        private readonly Color _corTextoValorPadrao;
 
         public Form1()
         {
@@ -47,19 +52,23 @@ namespace GerenciadorSistemas
             OnlineAutoUpdate.OnlineAutoUpdateAsync.OnlineAutoUpdateAsync2();
             //------------------------------------
             _toolTipBotoes = new ToolTip(components);
-            _snapshotCamposEdicao = new Dictionary<TextBox, string>();
-            _camposTextoEditaveis = new List<TextBox>
+            _snapshotCamposEdicao = new Dictionary<Control, string>();
+            _camposTextoEditaveis = new List<Control>
             {
                 textBoxNome,
-                textBoxValor,
+                RichTextBoxValor,
                 textBoxDescrição,
                 textBoxCategoria,
                 textBoxLocal
             };
             _corCampoEdicaoPadrao = textBoxNome.BackColor;
+            _fonteValorPadrao = RichTextBoxValor.Font;
+            _fonteValorComando = new Font("Consolas", RichTextBoxValor.Font.Size, RichTextBoxValor.Font.Style);
+            _corFundoValorPadrao = RichTextBoxValor.BackColor;
+            _corTextoValorPadrao = RichTextBoxValor.ForeColor;
             FormClosing += Form1_FormClosing;
             buttonCopyPlaceholder.Click += buttonCopyPlaceholder_Click;
-            textBoxValor.TextChanged += CampoTipoOuValorAlterado;
+            RichTextBoxValor.TextChanged += CampoTipoOuValorAlterado;
             comboBoxTipo.SelectedIndexChanged += CampoTipoOuValorAlterado;
             treeViewItens.BeforeSelect += treeViewItens_BeforeSelect;
             propertyGridItem.PropertyValueChanged += propertyGridItem_PropertyValueChanged;
@@ -116,7 +125,7 @@ namespace GerenciadorSistemas
 
         private void InicializarMonitoramentoCamposEdicao()
         {
-            foreach (TextBox campo in _camposTextoEditaveis)
+            foreach (Control campo in _camposTextoEditaveis)
             {
                 _snapshotCamposEdicao[campo] = string.Empty;
                 campo.TextChanged += CampoEdicao_TextChanged;
@@ -128,7 +137,7 @@ namespace GerenciadorSistemas
             if (_suspenderMonitoramentoCamposEdicao)
                 return;
 
-            TextBox campo = sender as TextBox;
+            Control campo = sender as Control;
 
             if (campo == null)
                 return;
@@ -153,11 +162,13 @@ namespace GerenciadorSistemas
 
         private void SincronizarEstadoCamposEdicao()
         {
-            foreach (TextBox campo in _camposTextoEditaveis)
+            foreach (Control campo in _camposTextoEditaveis)
             {
                 _snapshotCamposEdicao[campo] = campo.Text ?? string.Empty;
-                campo.BackColor = _corCampoEdicaoPadrao;
+                campo.BackColor = ObterCorFundoPadraoDoCampo(campo);
             }
+
+            AtualizarFormatoRichTextBoxValor();
 
             _tipoPropriedadeSelecionadaOriginal = ObterTipoSelecionado();
         }
@@ -167,7 +178,7 @@ namespace GerenciadorSistemas
             if (_suspenderConfirmacaoSaidaPropriedade || string.IsNullOrWhiteSpace(_nomePropriedadeSelecionadaOriginal))
                 return false;
 
-            foreach (TextBox campo in _camposTextoEditaveis)
+            foreach (Control campo in _camposTextoEditaveis)
             {
                 string valorBase;
 
@@ -212,7 +223,7 @@ namespace GerenciadorSistemas
             }
         }
 
-        private void AtualizarDestaqueCampoEdicao(TextBox campo)
+        private void AtualizarDestaqueCampoEdicao(Control campo)
         {
             string valorBase;
 
@@ -220,9 +231,78 @@ namespace GerenciadorSistemas
                 valorBase = string.Empty;
 
             string valorAtual = campo.Text ?? string.Empty;
+            if (campo == RichTextBoxValor && PodeExecutarTipoSelecionado())
+            {
+                AtualizarFormatoRichTextBoxValor();
+                return;
+            }
+
             campo.BackColor = string.Equals(valorAtual, valorBase ?? string.Empty, StringComparison.Ordinal)
-                ? _corCampoEdicaoPadrao
+                ? ObterCorFundoPadraoDoCampo(campo)
                 : _corCampoEdicaoNaoSalvo;
+
+            if (campo == RichTextBoxValor)
+                AtualizarFormatoRichTextBoxValor();
+        }
+
+        private Color ObterCorFundoPadraoDoCampo(Control campo)
+        {
+            return campo == RichTextBoxValor ? _corFundoValorPadrao : _corCampoEdicaoPadrao;
+        }
+
+        private void AtualizarFormatoRichTextBoxValor()
+        {
+            if (_suspenderFormatacaoRichTextBoxValor || RichTextBoxValor == null)
+                return;
+
+            _suspenderFormatacaoRichTextBoxValor = true;
+
+            try
+            {
+                int inicioSelecao = RichTextBoxValor.SelectionStart;
+                int tamanhoSelecao = RichTextBoxValor.SelectionLength;
+                bool usaFormatoCodigo = PodeExecutarTipoSelecionado();
+
+                RichTextBoxValor.Font = usaFormatoCodigo ? _fonteValorComando : _fonteValorPadrao;
+                RichTextBoxValor.BackColor = usaFormatoCodigo
+                    ? Color.Black
+                    : (CampoPossuiAlteracao(RichTextBoxValor) ? _corCampoEdicaoNaoSalvo : _corFundoValorPadrao);
+                RichTextBoxValor.ForeColor = usaFormatoCodigo ? Color.Yellow : _corTextoValorPadrao;
+
+                RichTextBoxValor.SelectAll();
+                RichTextBoxValor.SelectionColor = RichTextBoxValor.ForeColor;
+
+                if (usaFormatoCodigo)
+                    AplicarCorTextoComReferencias();
+
+                inicioSelecao = Math.Min(inicioSelecao, RichTextBoxValor.TextLength);
+                tamanhoSelecao = Math.Min(tamanhoSelecao, RichTextBoxValor.TextLength - inicioSelecao);
+                RichTextBoxValor.Select(inicioSelecao, tamanhoSelecao);
+                RichTextBoxValor.SelectionColor = usaFormatoCodigo ? Color.Yellow : _corTextoValorPadrao;
+            }
+            finally
+            {
+                _suspenderFormatacaoRichTextBoxValor = false;
+            }
+        }
+
+        private void AplicarCorTextoComReferencias()
+        {
+            foreach (Match referencia in Regex.Matches(RichTextBoxValor.Text, "\\{[^{}]+\\}"))
+            {
+                RichTextBoxValor.Select(referencia.Index, referencia.Length);
+                RichTextBoxValor.SelectionColor = Color.Cyan;
+            }
+        }
+
+        private bool CampoPossuiAlteracao(Control campo)
+        {
+            string valorBase;
+
+            if (!_snapshotCamposEdicao.TryGetValue(campo, out valorBase))
+                valorBase = string.Empty;
+
+            return !string.Equals(campo.Text ?? string.Empty, valorBase ?? string.Empty, StringComparison.Ordinal);
         }
 
         private void splitter3_SplitterMoved(object sender, SplitterEventArgs e)
@@ -337,7 +417,7 @@ namespace GerenciadorSistemas
             string valorResolvido;
             string erro;
 
-            if (!TryResolverTextoComReferencias(textBoxValor.Text, out valorResolvido, out erro))
+            if (!TryResolverTextoComReferencias(RichTextBoxValor.Text, out valorResolvido, out erro))
             {
                 MessageBox.Show(erro, "Referencia invalida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -358,7 +438,7 @@ namespace GerenciadorSistemas
             string valorResolvido;
             string erro;
 
-            if (!TryResolverTextoComReferencias(textBoxValor.Text, out valorResolvido, out erro))
+            if (!TryResolverTextoComReferencias(RichTextBoxValor.Text, out valorResolvido, out erro))
             {
                 MessageBox.Show(erro, "Referencia invalida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -806,7 +886,7 @@ namespace GerenciadorSistemas
 
             if (EhPropriedadeProtegida(nomePropriedade, localPropriedade))
             {
-                if (!AtualizarMetadadoDoItem(itemSelecionado, nomePropriedade, textBoxValor.Text))
+                if (!AtualizarMetadadoDoItem(itemSelecionado, nomePropriedade, RichTextBoxValor.Text))
                     return;
             }
             else
@@ -827,7 +907,7 @@ namespace GerenciadorSistemas
                     return;
                 itemSelecionado.Builder.AdicionarPropriedade(
                     nomePropriedade,
-                    textBoxValor.Text,
+                    RichTextBoxValor.Text,
                     textBoxDescri\u00E7\u00E3o.Text,
                     textBoxCategoria.Text,
                     localPropriedade,
@@ -908,7 +988,7 @@ namespace GerenciadorSistemas
             ExecutarSemMonitoramentoCamposEdicao(() =>
             {
                 textBoxNome.Text = info.Nome;
-                textBoxValor.Text = Convert.ToString(info.Valor);
+                RichTextBoxValor.Text = Convert.ToString(info.Valor);
                 textBoxDescri\u00E7\u00E3o.Text = info.Descricao;
                 textBoxCategoria.Text = info.Categoria;
                 textBoxLocal.Text = info.Local;
@@ -1709,7 +1789,7 @@ namespace GerenciadorSistemas
             ExecutarSemMonitoramentoCamposEdicao(() =>
             {
                 textBoxNome.Text = string.Empty;
-                textBoxValor.Text = string.Empty;
+                RichTextBoxValor.Text = string.Empty;
                 textBoxDescri\u00E7\u00E3o.Text = string.Empty;
                 textBoxCategoria.Text = string.Empty;
                 textBoxLocal.Text = string.Empty;
@@ -1722,12 +1802,13 @@ namespace GerenciadorSistemas
 
         private void CampoTipoOuValorAlterado(object sender, EventArgs e)
         {
+            AtualizarFormatoRichTextBoxValor();
             AtualizarEstadoButtonRun();
         }
 
         private void AtualizarEstadoButtonRun()
         {
-            buttonRun.Enabled = PodeExecutarTipoSelecionado() && !string.IsNullOrWhiteSpace(textBoxValor.Text);
+            buttonRun.Enabled = PodeExecutarTipoSelecionado() && !string.IsNullOrWhiteSpace(RichTextBoxValor.Text);
         }
 
         private bool PodeExecutarTipoSelecionado()
@@ -2046,7 +2127,7 @@ namespace GerenciadorSistemas
                 _nomePropriedadeSelecionadaOriginal,
                 _localPropriedadeSelecionadaOriginal,
                 novoNomePropriedade,
-                textBoxValor.Text,
+                RichTextBoxValor.Text,
                 textBoxDescri\u00E7\u00E3o.Text,
                 textBoxCategoria.Text,
                 novoLocalPropriedade,

@@ -49,7 +49,7 @@ namespace GerenciadorSistemas
             this.buttonCopy = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.buttonRun = new System.Windows.Forms.Button();
-            this.textBoxValor = new System.Windows.Forms.TextBox();
+            this.RichTextBoxValor = new System.Windows.Forms.RichTextBox();
             this.buttonSalvar = new System.Windows.Forms.Button();
             this.textBoxDescrição = new System.Windows.Forms.TextBox();
             this.textBoxLocal = new System.Windows.Forms.TextBox();
@@ -146,7 +146,7 @@ namespace GerenciadorSistemas
             this.groupBox1.Controls.Add(this.buttonCopy);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.buttonRun);
-            this.groupBox1.Controls.Add(this.textBoxValor);
+            this.groupBox1.Controls.Add(this.RichTextBoxValor);
             this.groupBox1.Controls.Add(this.buttonSalvar);
             this.groupBox1.Controls.Add(this.textBoxDescrição);
             this.groupBox1.Controls.Add(this.textBoxLocal);
@@ -274,16 +274,15 @@ namespace GerenciadorSistemas
             this.buttonRun.UseVisualStyleBackColor = true;
             this.buttonRun.Click += new System.EventHandler(this.buttonRun_Click);
             // 
-            // textBoxValor
+            // RichTextBoxValor
             // 
-            this.textBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.RichTextBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxValor.Location = new System.Drawing.Point(23, 91);
-            this.textBoxValor.Multiline = true;
-            this.textBoxValor.Name = "textBoxValor";
-            this.textBoxValor.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxValor.Size = new System.Drawing.Size(286, 81);
-            this.textBoxValor.TabIndex = 5;
+            this.RichTextBoxValor.Location = new System.Drawing.Point(23, 91);
+            this.RichTextBoxValor.Name = "RichTextBoxValor";
+            this.RichTextBoxValor.Size = new System.Drawing.Size(286, 81);
+            this.RichTextBoxValor.TabIndex = 5;
+            this.RichTextBoxValor.Text = "";
             // 
             // buttonSalvar
             // 
@@ -574,7 +573,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.Button buttonCopy;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button buttonRun;
-        private System.Windows.Forms.TextBox textBoxValor;
+        private System.Windows.Forms.RichTextBox RichTextBoxValor;
         private System.Windows.Forms.Button buttonSalvar;
         private System.Windows.Forms.TextBox textBoxDescrição;
         private System.Windows.Forms.TextBox textBoxLocal;

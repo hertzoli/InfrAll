@@ -32,11 +32,14 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.3")]
-[assembly: AssemblyFileVersion("1.6.3")]
+[assembly: AssemblyVersion("1.6.4")]
+[assembly: AssemblyFileVersion("1.6.4")]
 
 /*
 
+
+v1.6.4
+ - substituir o controle textBoxValor por um controle RichTextBox para definir cores diferentes caso seja um comando.
 
 v1.6.3
  - gerar um alerta se o usuário editar um propriedade e sair da propriedade selecionada sem salvar (informando se o usuário quer sair sem salvar a modificação)
