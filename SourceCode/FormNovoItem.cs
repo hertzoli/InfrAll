@@ -11,6 +11,7 @@ namespace GerenciadorSistemas
 {
     public partial class FormNovoItem : Form
     {
+        private const string ChaveIconePasta = "__folder__";
         private readonly ImageList _imageListIcons = new ImageList();
         private readonly Dictionary<string, string> _arquivosPorChave = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -75,6 +76,7 @@ namespace GerenciadorSistemas
 
             _imageListIcons.ColorDepth = ColorDepth.Depth32Bit;
             _imageListIcons.ImageSize = new Size(16, 16);
+            _imageListIcons.Images.Add(ChaveIconePasta, new Bitmap(Properties.Resources.Folder, new Size(16, 16)));
 
             TreeViewImages.ImageList = _imageListIcons;
 
@@ -138,6 +140,7 @@ namespace GerenciadorSistemas
             Directory.CreateDirectory(PastaImagens);
 
             _imageListIcons.Images.Clear();
+            _imageListIcons.Images.Add(ChaveIconePasta, new Bitmap(Properties.Resources.Folder, new Size(16, 16)));
             _arquivosPorChave.Clear();
             TreeViewImages.Nodes.Clear();
 
@@ -203,6 +206,8 @@ namespace GerenciadorSistemas
                     ? colecao[caminhoPasta]
                     : colecao.Add(caminhoPasta, partes[i]);
 
+                noPasta.ImageKey = ChaveIconePasta;
+                noPasta.SelectedImageKey = ChaveIconePasta;
                 colecao = noPasta.Nodes;
             }
 

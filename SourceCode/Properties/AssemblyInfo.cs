@@ -46,6 +46,9 @@ v1.6.5
   - buttonDefinirIconePadrao_Click agora salva configuracoes.iconePadrao em cadastro.yaml.
   - /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/Form1.cs:1671 agora carrega ícones recursivamente da pasta Imagens, para que itens com ícones em subpastas também apareçam corretamente na árvore principal.
   - /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/Models/CadastroYamlContract.cs:20 recebeu o bloco configuracoes.
+ - nós de pasta usam a chave interna __folder__
+  - imagens continuam usando suas próprias miniaturas
+  - o ícone de pasta é reaplicado após limpar/recarregar o ImageList
 
 v1.6.4
  - substituir o controle textBoxValor por um controle RichTextBox para definir cores diferentes caso seja um comando.
