@@ -85,7 +85,6 @@ namespace GerenciadorSistemas
 
             botaoOk.Click += BotaoOk_Click;
             botaoCancelar.Click += BotaoCancelar_Click;
-            buttonNovoIcone.Click += ButtonNovoIcone_Click;
 
             AcceptButton = botaoOk;
             CancelButton = botaoCancelar;
@@ -108,32 +107,7 @@ namespace GerenciadorSistemas
             Close();
         }
 
-        private void ButtonNovoIcone_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog dialog = new OpenFileDialog())
-            {
-                dialog.Title = "Selecionar icone";
-                dialog.Filter = "Imagens|*.bmp;*.jpg;*.png;*.ico;*.gif;*.jpeg";
-                dialog.Multiselect = false;
-
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                    return;
-
-                try
-                {
-                    string arquivoDestino = CopiarImagemParaPastaDoPrograma(dialog.FileName);
-                    string chave = AdicionarImagemAoTreeView(arquivoDestino, true);
-
-                    if (!string.IsNullOrWhiteSpace(chave))
-                        _textBoxNome.Focus();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Nao foi possivel importar o icone.\r\n" + ex.Message,
-                        "Novo icone", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
+  
 
         private void CarregarImagensDaPasta()
         {
@@ -450,6 +424,24 @@ namespace GerenciadorSistemas
                     cadastro.Items = new List<ItemPersistido>();
 
                 return cadastro;
+            }
+        }
+
+        private void buttonNovoIcone_Click(object sender, EventArgs e)
+        {
+            using (FormIconGenerator dialog = new FormIconGenerator(PastaImagens))
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                string nomeIconeGerado = dialog.NomeIconeGerado;
+
+                if (string.IsNullOrWhiteSpace(nomeIconeGerado))
+                    return;
+
+                CarregarImagensDaPasta();
+                SelecionarItemPorChave(nomeIconeGerado);
+                _textBoxNome.Focus();
             }
         }
     }

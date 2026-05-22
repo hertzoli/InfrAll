@@ -32,12 +32,14 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.5")]
-[assembly: AssemblyFileVersion("1.6.5")]
+[assembly: AssemblyVersion("1.6.6")]
+[assembly: AssemblyFileVersion("1.6.6")]
 
 /*
 
 
+v1.6.6
+ - Adicionado a o recurso de gerar um icone para um item a partir de um caminho local ou url de uma imagem png, ico, jpg ou webp.
 
 v1.6.5
  - listViewImages foi substituído por TreeViewImages em /D:/OneDrive/PROJETOS/C#/Gerenciador de sitemas/SourceCode/FormNovoItem.Designer.cs:39.

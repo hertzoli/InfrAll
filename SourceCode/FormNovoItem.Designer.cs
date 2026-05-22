@@ -120,6 +120,7 @@ namespace GerenciadorSistemas
             this.buttonNovoIcone.TabIndex = 21;
             this.buttonNovoIcone.Text = "Novo Icone";
             this.buttonNovoIcone.UseVisualStyleBackColor = true;
+            this.buttonNovoIcone.Click += new System.EventHandler(this.buttonNovoIcone_Click);
             // 
             // botaoOk
             // 
