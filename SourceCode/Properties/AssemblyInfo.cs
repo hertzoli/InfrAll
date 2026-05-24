@@ -32,11 +32,20 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0")]
-[assembly: AssemblyFileVersion("2.0")]
+[assembly: AssemblyVersion("2.1")]
+[assembly: AssemblyFileVersion("2.1")]
 
 /*
 
+
+
+
+
+v2.1
+ - unificar o `FormIconGenerator` e o `FormSelectIcon` em apenas um formulário. ou seja os controles e a lógica do `FormIconGenerator` deve ser copiado para `FormSelectIcon`.
+ - ao acionar o evento `buttonAbrirPastaImagens_Click` a pasta "Imagens" deve ser aberta no explorer.
+ - permitir abrir a pasta imagens a partir do botão
+ - implementado previsualização em 16x16 da imagem que será gerada a partir de link ou caminho.
 
 
 v2.0

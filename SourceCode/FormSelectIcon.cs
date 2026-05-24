@@ -1,8 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -12,8 +18,12 @@ namespace GerenciadorSistemas
     public partial class FormSelectIcon : Form
     {
         private const string ChaveIconePasta = "__folder__";
+        private static readonly HttpClient httpClient = new HttpClient();
         private readonly ImageList _imageListIcons = new ImageList();
         private readonly Dictionary<string, string> _arquivosPorChave = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private CancellationTokenSource previewCancellationTokenSource;
+        private int previewRequestVersion;
+        private Image imagemPreviewOriginal;
 
         public FormSelectIcon()
         {
@@ -37,6 +47,15 @@ namespace GerenciadorSistemas
         public string PastaImagens
         {
             get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens"); }
+        }
+
+        public string NomeIconeGerado { get; private set; }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            CancelarAtualizacaoPreview();
+            TrocarImagemPreview(null, null);
+            base.OnFormClosed(e);
         }
 
         public void ConfigurarSelecao(string iconeSelecionado)
@@ -401,22 +420,491 @@ namespace GerenciadorSistemas
             }
         }
 
-        private void buttonNovoIcone_Click(object sender, EventArgs e)
+        private void buttonAbrirPastaImagens_Click(object sender, EventArgs e)
         {
-            using (FormIconGenerator dialog = new FormIconGenerator(PastaImagens))
+            try
             {
-                if (dialog.ShowDialog(this) != DialogResult.OK)
+                Directory.CreateDirectory(PastaImagens);
+                Process.Start("explorer.exe", PastaImagens);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel abrir a pasta de imagens.\r\n" + ex.Message,
+                    "Pasta Imagens", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void textBoxCaminhoImagem_TextChanged(object sender, EventArgs e)
+        {
+            AtualizarNomeIconeSaida(textBoxCaminhoImagem.Text);
+            IniciarAtualizacaoPreview(textBoxCaminhoImagem.Text);
+        }
+
+        private void textBoxCaminhoImagem_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var arquivos = e.Data.GetData(DataFormats.FileDrop) as string[];
+                if (arquivos != null && arquivos.Length > 0)
+                {
+                    e.Effect = DragDropEffects.Copy;
                     return;
+                }
+            }
 
-                string nomeIconeGerado = dialog.NomeIconeGerado;
+            e.Effect = DragDropEffects.None;
+        }
 
-                if (string.IsNullOrWhiteSpace(nomeIconeGerado))
+        private void textBoxCaminhoImagem_DragDrop(object sender, DragEventArgs e)
+        {
+            var arquivos = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (arquivos != null && arquivos.Length > 0)
+            {
+                textBoxCaminhoImagem.Text = arquivos[0];
+            }
+        }
+
+        private void pictureBoxImagem_DragEnter(object sender, DragEventArgs e)
+        {
+            textBoxCaminhoImagem_DragEnter(sender, e);
+        }
+
+        private void pictureBoxImagem_DragDrop(object sender, DragEventArgs e)
+        {
+            textBoxCaminhoImagem_DragDrop(sender, e);
+        }
+
+        private void pictureBoxImagem_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.Clear(pictureBoxImagem.BackColor);
+
+            if (imagemPreviewOriginal == null ||
+                pictureBoxImagem.ClientSize.Width <= 0 ||
+                pictureBoxImagem.ClientSize.Height <= 0)
+            {
+                return;
+            }
+
+            double escalaX = (double)pictureBoxImagem.ClientSize.Width / imagemPreviewOriginal.Width;
+            double escalaY = (double)pictureBoxImagem.ClientSize.Height / imagemPreviewOriginal.Height;
+            double escala = Math.Min(1.0, Math.Min(escalaX, escalaY));
+
+            int largura = (int)Math.Round(imagemPreviewOriginal.Width * escala);
+            int altura = (int)Math.Round(imagemPreviewOriginal.Height * escala);
+            int x = (pictureBoxImagem.ClientSize.Width - largura) / 2;
+            int y = (pictureBoxImagem.ClientSize.Height - altura) / 2;
+
+            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            e.Graphics.DrawImage(imagemPreviewOriginal, new Rectangle(x, y, largura, altura));
+        }
+
+        private void pictureBoxImagem_Resize(object sender, EventArgs e)
+        {
+            pictureBoxImagem.Invalidate();
+        }
+
+        private async void buttonGerarIcone_Click(object sender, EventArgs e)
+        {
+            string caminhoImagem = textBoxCaminhoImagem.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(caminhoImagem))
+            {
+                MessageBox.Show("Informe o caminho local ou a URL de uma imagem.", "Imagem nao informada",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            buttonGerarIcone.Enabled = false;
+
+            try
+            {
+                byte[] imagemOriginal = await ObterBytesImagemAsync(caminhoImagem);
+                Directory.CreateDirectory(PastaImagens);
+
+                string nomeIconeSaida = ObterNomeIconeSaidaComExtensaoPng(textBoxNomeIconeSaida.Text);
+                if (string.IsNullOrWhiteSpace(nomeIconeSaida))
+                {
+                    MessageBox.Show("Informe o nome do icone de saida.", "Nome nao informado",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
+                }
 
+                textBoxNomeIconeSaida.Text = nomeIconeSaida;
+
+                string caminhoIcone = ObterCaminhoUnico(PastaImagens, nomeIconeSaida);
+
+                GerarPng16x16(imagemOriginal, caminhoImagem, caminhoIcone);
+
+                NomeIconeGerado = Path.GetFileName(caminhoIcone);
                 CarregarImagensDaPasta();
-                SelecionarItemPorChave(nomeIconeGerado);
+                SelecionarItemPorChave(NomeIconeGerado);
                 TreeViewImages.Focus();
             }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show(ex.Message, "Arquivo nao encontrado",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show("Nao foi possivel baixar a imagem da URL informada.\n\n" + ex.Message,
+                    "Falha ao baixar imagem", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel gerar o icone.\n\n" + ex.Message,
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                buttonGerarIcone.Enabled = true;
+            }
+        }
+
+        private void buttonProcurar_Click(object sender, EventArgs e)
+        {
+            using (var openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Selecionar imagem";
+                openFileDialog.Filter = "Imagens|*.png;*.jpg;*.jpeg;*.ico;*.webp|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|ICO (*.ico)|*.ico|WEBP (*.webp)|*.webp|Todos os arquivos (*.*)|*.*";
+                openFileDialog.CheckFileExists = true;
+                openFileDialog.CheckPathExists = true;
+                openFileDialog.Multiselect = false;
+
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    textBoxCaminhoImagem.Text = openFileDialog.FileName;
+                }
+            }
+        }
+
+        private void AtualizarNomeIconeSaida(string caminhoImagem)
+        {
+            string nomeArquivo = ObterNomeArquivoSemExtensao(caminhoImagem);
+            textBoxNomeIconeSaida.Text = nomeArquivo;
+        }
+
+        private static string ObterNomeArquivoSemExtensao(string caminhoImagem)
+        {
+            if (string.IsNullOrWhiteSpace(caminhoImagem))
+            {
+                return string.Empty;
+            }
+
+            caminhoImagem = caminhoImagem.Trim();
+
+            Uri uri;
+            if (Uri.TryCreate(caminhoImagem, UriKind.Absolute, out uri) &&
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            {
+                return Path.GetFileNameWithoutExtension(uri.LocalPath);
+            }
+
+            try
+            {
+                string caminhoLocal = Path.GetFullPath(caminhoImagem);
+                if (!File.Exists(caminhoLocal))
+                {
+                    return string.Empty;
+                }
+
+                return Path.GetFileNameWithoutExtension(caminhoLocal);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static string ObterNomeIconeSaidaComExtensaoPng(string nomeIconeSaida)
+        {
+            if (string.IsNullOrWhiteSpace(nomeIconeSaida))
+            {
+                return string.Empty;
+            }
+
+            nomeIconeSaida = Path.GetFileName(nomeIconeSaida.Trim());
+            if (string.IsNullOrWhiteSpace(nomeIconeSaida))
+            {
+                return string.Empty;
+            }
+
+            if (nomeIconeSaida.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                return nomeIconeSaida;
+            }
+
+            return nomeIconeSaida + ".png";
+        }
+
+        private static string ObterCaminhoUnico(string pastaDestino, string nomeIconeSaida)
+        {
+            string nomeBase = Path.GetFileNameWithoutExtension(nomeIconeSaida);
+            string extensao = Path.GetExtension(nomeIconeSaida);
+            string caminhoIcone = Path.Combine(pastaDestino, nomeIconeSaida);
+            int contador = 1;
+
+            while (File.Exists(caminhoIcone))
+            {
+                caminhoIcone = Path.Combine(pastaDestino,
+                    string.Format("{0}_{1}{2}", nomeBase, contador, extensao));
+                contador++;
+            }
+
+            return caminhoIcone;
+        }
+
+        private void IniciarAtualizacaoPreview(string caminhoImagem)
+        {
+            CancelarAtualizacaoPreview();
+
+            previewCancellationTokenSource = new CancellationTokenSource();
+            int versao = Interlocked.Increment(ref previewRequestVersion);
+            _ = AtualizarPreviewAsync(caminhoImagem, previewCancellationTokenSource.Token, versao);
+        }
+
+        private void CancelarAtualizacaoPreview()
+        {
+            Interlocked.Increment(ref previewRequestVersion);
+
+            if (previewCancellationTokenSource != null)
+            {
+                previewCancellationTokenSource.Cancel();
+                previewCancellationTokenSource.Dispose();
+                previewCancellationTokenSource = null;
+            }
+        }
+
+        private async Task AtualizarPreviewAsync(string caminhoImagem, CancellationToken cancellationToken, int versao)
+        {
+            Image preview = null;
+            Image previewIcone16x16 = null;
+
+            try
+            {
+                await Task.Delay(300, cancellationToken);
+
+                caminhoImagem = caminhoImagem.Trim();
+                if (string.IsNullOrWhiteSpace(caminhoImagem))
+                {
+                    AplicarPreviewSeAtual(null, null, versao);
+                    return;
+                }
+
+                byte[] imagemOriginal = await ObterBytesImagemAsync(caminhoImagem);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                preview = CriarImagemPreview(imagemOriginal, caminhoImagem);
+                previewIcone16x16 = CriarIcone16x16(imagemOriginal, caminhoImagem);
+                if (!AplicarPreviewSeAtual(preview, previewIcone16x16, versao))
+                {
+                    preview.Dispose();
+                    previewIcone16x16.Dispose();
+                }
+
+                preview = null;
+                previewIcone16x16 = null;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch
+            {
+                AplicarPreviewSeAtual(null, null, versao);
+            }
+            finally
+            {
+                if (preview != null)
+                {
+                    preview.Dispose();
+                }
+
+                if (previewIcone16x16 != null)
+                {
+                    previewIcone16x16.Dispose();
+                }
+            }
+        }
+
+        private bool AplicarPreviewSeAtual(Image preview, Image previewIcone16x16, int versao)
+        {
+            if (versao != previewRequestVersion)
+            {
+                return false;
+            }
+
+            TrocarImagemPreview(preview, previewIcone16x16);
+            return true;
+        }
+
+        private void TrocarImagemPreview(Image novaImagem, Image novoIcone16x16)
+        {
+            Image imagemAnterior = imagemPreviewOriginal;
+            Image iconeAnterior = pictureBoxPreviwIcon.Image;
+
+            imagemPreviewOriginal = novaImagem;
+            pictureBoxPreviwIcon.Image = novoIcone16x16;
+            pictureBoxImagem.Invalidate();
+
+            if (imagemAnterior != null)
+            {
+                imagemAnterior.Dispose();
+            }
+
+            if (iconeAnterior != null)
+            {
+                iconeAnterior.Dispose();
+            }
+        }
+
+        private static Image CriarImagemPreview(byte[] imagemOriginal, string caminhoImagem)
+        {
+            if (EhArquivoIco(caminhoImagem))
+            {
+                using (var streamIcone = new MemoryStream(imagemOriginal))
+                using (var icon = new Icon(streamIcone))
+                {
+                    return icon.ToBitmap();
+                }
+            }
+
+            byte[] imagemParaPreview = EhArquivoWebp(caminhoImagem)
+                ? WebpToPngConverter.ConvertToPngBytes(imagemOriginal)
+                : imagemOriginal;
+
+            using (var streamImagem = new MemoryStream(imagemParaPreview))
+            using (Image imagemPreview = Image.FromStream(streamImagem))
+            {
+                return new Bitmap(imagemPreview);
+            }
+        }
+
+        private static async Task<byte[]> ObterBytesImagemAsync(string caminhoImagem)
+        {
+            Uri uri;
+
+            if (Uri.TryCreate(caminhoImagem, UriKind.Absolute, out uri) &&
+                (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            {
+                return await httpClient.GetByteArrayAsync(uri);
+            }
+
+            string caminhoLocal = Path.GetFullPath(caminhoImagem);
+
+            if (!File.Exists(caminhoLocal))
+            {
+                throw new FileNotFoundException("O arquivo informado nao foi encontrado:\n" + caminhoLocal);
+            }
+
+            return File.ReadAllBytes(caminhoLocal);
+        }
+
+        private static void GerarPng16x16(byte[] imagemOriginal, string caminhoImagem, string caminhoIcone)
+        {
+            using (Bitmap icone = CriarIcone16x16(imagemOriginal, caminhoImagem))
+            {
+                icone.Save(caminhoIcone, ImageFormat.Png);
+            }
+        }
+
+        private static Bitmap CriarIcone16x16(byte[] imagemOriginal, string caminhoImagem)
+        {
+            try
+            {
+                if (EhArquivoIco(caminhoImagem))
+                {
+                    return CriarIcone16x16DeIco(imagemOriginal);
+                }
+
+                byte[] imagemParaGerar = EhArquivoWebp(caminhoImagem)
+                    ? WebpToPngConverter.ConvertToPngBytes(imagemOriginal)
+                    : imagemOriginal;
+
+                return CriarIcone16x16DeImagem(imagemParaGerar);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    "O arquivo informado nao pode ser lido como PNG, JPEG, ICO ou WEBP. Para WEBP, coloque dwebp.exe na mesma pasta do programa.",
+                    ex);
+            }
+        }
+
+        private static Bitmap CriarIcone16x16DeImagem(byte[] imagemOriginal)
+        {
+            try
+            {
+                using (var streamImagem = new MemoryStream(imagemOriginal))
+                using (Image imagem = Image.FromStream(streamImagem))
+                {
+                    return CriarBitmap16x16(imagem);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("O arquivo informado nao pode ser lido como imagem.", ex);
+            }
+        }
+
+        private static Bitmap CriarIcone16x16DeIco(byte[] imagemOriginal)
+        {
+            try
+            {
+                using (var streamIcone = new MemoryStream(imagemOriginal))
+                using (var icon = new Icon(streamIcone))
+                using (Image imagem = icon.ToBitmap())
+                {
+                    return CriarBitmap16x16(imagem);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("O arquivo ICO informado nao pode ser lido.", ex);
+            }
+        }
+
+        private static Bitmap CriarBitmap16x16(Image imagem)
+        {
+            var icone = new Bitmap(16, 16);
+
+            using (Graphics graphics = Graphics.FromImage(icone))
+            {
+                graphics.Clear(Color.Transparent);
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                graphics.DrawImage(imagem, new Rectangle(0, 0, 16, 16));
+            }
+
+            return icone;
+        }
+
+        private static bool EhArquivoIco(string caminhoImagem)
+        {
+            Uri uri;
+            string caminhoParaExtensao = caminhoImagem;
+
+            if (Uri.TryCreate(caminhoImagem, UriKind.Absolute, out uri))
+            {
+                caminhoParaExtensao = uri.LocalPath;
+            }
+
+            return string.Equals(Path.GetExtension(caminhoParaExtensao), ".ico", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool EhArquivoWebp(string caminhoImagem)
+        {
+            Uri uri;
+            string caminhoParaExtensao = caminhoImagem;
+
+            if (Uri.TryCreate(caminhoImagem, UriKind.Absolute, out uri))
+            {
+                caminhoParaExtensao = uri.LocalPath;
+            }
+
+            return string.Equals(Path.GetExtension(caminhoParaExtensao), ".webp", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

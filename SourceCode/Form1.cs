@@ -1936,7 +1936,7 @@ namespace GerenciadorSistemas
             DataGridViewRow linha = DataGridViewItem.Rows[indice];
             linha.Tag = no;
             linha.Cells["Nome"].Style.Font = new Font(DataGridViewItem.Font, FontStyle.Bold);
-            linha.Cells["Valor"].Style.BackColor = Color.LightYellow;
+            linha.Cells["Valor"].Style.BackColor = Color.FromArgb(240 ,255, 240);
         }
 
         private Image ObterImagemDoItem(InfrastructureItem item)
