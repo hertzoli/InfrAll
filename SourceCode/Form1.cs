@@ -23,6 +23,7 @@ namespace GerenciadorSistemas
         private const int AlturaMinimaTreeView = 500;
         private const int AlturaMinimaPropertyGrid = 500;
         private const string ChaveIconeErro = "__error__";
+        private const string ChaveIconeVazio = "Vazio.png";
         private string _nomePropriedadeSelecionadaOriginal;
         private string _localPropriedadeSelecionadaOriginal;
         private ContextMenuStrip _menuContextoTreeView;
@@ -139,6 +140,7 @@ namespace GerenciadorSistemas
                 Width = 48,
                 FillWeight = 45
             };
+            colunaIcone.DefaultCellStyle.NullValue = null;
 
             DataGridViewItem.Columns.Add(colunaIcone);
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Nome", "Nome", 140));
@@ -833,8 +835,7 @@ namespace GerenciadorSistemas
             noEmEdicao.Text = itemSelecionado.NomeExibicao;
             noEmEdicao.Name = itemSelecionado.NomeExibicao;
             string chaveIcone = ResolverIconeDoItem(itemSelecionado);
-            noEmEdicao.ImageKey = chaveIcone;
-            noEmEdicao.SelectedImageKey = chaveIcone;
+            AplicarIconeNoNo(noEmEdicao, chaveIcone);
 
             ExecutarSemConfirmacaoSaidaPropriedade(() =>
             {
@@ -1143,8 +1144,7 @@ namespace GerenciadorSistemas
             TreeNode no = new TreeNode(item.NomeExibicao);
             no.Name = item.NomeExibicao;
             no.Tag = item;
-            no.ImageKey = chaveIcone;
-            no.SelectedImageKey = chaveIcone;
+            AplicarIconeNoNo(no, chaveIcone);
             return no;
         }
 
@@ -1818,6 +1818,9 @@ namespace GerenciadorSistemas
             if (!string.IsNullOrWhiteSpace(chaveIcone) && imageList1.Images.ContainsKey(chaveIcone))
                 return imageList1.Images[chaveIcone];
 
+            if (string.IsNullOrWhiteSpace(chaveIcone))
+                return null;
+
             GarantirIconeErroCarregado();
             return imageList1.Images[ChaveIconeErro];
         }
@@ -1910,30 +1913,12 @@ namespace GerenciadorSistemas
             pictureBoxImagem.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
-        private string[] ObterChavesDeImagem()
-        {
-            CarregarImagensDaPastaDoPrograma();
-
-            List<string> chaves = new List<string>();
-
-            for (int i = 0; i < imageList1.Images.Keys.Count; i++)
-            {
-                string chave = imageList1.Images.Keys[i];
-                if (!string.IsNullOrWhiteSpace(chave))
-                    chaves.Add(chave);
-            }
-
-            if (chaves.Count == 0)
-                chaves.Add("Padrao");
-
-            return chaves.ToArray();
-        }
-
         private void CarregarImagensDaPastaDoPrograma()
         {
             string pastaImagens = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens");
 
             Directory.CreateDirectory(pastaImagens);
+            GarantirIconeVazioCarregado();
             GarantirIconeErroCarregado();
 
             foreach (string arquivo in Directory.GetFiles(pastaImagens, "*.*", SearchOption.AllDirectories))
@@ -1949,6 +1934,11 @@ namespace GerenciadorSistemas
                 return;
 
             imageList1.Images.Add(ChaveIconeErro, new Bitmap(Properties.Resources.ErrorSmall, new Size(16, 16)));
+        }
+
+        private void GarantirIconeVazioCarregado()
+        {
+            //imageList1.Images["Vazio.png"];
         }
 
         private void GarantirIconeCarregadoNoImageListPrincipal(string chaveIcone)
@@ -2000,9 +1990,12 @@ namespace GerenciadorSistemas
         private string ResolverIconeDoItem(InfrastructureItem item)
         {
             if (item == null)
-                return ChaveIconeErro;
+                return string.Empty;
 
             string chaveIcone = (item.IconeKey ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(chaveIcone))
+                return string.Empty;
 
             if (!string.IsNullOrWhiteSpace(chaveIcone))
             {
@@ -2028,6 +2021,22 @@ namespace GerenciadorSistemas
 
             GarantirIconeErroCarregado();
             return ChaveIconeErro;
+        }
+
+        private static void AplicarIconeNoNo(TreeNode no, string chaveIcone)
+        {
+            if (no == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(chaveIcone))
+            {
+                no.ImageKey = ChaveIconeVazio;
+                no.SelectedImageKey = ChaveIconeVazio;
+                return;
+            }
+
+            no.ImageKey = chaveIcone;
+            no.SelectedImageKey = chaveIcone;
         }
 
         private string ProcurarIconePorNomeDeArquivo(string chaveIcone)
@@ -2130,10 +2139,7 @@ namespace GerenciadorSistemas
                 string chaveIcone = ResolverIconeDoItem(item);
 
                 if (noSelecionado != null)
-                {
-                    noSelecionado.ImageKey = chaveIcone;
-                    noSelecionado.SelectedImageKey = chaveIcone;
-                }
+                    AplicarIconeNoNo(noSelecionado, chaveIcone);
             }
             else if (string.Equals(nomePropriedade, "ID", StringComparison.OrdinalIgnoreCase))
             {
@@ -2691,8 +2697,7 @@ namespace GerenciadorSistemas
 
                 noSelecionado.Text = itemSelecionado.NomeExibicao;
                 noSelecionado.Name = itemSelecionado.NomeExibicao;
-                noSelecionado.ImageKey = chaveIcone;
-                noSelecionado.SelectedImageKey = chaveIcone;
+                AplicarIconeNoNo(noSelecionado, chaveIcone);
 
                 AtualizarDataGridViewItem(treeViewItens.SelectedNode, noSelecionado);
                 CarregarItemNosCamposEdicao(noSelecionado);

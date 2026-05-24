@@ -32,11 +32,15 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.7")]
-[assembly: AssemblyFileVersion("1.6.7")]
+[assembly: AssemblyVersion("1.6.8")]
+[assembly: AssemblyFileVersion("1.6.8")]
 
 /*
 
+
+v1.6.8
+ - se o dado "Icone" de um determinado item tiver vazio. ou seja, não preenchido pelo usuário. em vez de carregar o icone padrão `Properties.Resources.ErrorSmall` apenas não carregar icone nenhum para esse item.
+ - 
 
 v1.6.7
 - mudado o lógida da estrutura de dados para tudo passar a ser um item. PRD_001_Modelo_Unificado_De_Itens_E_YAML.md

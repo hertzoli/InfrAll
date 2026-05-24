@@ -37,6 +37,7 @@ namespace GerenciadorSistemas
             this.panel3 = new System.Windows.Forms.Panel();
             this.buttonIssue = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.textBoxDataEdicao = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -91,6 +92,7 @@ namespace GerenciadorSistemas
             this.imageList1.Images.SetKeyName(3, "Tool_16x16.png");
             this.imageList1.Images.SetKeyName(4, "tool_32.ico");
             this.imageList1.Images.SetKeyName(5, "tool_32_e_16.ico");
+            this.imageList1.Images.SetKeyName(6, "Vazio.png");
             // 
             // panel1
             // 
@@ -136,6 +138,7 @@ namespace GerenciadorSistemas
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.textBoxDataEdicao);
             this.groupBox1.Controls.Add(this.label8);
@@ -166,10 +169,20 @@ namespace GerenciadorSistemas
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Item";
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(38, 16);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(103, 22);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Selecionar Icone";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(24, 490);
+            this.label9.Location = new System.Drawing.Point(12, 462);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(84, 13);
             this.label9.TabIndex = 24;
@@ -179,17 +192,17 @@ namespace GerenciadorSistemas
             // 
             this.textBoxDataEdicao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDataEdicao.Location = new System.Drawing.Point(117, 483);
+            this.textBoxDataEdicao.Location = new System.Drawing.Point(117, 459);
             this.textBoxDataEdicao.Name = "textBoxDataEdicao";
             this.textBoxDataEdicao.ReadOnly = true;
-            this.textBoxDataEdicao.Size = new System.Drawing.Size(105, 20);
+            this.textBoxDataEdicao.Size = new System.Drawing.Size(119, 20);
             this.textBoxDataEdicao.TabIndex = 23;
             this.textBoxDataEdicao.Text = "10/10/2025 18:32";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 461);
+            this.label8.Location = new System.Drawing.Point(12, 437);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(87, 13);
             this.label8.TabIndex = 22;
@@ -199,16 +212,16 @@ namespace GerenciadorSistemas
             // 
             this.textBoxDataCriacao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDataCriacao.Location = new System.Drawing.Point(117, 454);
+            this.textBoxDataCriacao.Location = new System.Drawing.Point(117, 434);
             this.textBoxDataCriacao.Name = "textBoxDataCriacao";
             this.textBoxDataCriacao.ReadOnly = true;
-            this.textBoxDataCriacao.Size = new System.Drawing.Size(105, 20);
+            this.textBoxDataCriacao.Size = new System.Drawing.Size(119, 20);
             this.textBoxDataCriacao.TabIndex = 21;
             this.textBoxDataCriacao.Text = "10/10/2025 18:32";
             // 
             // pictureBoxImagem
             // 
-            this.pictureBoxImagem.Location = new System.Drawing.Point(23, 41);
+            this.pictureBoxImagem.Location = new System.Drawing.Point(12, 18);
             this.pictureBoxImagem.Name = "pictureBoxImagem";
             this.pictureBoxImagem.Size = new System.Drawing.Size(20, 20);
             this.pictureBoxImagem.TabIndex = 20;
@@ -219,7 +232,7 @@ namespace GerenciadorSistemas
             this.comboBoxTipo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxTipo.FormattingEnabled = true;
-            this.comboBoxTipo.Location = new System.Drawing.Point(59, 176);
+            this.comboBoxTipo.Location = new System.Drawing.Point(49, 177);
             this.comboBoxTipo.Name = "comboBoxTipo";
             this.comboBoxTipo.Size = new System.Drawing.Size(249, 21);
             this.comboBoxTipo.TabIndex = 19;
@@ -227,7 +240,7 @@ namespace GerenciadorSistemas
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 180);
+            this.label7.Location = new System.Drawing.Point(12, 180);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(31, 13);
             this.label7.TabIndex = 18;
@@ -237,17 +250,17 @@ namespace GerenciadorSistemas
             // 
             this.textBoxNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxNome.Location = new System.Drawing.Point(48, 41);
+            this.textBoxNome.Location = new System.Drawing.Point(56, 45);
             this.textBoxNome.Name = "textBoxNome";
-            this.textBoxNome.Size = new System.Drawing.Size(286, 20);
+            this.textBoxNome.Size = new System.Drawing.Size(242, 20);
             this.textBoxNome.TabIndex = 1;
             // 
             // buttonCopyPlaceholder
             // 
             this.buttonCopyPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCopyPlaceholder.Location = new System.Drawing.Point(314, 426);
+            this.buttonCopyPlaceholder.Location = new System.Drawing.Point(301, 404);
             this.buttonCopyPlaceholder.Name = "buttonCopyPlaceholder";
-            this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 23);
+            this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 22);
             this.buttonCopyPlaceholder.TabIndex = 17;
             this.buttonCopyPlaceholder.Text = "Copy";
             this.buttonCopyPlaceholder.UseVisualStyleBackColor = true;
@@ -255,7 +268,7 @@ namespace GerenciadorSistemas
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(45, 25);
+            this.label1.Location = new System.Drawing.Point(12, 48);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 0;
@@ -265,16 +278,16 @@ namespace GerenciadorSistemas
             // 
             this.textBoxReferenciaPropriedade.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(23, 428);
+            this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(81, 406);
             this.textBoxReferenciaPropriedade.Name = "textBoxReferenciaPropriedade";
             this.textBoxReferenciaPropriedade.ReadOnly = true;
-            this.textBoxReferenciaPropriedade.Size = new System.Drawing.Size(285, 20);
+            this.textBoxReferenciaPropriedade.Size = new System.Drawing.Size(217, 20);
             this.textBoxReferenciaPropriedade.TabIndex = 16;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 75);
+            this.label2.Location = new System.Drawing.Point(12, 72);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(34, 13);
             this.label2.TabIndex = 2;
@@ -283,7 +296,7 @@ namespace GerenciadorSistemas
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(20, 412);
+            this.label6.Location = new System.Drawing.Point(12, 409);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(62, 13);
             this.label6.TabIndex = 15;
@@ -292,7 +305,7 @@ namespace GerenciadorSistemas
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 206);
+            this.label3.Location = new System.Drawing.Point(12, 206);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(58, 13);
             this.label3.TabIndex = 3;
@@ -301,9 +314,9 @@ namespace GerenciadorSistemas
             // buttonCopy
             // 
             this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCopy.Location = new System.Drawing.Point(315, 143);
+            this.buttonCopy.Location = new System.Drawing.Point(302, 143);
             this.buttonCopy.Name = "buttonCopy";
-            this.buttonCopy.Size = new System.Drawing.Size(47, 29);
+            this.buttonCopy.Size = new System.Drawing.Size(44, 21);
             this.buttonCopy.TabIndex = 14;
             this.buttonCopy.Text = "Copy";
             this.buttonCopy.UseVisualStyleBackColor = true;
@@ -312,7 +325,7 @@ namespace GerenciadorSistemas
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(20, 386);
+            this.label4.Location = new System.Drawing.Point(12, 386);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(21, 13);
             this.label4.TabIndex = 4;
@@ -321,9 +334,9 @@ namespace GerenciadorSistemas
             // buttonRun
             // 
             this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRun.Location = new System.Drawing.Point(315, 91);
+            this.buttonRun.Location = new System.Drawing.Point(302, 91);
             this.buttonRun.Name = "buttonRun";
-            this.buttonRun.Size = new System.Drawing.Size(47, 29);
+            this.buttonRun.Size = new System.Drawing.Size(44, 21);
             this.buttonRun.TabIndex = 13;
             this.buttonRun.Text = "Run";
             this.buttonRun.UseVisualStyleBackColor = true;
@@ -333,7 +346,7 @@ namespace GerenciadorSistemas
             // 
             this.RichTextBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.RichTextBoxValor.Location = new System.Drawing.Point(23, 91);
+            this.RichTextBoxValor.Location = new System.Drawing.Point(12, 88);
             this.RichTextBoxValor.Name = "RichTextBoxValor";
             this.RichTextBoxValor.Size = new System.Drawing.Size(286, 81);
             this.RichTextBoxValor.TabIndex = 5;
@@ -356,7 +369,7 @@ namespace GerenciadorSistemas
             // 
             this.textBoxDescricao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDescricao.Location = new System.Drawing.Point(23, 222);
+            this.textBoxDescricao.Location = new System.Drawing.Point(12, 222);
             this.textBoxDescricao.Multiline = true;
             this.textBoxDescricao.Name = "textBoxDescricao";
             this.textBoxDescricao.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -367,9 +380,9 @@ namespace GerenciadorSistemas
             // 
             this.textBoxLocal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLocal.Location = new System.Drawing.Point(23, 357);
+            this.textBoxLocal.Location = new System.Drawing.Point(81, 357);
             this.textBoxLocal.Name = "textBoxLocal";
-            this.textBoxLocal.Size = new System.Drawing.Size(285, 20);
+            this.textBoxLocal.Size = new System.Drawing.Size(217, 20);
             this.textBoxLocal.TabIndex = 9;
             // 
             // textBoxID
@@ -379,13 +392,13 @@ namespace GerenciadorSistemas
             this.textBoxID.Location = new System.Drawing.Point(81, 381);
             this.textBoxID.Name = "textBoxID";
             this.textBoxID.ReadOnly = true;
-            this.textBoxID.Size = new System.Drawing.Size(227, 20);
+            this.textBoxID.Size = new System.Drawing.Size(217, 20);
             this.textBoxID.TabIndex = 7;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(20, 341);
+            this.label5.Location = new System.Drawing.Point(12, 360);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 13);
             this.label5.TabIndex = 8;
@@ -607,6 +620,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TextBox textBoxDataEdicao;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBoxDataCriacao;
+        private System.Windows.Forms.Button button1;
     }
 }
 
