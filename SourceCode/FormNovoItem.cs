@@ -403,8 +403,8 @@ namespace GerenciadorSistemas
             {
                 return new CadastroPersistido
                 {
-                    SchemaVersion = 1,
-                    Items = new List<ItemPersistido>()
+                    SchemaVersion = 2,
+                    Itens = new List<ItemPersistido>()
                 };
             }
 
@@ -420,8 +420,8 @@ namespace GerenciadorSistemas
                 if (cadastro == null)
                     cadastro = new CadastroPersistido();
 
-                if (cadastro.Items == null)
-                    cadastro.Items = new List<ItemPersistido>();
+                if (cadastro.Itens == null)
+                    cadastro.Itens = new List<ItemPersistido>();
 
                 return cadastro;
             }

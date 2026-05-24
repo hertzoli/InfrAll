@@ -67,8 +67,31 @@
       <DependentUpon>FormNovoItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\CadastroYamlContract.cs" />
+    <Compile Include="Models\Item.cs" />
+    <Compile Include="Models\TipoDoValor.cs" />
     <Compile Include="OnlineAutoUpdateUltra.cs" />
     <Compile Include="PropertyGridRuntimeBuilder.cs" />
+    <Compile Include="Services\ItemHierarchyService.cs" />
+    <Compile Include="Services\ItemIdService.cs" />
+    <Compile Include="Services\ItemClipboardService.cs" />
+    <Compile Include="Services\ItemUndoHistoryService.cs" />
+    <Compile Include="Services\RefPlaceholderResolver.cs" />
+    <Compile Include="Form1.ClipboardItens.cs">
+      <SubType>Form</SubType>
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.Historico.cs">
+      <SubType>Form</SubType>
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.TreeExpansion.cs">
+      <SubType>Form</SubType>
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.PlaceholdersRef.cs">
+      <SubType>Form</SubType>
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

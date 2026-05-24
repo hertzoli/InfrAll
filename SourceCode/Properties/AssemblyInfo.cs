@@ -32,11 +32,22 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.6")]
-[assembly: AssemblyFileVersion("1.6.6")]
+[assembly: AssemblyVersion("1.6.7")]
+[assembly: AssemblyFileVersion("1.6.7")]
 
 /*
 
+
+v1.6.7
+- mudado o lógida da estrutura de dados para tudo passar a ser um item. PRD_001_Modelo_Unificado_De_Itens_E_YAML.md
+- alterado o propertygrid para um DataGridView: PRD_002_Interface_DataGridViewItem_E_Edicao_De_Item.md
+- implementado o recurso de desfazer: PRD_004_Ctrl_Z_Historico_De_Acoes.md
+- implementaro referencia (placeholder) absoluto e ou relativo: PRD_005_Placeholders_REF_Relativos_E_Absolutos.md
+- para evitar conflito com JASON e outros argumentos placeholder agora usa ~REF[...]~ em vez de só {...}
+- selecionar um item de `treeViewItens` arrastar e soltar entro de `RichTextBoxValor` deve criar em `RichTextBoxValor` um placeholder com o caminho relativo do item que foi solto no local onde o cursor de texto estava.
+- se o "cadastro.yaml" atual estiver em um `schemaVersion` não suportado, ou se ocorrer algum erro ao carregar os dados do YAML, então exibir uma mensagem informando o erro e sua ação, em seguida renomear o arquivo "cadastro.yaml" que deu erro para "cadastro_[DateTime].yaml" e então criar uma novo "cadastro.yaml"
+- o `treeViewItens` não inicia mais com os nós expandidos. o sistema salva o estado de espansão dos nós e carrega o mesmo estado na inicialização.
+    
 
 v1.6.6
  - Adicionado a o recurso de gerar um icone para um item a partir de um caminho local ou url de uma imagem png, ico, jpg ou webp.

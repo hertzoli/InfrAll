@@ -16,7 +16,7 @@ namespace GerenciadorSistemas
 {
     public partial class Form1 : Form
     {
-        private const int VersaoSchemaCadastro = 1;
+        private const int VersaoSchemaCadastro = 2;
         private const int LarguraMinimaTreeView = 200;
         private const int LarguraMinimaPropertyGrid = 200;
         private const int LarguraMinimaGroupBoxPropriedade = 397;
@@ -31,9 +31,15 @@ namespace GerenciadorSistemas
         private bool _suspenderPersistencia;
         private bool _suspenderMonitoramentoCamposEdicao;
         private bool _suspenderConfirmacaoSaidaPropriedade;
-        private bool _restaurandoSelecaoPropertyGrid;
+        private bool _suspenderSelecaoDataGridItem;
         private bool _suspenderFormatacaoRichTextBoxValor;
+        private bool _arrastandoItemTreeView;
+        private bool _suspenderAtualizacaoSelecaoPorDrag;
+        private bool _suspenderConfirmacaoSelecaoPorDrag;
         private TipoValorPropriedade _tipoPropriedadeSelecionadaOriginal;
+        private TreeNode _noItemEmEdicao;
+        private TreeNode _noSelecionadoAntesDoDrag;
+        private TreeNode _noItemEmEdicaoAntesDoDrag;
         private readonly ToolTip _toolTipBotoes;
         private readonly Dictionary<Control, string> _snapshotCamposEdicao;
         private readonly List<Control> _camposTextoEditaveis;
@@ -43,6 +49,13 @@ namespace GerenciadorSistemas
         private readonly Font _fonteValorComando;
         private readonly Color _corFundoValorPadrao;
         private readonly Color _corTextoValorPadrao;
+        private readonly ItemIdService _itemIdService;
+        private readonly ItemHierarchyService _itemHierarchyService;
+        private readonly ItemClipboardService _itemClipboardService;
+        private readonly ItemUndoHistoryService _undoHistoryService;
+        private readonly RefPlaceholderResolver _refPlaceholderResolver;
+        private bool _restaurandoHistorico;
+        private ItemUndoSnapshot _snapshotAntesAlteracaoPropertyGrid;
 
         public Form1()
         {
@@ -58,8 +71,8 @@ namespace GerenciadorSistemas
             {
                 textBoxNome,
                 RichTextBoxValor,
-                textBoxDescrição,
-                textBoxCategoria,
+                textBoxDescricao,
+                textBoxID,
                 textBoxLocal
             };
             _corCampoEdicaoPadrao = textBoxNome.BackColor;
@@ -67,12 +80,21 @@ namespace GerenciadorSistemas
             _fonteValorComando = new Font("Consolas", RichTextBoxValor.Font.Size, RichTextBoxValor.Font.Style);
             _corFundoValorPadrao = RichTextBoxValor.BackColor;
             _corTextoValorPadrao = RichTextBoxValor.ForeColor;
+            _itemIdService = new ItemIdService();
+            _itemHierarchyService = new ItemHierarchyService(_itemIdService);
+            _itemClipboardService = new ItemClipboardService();
+            _undoHistoryService = new ItemUndoHistoryService(50);
+            _refPlaceholderResolver = new RefPlaceholderResolver();
+            KeyPreview = true;
+            KeyDown += Form1_KeyDown;
             FormClosing += Form1_FormClosing;
             buttonCopyPlaceholder.Click += buttonCopyPlaceholder_Click;
+            DataGridViewItem.KeyDown += DataGridViewItem_KeyDown;
             RichTextBoxValor.TextChanged += CampoTipoOuValorAlterado;
+            ConfigurarDragDropPlaceholderEmValor();
             comboBoxTipo.SelectedIndexChanged += CampoTipoOuValorAlterado;
             treeViewItens.BeforeSelect += treeViewItens_BeforeSelect;
-            propertyGridItem.PropertyValueChanged += propertyGridItem_PropertyValueChanged;
+            treeViewItens.MouseDown += treeViewItens_MouseDown;
             splitter1.SplitterMoved += splitter1_SplitterMoved;
             splitter3.SplitterMoved += splitter3_SplitterMoved;
             splitter4.SplitterMoved += splitter4_SplitterMoved;
@@ -89,8 +111,7 @@ namespace GerenciadorSistemas
             treeViewItens.Nodes.Clear();
             treeViewItens.AllowDrop = true;
             treeViewItens.DrawMode = TreeViewDrawMode.OwnerDrawText;
-            propertyGridItem.UseWaitCursor = false;
-            propertyGridItem.SelectedObject = null;
+            ConfigurarDataGridViewItem();
             ConfigurarMenuContextoTreeView();
             ConfigurarComboBoxTipo();
             ConfigurarToolTips();
@@ -101,9 +122,45 @@ namespace GerenciadorSistemas
         private void ConfigurarComboBoxTipo()
         {
             comboBoxTipo.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBoxTipo.DataSource = Enum.GetValues(typeof(TipoValorPropriedade));
-            comboBoxTipo.SelectedItem = TipoValorPropriedade.Texto;
+            comboBoxTipo.DataSource = Enum.GetValues(typeof(TipoDoValor));
+            comboBoxTipo.SelectedItem = TipoDoValor.Texto;
             AtualizarEstadoButtonRun();
+        }
+
+        private void ConfigurarDataGridViewItem()
+        {
+            DataGridViewItem.Columns.Clear();
+
+            DataGridViewImageColumn colunaIcone = new DataGridViewImageColumn
+            {
+                Name = "Icone",
+                HeaderText = "Icone",
+                ImageLayout = DataGridViewImageCellLayout.Zoom,
+                Width = 48,
+                FillWeight = 45
+            };
+
+            DataGridViewItem.Columns.Add(colunaIcone);
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Nome", "Nome", 140));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Valor", "Valor", 180));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("TipoDoValor", "TipoDoValor", 90));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Descricao", "Descricao", 180));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("ID", "ID", 90));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("DataDeCriacao", "DataDeCriacao", 120));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("DataDeEdicao", "DataDeEdicao", 120));
+
+            DataGridViewItem.Columns["Nome"].DefaultCellStyle.Font = new Font(DataGridViewItem.Font, FontStyle.Bold);
+            DataGridViewItem.Columns["Valor"].DefaultCellStyle.BackColor = Color.LightYellow;
+        }
+
+        private static DataGridViewTextBoxColumn CriarColunaTextoDataGridViewItem(string nome, string titulo, float fillWeight)
+        {
+            return new DataGridViewTextBoxColumn
+            {
+                Name = nome,
+                HeaderText = titulo,
+                FillWeight = fillWeight
+            };
         }
 
         private void ConfigurarToolTips()
@@ -112,15 +169,12 @@ namespace GerenciadorSistemas
             _toolTipBotoes.SetToolTip(buttonNovoSubItem, "Criar um subitem dentro do item selecionado.");
             _toolTipBotoes.SetToolTip(buttonDuplicar, "Duplicar o item atualmente selecionado.");
             _toolTipBotoes.SetToolTip(buttonExcluirItem, "Excluir o item atualmente selecionado.");
-            _toolTipBotoes.SetToolTip(buttonNovaPropriedade, "Adicionar uma nova propriedade ao item selecionado.");
-            _toolTipBotoes.SetToolTip(buttonNovaSubPropriedade, "Adicionar uma subpropriedade na propriedade selecionada.");
-            _toolTipBotoes.SetToolTip(buttonExcluirPropriedade, "Excluir a propriedade atualmente selecionada.");
             _toolTipBotoes.SetToolTip(buttonRun, "Executar o valor informado como comando.");
             _toolTipBotoes.SetToolTip(buttonCopy, "Copiar o valor informado para a area de transferencia.");
             _toolTipBotoes.SetToolTip(buttonCopyPlaceholder, "Copiar o placeholder da propriedade para a area de transferencia.");
             _toolTipBotoes.SetToolTip(buttonSalvar, "Salvar as alteracoes da propriedade atual.");
             _toolTipBotoes.SetToolTip(textBoxLocal, "Informar o local associado a propriedade selecionada.");
-            _toolTipBotoes.SetToolTip(textBoxCategoria, "Informar a categoria usada para organizar a propriedade.");
+            _toolTipBotoes.SetToolTip(textBoxID, "Informar a categoria usada para organizar a propriedade.");
             _toolTipBotoes.SetToolTip(comboBoxTipo, "Definir se o valor da propriedade e um texto, comando ou script.");
         }
 
@@ -289,7 +343,7 @@ namespace GerenciadorSistemas
 
         private void AplicarCorTextoComReferencias()
         {
-            foreach (Match referencia in Regex.Matches(RichTextBoxValor.Text, "\\{[^{}]+\\}"))
+            foreach (Match referencia in Regex.Matches(RichTextBoxValor.Text, "~REF\\[[^\\]]+\\]~"))
             {
                 RichTextBoxValor.Select(referencia.Index, referencia.Length);
                 RichTextBoxValor.SelectionColor = Color.Cyan;
@@ -334,7 +388,7 @@ namespace GerenciadorSistemas
             int alturaAreaSuperior = ClientSize.Height - panel1.Height - splitter1.Height;
             int alturaMinimaNecessaria = Math.Max(
                 panel6.Height + AlturaMinimaTreeView,
-                panel5.Height + AlturaMinimaPropertyGrid);
+                AlturaMinimaPropertyGrid);
 
             if (alturaAreaSuperior < alturaMinimaNecessaria)
                 panel1.Height = ClientSize.Height - splitter1.Height - alturaMinimaNecessaria;
@@ -393,17 +447,14 @@ namespace GerenciadorSistemas
             if (confirmacao != DialogResult.Yes)
                 return;
 
+            RegistrarHistoricoAntesDaAcao("Excluir item");
+
             if (noSelecionado.Parent == null)
                 treeViewItens.Nodes.Remove(noSelecionado);
             else
                 noSelecionado.Parent.Nodes.Remove(noSelecionado);
 
-            if (treeViewItens.SelectedNode == null)
-            {
-                propertyGridItem.SelectedObject = null;
-                LimparCamposEdicao();
-                LimparContextoDaPropriedadeSelecionada();
-            }
+            AtualizarAposOperacaoEstrutural(treeViewItens.SelectedNode);
 
             PersistirCadastro();
         }
@@ -418,7 +469,7 @@ namespace GerenciadorSistemas
             string valorResolvido;
             string erro;
 
-            if (!TryResolverTextoComReferencias(RichTextBoxValor.Text, out valorResolvido, out erro))
+            if (!TryResolverTextoComReferenciasRef(RichTextBoxValor.Text, out valorResolvido, out erro))
             {
                 MessageBox.Show(erro, "Referencia invalida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -439,7 +490,7 @@ namespace GerenciadorSistemas
             string valorResolvido;
             string erro;
 
-            if (!TryResolverTextoComReferencias(RichTextBoxValor.Text, out valorResolvido, out erro))
+            if (!TryResolverTextoComReferenciasRef(RichTextBoxValor.Text, out valorResolvido, out erro))
             {
                 MessageBox.Show(erro, "Referencia invalida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -749,237 +800,51 @@ namespace GerenciadorSistemas
             return valor;
         }
 
-        private void buttonNovaPropriedade_Click(object sender, EventArgs e)
-        {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
-
-            if (itemSelecionado == null)
-            {
-                MessageBox.Show("Selecione um item na arvore antes de adicionar propriedades.", "Nova propriedade",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            PropertyGridSelectionInfo propriedadeSelecionada = ObterPropriedadeSelecionada(propertyGridItem);
-
-            LimparCamposEdicao();
-            LimparContextoDaPropriedadeSelecionada();
-            ExecutarSemMonitoramentoCamposEdicao(() =>
-            {
-                textBoxCategoria.Text = string.Empty;
-                textBoxLocal.Text = ObterLocalParaNovaPropriedade(itemSelecionado, propriedadeSelecionada);
-                if (propriedadeSelecionada != null && !string.IsNullOrWhiteSpace(propriedadeSelecionada.Categoria))
-                    textBoxCategoria.Text = string.Empty;
-            });
-            SincronizarEstadoCamposEdicao();
-            textBoxNome.Focus();
-        }
-
-        private void buttonNovaSubPropriedade_Click(object sender, EventArgs e)
-        {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
-
-            if (itemSelecionado == null)
-            {
-                MessageBox.Show("Selecione um item na arvore antes de adicionar subpropriedades.", "Nova subpropriedade",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            PropertyGridSelectionInfo propriedadeSelecionada = ObterPropriedadeSelecionada(propertyGridItem);
-
-            if (propriedadeSelecionada == null)
-            {
-                MessageBox.Show("Selecione uma propriedade no PropertyGrid para criar uma subpropriedade.", "Nova subpropriedade",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            LimparCamposEdicao();
-            LimparContextoDaPropriedadeSelecionada();
-            ExecutarSemMonitoramentoCamposEdicao(() =>
-            {
-                textBoxCategoria.Text = string.Empty;
-                textBoxLocal.Text = ObterLocalParaNovaSubpropriedade(propriedadeSelecionada);
-            });
-            SincronizarEstadoCamposEdicao();
-            textBoxNome.Focus();
-        }
-
-        private void buttonExcluirPropriedade_Click(object sender, EventArgs e)
-        {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
-
-            if (itemSelecionado == null)
-            {
-                MessageBox.Show("Selecione um item na arvore antes de remover propriedades.", "Excluir propriedade",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(textBoxNome.Text))
-            {
-                MessageBox.Show("Selecione uma propriedade no PropertyGrid para remover.", "Excluir propriedade",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if (EhPropriedadeProtegida(textBoxNome.Text, textBoxLocal.Text))
-            {
-                MessageBox.Show("As propriedades padrao do item nao podem ser removidas.", "Excluir propriedade",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-
-            if (MessageBox.Show("Tem Certeza que deseja Excluir essa propriedade?", "", MessageBoxButtons.OKCancel) == DialogResult.OK)
-            {
-                bool removida = itemSelecionado.Builder.RemoverPropriedade(textBoxNome.Text, textBoxLocal.Text);
-
-                if (!removida)
-                {
-                    MessageBox.Show("A propriedade informada nao foi encontrada no item selecionado.", "Excluir propriedade",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-            }
-
-            AtualizarPropertyGrid(itemSelecionado);
-            LimparCamposEdicao();
-            LimparContextoDaPropriedadeSelecionada();
-            PersistirCadastro();
-        }
-
-        private void buttonRefresh_Click(object sender, EventArgs e)
-        {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
-
-            if (itemSelecionado == null)
-                return;
-
-            itemSelecionado.SincronizarMetadados();
-            AtualizarPropertyGrid(itemSelecionado);
-        }
-
         private void buttonSalvar_Click(object sender, EventArgs e)
         {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
+            TreeNode noEmEdicao = ObterNoItemEmEdicao();
+            InfrastructureItem itemSelecionado = noEmEdicao != null ? noEmEdicao.Tag as InfrastructureItem : null;
 
             if (itemSelecionado == null)
             {
-                MessageBox.Show("Selecione um item na arvore antes de salvar propriedades.", "Salvar propriedade",
+                MessageBox.Show("Selecione um item antes de salvar.", "Salvar item",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            string nomePropriedade = (textBoxNome.Text ?? string.Empty).Trim();
+            string nomeItem = (textBoxNome.Text ?? string.Empty).Trim();
 
-            if (string.IsNullOrWhiteSpace(nomePropriedade))
+            if (string.IsNullOrWhiteSpace(nomeItem))
             {
-                MessageBox.Show("Informe o nome da propriedade.", "Salvar propriedade",
+                MessageBox.Show("Informe o nome do item.", "Salvar item",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string localPropriedade = (textBoxLocal.Text ?? string.Empty).Trim();
-            bool propriedadeExistente = itemSelecionado.Builder.ContemPropriedade(nomePropriedade, localPropriedade);
-            bool propriedadeSelecionadaEmEdicao = !string.IsNullOrWhiteSpace(_nomePropriedadeSelecionadaOriginal);
+            RegistrarHistoricoAntesDaAcao("Editar item");
 
-            if (EhPropriedadeProtegida(nomePropriedade, localPropriedade))
-            {
-                if (!AtualizarMetadadoDoItem(itemSelecionado, nomePropriedade, RichTextBoxValor.Text))
-                    return;
-            }
-            else
-            {
-                if (!propriedadeSelecionadaEmEdicao && propriedadeExistente)
-                {
-                    DialogResult confirmacao = MessageBox.Show(
-                        "Ja existe uma propriedade com este nome e local. Deseja atualiza-la?",
-                        "Atualizar propriedade existente",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
+            itemSelecionado.NomeExibicao = nomeItem;
+            itemSelecionado.Valor = RichTextBoxValor.Text ?? string.Empty;
+            itemSelecionado.TipoDoValor = ObterTipoDoValorSelecionado();
+            itemSelecionado.Descricao = textBoxDescricao.Text ?? string.Empty;
+            itemSelecionado.MarcarEditado();
+            itemSelecionado.SincronizarMetadados();
 
-                    if (confirmacao != DialogResult.Yes)
-                        return;
-                }
-
-                if (!RemoverPropriedadeAnteriorSeNecessario(itemSelecionado, nomePropriedade, localPropriedade))
-                    return;
-                itemSelecionado.Builder.AdicionarPropriedade(
-                    nomePropriedade,
-                    RichTextBoxValor.Text,
-                    textBoxDescri\u00E7\u00E3o.Text,
-                    textBoxCategoria.Text,
-                    localPropriedade,
-                    ObterTipoSelecionado());
-            }
+            noEmEdicao.Text = itemSelecionado.NomeExibicao;
+            noEmEdicao.Name = itemSelecionado.NomeExibicao;
+            string chaveIcone = ResolverIconeDoItem(itemSelecionado);
+            noEmEdicao.ImageKey = chaveIcone;
+            noEmEdicao.SelectedImageKey = chaveIcone;
 
             ExecutarSemConfirmacaoSaidaPropriedade(() =>
             {
-                AtualizarPropertyGrid(itemSelecionado);
+                AtualizarDataGridViewItem(treeViewItens.SelectedNode, noEmEdicao);
+                CarregarItemNosCamposEdicao(noEmEdicao);
             });
-            AtualizarContextoDaPropriedadeSelecionada(nomePropriedade, localPropriedade);
             SincronizarEstadoCamposEdicao();
             PersistirCadastro();
         }
-
-        private void propertyGridItem_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
-        {
-            if (_restaurandoSelecaoPropertyGrid)
-                return;
-
-            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
-            {
-                RestaurarSelecaoPropertyGrid(e.OldSelection);
-                return;
-            }
-
-            PropertyGridSelectionInfo info = ObterPropriedadeSelecionada(propertyGridItem);
-
-            if (info == null)
-            {
-                LimparCamposEdicao();
-                return;
-            }
-
-            CarregarPropriedadeNosCamposEdicao(info);
-        }
-
-        private void propertyGridItem_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
-        {
-            InfrastructureItem itemSelecionado = ObterItemSelecionado();
-
-            if (itemSelecionado == null || e == null || e.ChangedItem == null)
-                return;
-
-            DynamicNodePropertyDescriptor propriedadeAlterada =
-                e.ChangedItem.PropertyDescriptor as DynamicNodePropertyDescriptor;
-
-            if (propriedadeAlterada == null)
-                return;
-
-            string valorAtual = Convert.ToString(propriedadeAlterada.Item.Value) ?? string.Empty;
-
-            if (EhPropriedadeProtegida(propriedadeAlterada.Item.Name, propriedadeAlterada.Item.Path))
-            {
-                if (!AtualizarMetadadoDoItem(itemSelecionado, propriedadeAlterada.Item.Name, valorAtual))
-                {
-                    propriedadeAlterada.Item.Value = ObterValorAtualPropriedadeProtegida(
-                        itemSelecionado,
-                        propriedadeAlterada.Item.Name,
-                        e.OldValue);
-                    itemSelecionado.SincronizarMetadados();
-                    AtualizarPropertyGrid(itemSelecionado);
-                    return;
-                }
-
-                AtualizarPropertyGrid(itemSelecionado);
-            }
-
-            CarregarPropriedadeNosCamposEdicao(CriarInfoDaPropriedade(propriedadeAlterada.Item));
-            PersistirCadastro();
-        }
+         
 
         private void CarregarPropriedadeNosCamposEdicao(PropertyGridSelectionInfo info)
         {
@@ -990,8 +855,8 @@ namespace GerenciadorSistemas
             {
                 textBoxNome.Text = info.Nome;
                 RichTextBoxValor.Text = Convert.ToString(info.Valor);
-                textBoxDescri\u00E7\u00E3o.Text = info.Descricao;
-                textBoxCategoria.Text = info.Categoria;
+                textBoxDescricao.Text = info.Descricao;
+                textBoxID.Text = info.Categoria;
                 textBoxLocal.Text = info.Local;
                 SelecionarTipoNoCombo(info.Tipo);
                 textBoxReferenciaPropriedade.Text = MontarPlaceholderDaPropriedade(info, treeViewItens.SelectedNode);
@@ -999,38 +864,28 @@ namespace GerenciadorSistemas
             AtualizarContextoDaPropriedadeSelecionada(info.Nome, info.Local);
             SincronizarEstadoCamposEdicao();
             AtualizarEstadoButtonRun();
-        }
-
-        private void RestaurarSelecaoPropertyGrid(GridItem item)
-        {
-            if (item == null)
-                return;
-
-            _restaurandoSelecaoPropertyGrid = true;
-
-            try
-            {
-                item.Select();
-            }
-            finally
-            {
-                _restaurandoSelecaoPropertyGrid = false;
-            }
+            _snapshotAntesAlteracaoPropertyGrid = CapturarSnapshotHistoricoAtual("Editar propriedade");
         }
 
         private void treeViewItens_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
+            if (_suspenderConfirmacaoSelecaoPorDrag)
+                return;
+
             if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
                 e.Cancel = true;
         }
 
         private void treeViewItens_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (_suspenderAtualizacaoSelecaoPorDrag)
+                return;
+
             InfrastructureItem itemSelecionado = ObterItemSelecionado();
 
             if (itemSelecionado == null)
             {
-                propertyGridItem.SelectedObject = null;
+                AtualizarDataGridViewItem(null, null);
                 LimparCamposEdicao();
                 LimparContextoDaPropriedadeSelecionada();
                 textBoxReferenciaPropriedade.Text = string.Empty;
@@ -1039,15 +894,19 @@ namespace GerenciadorSistemas
             }
 
             itemSelecionado.SincronizarMetadados();
-            AtualizarPropertyGrid(itemSelecionado);
-            LimparCamposEdicao();
+            AtualizarDataGridViewItem(e.Node, e.Node);
+            CarregarItemNosCamposEdicao(e.Node);
             LimparContextoDaPropriedadeSelecionada();
-            textBoxReferenciaPropriedade.Text = string.Empty;
             AtualizarEstadoButtonRun();
         }
 
         private void treeViewItens_KeyDown(object sender, KeyEventArgs e)
         {
+            if (ProcessarAtalhoDesfazer(e))
+                return;
+
+            if (ProcessarAtalhoClipboardItens(e))
+                return;
 
             if (e.KeyCode == Keys.F2)
             {
@@ -1069,12 +928,42 @@ namespace GerenciadorSistemas
                 treeViewItens.SelectedNode = e.Node;
         }
 
+        private void treeViewItens_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+                return;
+
+            TreeNode noMouse = treeViewItens.GetNodeAt(e.Location);
+            if (noMouse == null)
+                return;
+
+            _noSelecionadoAntesDoDrag = treeViewItens.SelectedNode;
+            _noItemEmEdicaoAntesDoDrag = ObterNoItemEmEdicao();
+        }
+
         private void treeViewItens_ItemDrag(object sender, ItemDragEventArgs e)
         {
             if (e.Item == null)
                 return;
 
-            DoDragDrop(e.Item, DragDropEffects.Move);
+            _arrastandoItemTreeView = true;
+            _suspenderAtualizacaoSelecaoPorDrag = true;
+
+            try
+            {
+                RestaurarContextoVisualAnteriorAoDrag();
+                DragDropEffects efeito = DoDragDrop(e.Item, DragDropEffects.Copy | DragDropEffects.Move);
+
+                if (efeito == DragDropEffects.Copy)
+                    RestaurarContextoVisualAnteriorAoDrag();
+            }
+            finally
+            {
+                _arrastandoItemTreeView = false;
+                _suspenderAtualizacaoSelecaoPorDrag = false;
+                _noSelecionadoAntesDoDrag = null;
+                _noItemEmEdicaoAntesDoDrag = null;
+            }
         }
 
         private void treeViewItens_DragEnter(object sender, DragEventArgs e)
@@ -1094,7 +983,6 @@ namespace GerenciadorSistemas
 
             Point ponto = treeViewItens.PointToClient(new Point(e.X, e.Y));
             TreeNode noDestino = treeViewItens.GetNodeAt(ponto);
-            treeViewItens.SelectedNode = noDestino;
 
             TreeNode noArrastado = e.Data.GetData(typeof(TreeNode)) as TreeNode;
             if (noArrastado == null || noDestino == null || noDestino == noArrastado)
@@ -1156,6 +1044,8 @@ namespace GerenciadorSistemas
                 return;
             }
 
+            RegistrarHistoricoAntesDaAcao("Mover item");
+
             RemoverNoDaColecaoAtual(noArrastado);
 
             if (posicao == TreeDropPosition.AsChild)
@@ -1181,7 +1071,7 @@ namespace GerenciadorSistemas
             }
 
             LimparIndicadorDrop();
-            treeViewItens.SelectedNode = noArrastado;
+            AtualizarAposOperacaoEstrutural(noArrastado);
             PersistirCadastro();
         }
 
@@ -1227,8 +1117,11 @@ namespace GerenciadorSistemas
                     dialog.ItemDescricao,
                     dialog.IconeSelecionado,
                     dialog.Observacao);
+                PrepararNovoItem(novoItem);
 
                 TreeNode novoNo = CriarNoParaItem(novoItem);
+
+                RegistrarHistoricoAntesDaAcao(noPai == null ? "Adicionar item raiz" : "Adicionar subitem");
 
                 if (noPai == null)
                     treeViewItens.Nodes.Add(novoNo);
@@ -1238,7 +1131,6 @@ namespace GerenciadorSistemas
                     noPai.Expand();
                 }
 
-                treeViewItens.ExpandAll();
                 treeViewItens.SelectedNode = novoNo;
                 novoNo.EnsureVisible();
                 PersistirCadastro();
@@ -1256,6 +1148,40 @@ namespace GerenciadorSistemas
             return no;
         }
 
+        private void PrepararNovoItem(InfrastructureItem item)
+        {
+            if (item == null)
+                return;
+
+            HashSet<string> idsExistentes = _itemHierarchyService.ColetarIds(
+                treeViewItens.Nodes.Cast<TreeNode>().Select(MapearNoParaItem));
+
+            item.ID = _itemIdService.GerarIdUnico(idsExistentes);
+            item.CriadoEm = DateTime.Now;
+            item.DataDeEdicao = item.CriadoEm;
+            item.TipoDoValor = TipoDoValor.Texto;
+            item.SincronizarMetadados();
+        }
+
+        private void RenovarIdentidadeDoNoRecursivamente(TreeNode no, ISet<string> idsExistentes)
+        {
+            if (no == null)
+                return;
+
+            InfrastructureItem item = no.Tag as InfrastructureItem;
+            if (item != null)
+            {
+                DateTime agora = DateTime.Now;
+                item.ID = _itemIdService.GerarIdUnico(idsExistentes);
+                item.CriadoEm = agora;
+                item.DataDeEdicao = agora;
+                item.SincronizarMetadados();
+            }
+
+            foreach (TreeNode filho in no.Nodes)
+                RenovarIdentidadeDoNoRecursivamente(filho, idsExistentes);
+        }
+
         private void DuplicarItemSelecionado()
         {
             TreeNode noSelecionado = treeViewItens.SelectedNode;
@@ -1267,17 +1193,16 @@ namespace GerenciadorSistemas
                 return;
             }
 
-            TreeNode duplicado = ClonarNo(noSelecionado);
-            duplicado.Text = GerarNomeDuplicado(noSelecionado.Text, noSelecionado.Parent);
-            duplicado.Name = duplicado.Text;
+            RegistrarHistoricoAntesDaAcao("Duplicar item");
 
-            InfrastructureItem itemDuplicado = duplicado.Tag as InfrastructureItem;
-            if (itemDuplicado != null)
-            {
-                itemDuplicado.NomeExibicao = duplicado.Text;
-                itemDuplicado.CriadoEm = DateTime.Now;
-                itemDuplicado.SincronizarMetadados();
-            }
+            Item itemDuplicado = MapearNoParaItem(noSelecionado);
+            itemDuplicado.Nome = GerarNomeDuplicado(noSelecionado.Text, noSelecionado.Parent);
+
+            HashSet<string> idsExistentes = _itemHierarchyService.ColetarIds(
+                treeViewItens.Nodes.Cast<TreeNode>().Select(MapearNoParaItem));
+            _itemHierarchyService.RenovarIdentidadeRecursiva(itemDuplicado, idsExistentes);
+
+            TreeNode duplicado = CriarNoAPartirDoItem(itemDuplicado);
 
             if (noSelecionado.Parent == null)
                 treeViewItens.Nodes.Add(duplicado);
@@ -1287,9 +1212,7 @@ namespace GerenciadorSistemas
                 noSelecionado.Parent.Expand();
             }
 
-            treeViewItens.ExpandAll();
-            treeViewItens.SelectedNode = duplicado;
-            duplicado.EnsureVisible();
+            AtualizarAposOperacaoEstrutural(duplicado);
             PersistirCadastro();
         }
 
@@ -1347,16 +1270,33 @@ namespace GerenciadorSistemas
                 {
                     CadastroPersistido cadastro = deserializer.Deserialize<CadastroPersistido>(reader);
 
-                    if (cadastro == null || cadastro.Items == null)
-                        return;
+                    if (cadastro == null)
+                        throw new InvalidDataException("O arquivo cadastro.yaml nao contem um cadastro valido.");
+
+                    if (cadastro.SchemaVersion != VersaoSchemaCadastro)
+                    {
+                        throw new InvalidDataException(
+                            string.Format(
+                                "schemaVersion {0} nao suportado. Versao suportada: {1}.",
+                                cadastro.SchemaVersion,
+                                VersaoSchemaCadastro));
+                    }
+
+                    if (cadastro.Itens == null)
+                        throw new InvalidDataException("O arquivo cadastro.yaml nao contem a lista de itens.");
+
+                    List<Item> itens = cadastro.Itens.Select(MapearPersistenciaParaItem).ToList();
+                    _itemHierarchyService.PrepararHierarquia(itens);
 
                     _suspenderPersistencia = true;
                     treeViewItens.Nodes.Clear();
 
-                    foreach (ItemPersistido itemPersistido in cadastro.Items)
-                        treeViewItens.Nodes.Add(CriarNoAPartirDaPersistencia(itemPersistido));
+                    foreach (Item item in itens)
+                        treeViewItens.Nodes.Add(CriarNoAPartirDoItem(item));
 
-                    treeViewItens.ExpandAll();
+                    AplicarEstadoDeExpansao(cadastro.Configuracoes != null
+                        ? cadastro.Configuracoes.ItensExpandidos
+                        : null);
 
                     if (treeViewItens.Nodes.Count > 0)
                         treeViewItens.SelectedNode = treeViewItens.Nodes[0];
@@ -1364,16 +1304,125 @@ namespace GerenciadorSistemas
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Nao foi possivel carregar o cadastro salvo.\r\n" + ex.Message,
-                    "Erro ao carregar cadastro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                TratarFalhaAoCarregarCadastro(caminhoArquivo, ex);
             }
             finally
             {
                 _suspenderPersistencia = false;
+                LimparHistoricoDeAcoes();
             }
+        }
+
+        private void TratarFalhaAoCarregarCadastro(string caminhoArquivo, Exception erroOriginal)
+        {
+            try
+            {
+                Logger.LogWriter.LogErroDetalhado(erroOriginal, "Erro ao carregar cadastro.yaml", new
+                {
+                    CaminhoArquivo = caminhoArquivo,
+                    SchemaSuportado = VersaoSchemaCadastro
+                });
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                string caminhoBackup = GerarCaminhoCadastroComTimestamp(caminhoArquivo);
+
+                if (File.Exists(caminhoArquivo))
+                    File.Move(caminhoArquivo, caminhoBackup);
+
+                treeViewItens.Nodes.Clear();
+                AtualizarDataGridViewItem(null, null);
+                LimparCamposEdicao();
+                LimparContextoDaPropriedadeSelecionada();
+                CriarCadastroVazio(caminhoArquivo);
+
+                MessageBox.Show(
+                    "Nao foi possivel carregar o cadastro atual.\r\n\r\n"
+                    + "Erro: " + ObterMensagemSeguraErroCadastro(erroOriginal) + "\r\n\r\n"
+                    + "Acao executada: o arquivo com erro foi renomeado para \""
+                    + Path.GetFileName(caminhoBackup)
+                    + "\" e um novo cadastro.yaml vazio foi criado.",
+                    "Cadastro recriado",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Logger.LogWriter.LogErroDetalhado(ex, "Erro ao isolar cadastro.yaml invalido", new
+                    {
+                        CaminhoArquivo = caminhoArquivo
+                    });
+                }
+                catch
+                {
+                }
+
+                MessageBox.Show(
+                    "Nao foi possivel carregar o cadastro atual e a recuperacao automatica falhou.\r\n\r\n"
+                    + "Erro original: " + ObterMensagemSeguraErroCadastro(erroOriginal) + "\r\n"
+                    + "Erro na recuperacao: " + ObterMensagemSeguraErroCadastro(ex),
+                    "Erro ao recuperar cadastro",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private static string GerarCaminhoCadastroComTimestamp(string caminhoArquivo)
+        {
+            string pasta = Path.GetDirectoryName(caminhoArquivo);
+            string nomeBase = Path.GetFileNameWithoutExtension(caminhoArquivo);
+            string extensao = Path.GetExtension(caminhoArquivo);
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string caminhoBackup = Path.Combine(pasta, nomeBase + "_" + timestamp + extensao);
+            int contador = 2;
+
+            while (File.Exists(caminhoBackup))
+            {
+                caminhoBackup = Path.Combine(
+                    pasta,
+                    string.Format("{0}_{1}_{2}{3}", nomeBase, timestamp, contador, extensao));
+                contador++;
+            }
+
+            return caminhoBackup;
+        }
+
+        private void CriarCadastroVazio(string caminhoArquivo)
+        {
+            CadastroPersistido cadastro = new CadastroPersistido
+            {
+                SchemaVersion = VersaoSchemaCadastro,
+                SavedAt = DateTime.Now.ToString("o"),
+                Configuracoes = new ConfiguracoesPersistidas
+                {
+                    IconePadrao = FormNovoItem.CarregarIconePadraoPersistido(),
+                    ItensExpandidos = new List<string>()
+                },
+                Itens = new List<ItemPersistido>()
+            };
+
+            ISerializer serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            using (StreamWriter writer = new StreamWriter(caminhoArquivo, false))
+                serializer.Serialize(writer, cadastro);
+        }
+
+        private static string ObterMensagemSeguraErroCadastro(Exception ex)
+        {
+            if (ex == null)
+                return "Erro desconhecido.";
+
+            return string.IsNullOrWhiteSpace(ex.Message)
+                ? ex.GetType().Name
+                : ex.Message;
         }
 
         private void PersistirCadastro()
@@ -1383,18 +1432,25 @@ namespace GerenciadorSistemas
 
             try
             {
+                AtualizarCaminhosDosItensDaArvore();
+
                 CadastroPersistido cadastro = new CadastroPersistido
                 {
                     SchemaVersion = VersaoSchemaCadastro,
                     SavedAt = DateTime.Now.ToString("o"),
                     Configuracoes = new ConfiguracoesPersistidas
                     {
-                        IconePadrao = FormNovoItem.CarregarIconePadraoPersistido()
+                        IconePadrao = FormNovoItem.CarregarIconePadraoPersistido(),
+                        ItensExpandidos = ColetarIdsDosNosExpandidos()
                     },
-                    Items = treeViewItens.Nodes.Cast<TreeNode>()
-                        .Select(MapearNoParaPersistencia)
+                    Itens = treeViewItens.Nodes.Cast<TreeNode>()
+                        .Select(MapearNoParaItemPersistido)
                         .ToList()
                 };
+
+                List<Item> itens = cadastro.Itens.Select(MapearPersistenciaParaItem).ToList();
+                _itemHierarchyService.PrepararHierarquia(itens);
+                cadastro.Itens = itens.Select(MapearItemParaPersistencia).ToList();
 
                 ISerializer serializer = new SerializerBuilder()
                     .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -1426,82 +1482,149 @@ namespace GerenciadorSistemas
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cadastro.yaml");
         }
 
-        private TreeNode CriarNoAPartirDaPersistencia(ItemPersistido itemPersistido)
+        private void AtualizarCaminhosDosItensDaArvore()
+        {
+            AtualizarCaminhosDosItensDaColecao(treeViewItens.Nodes, string.Empty);
+        }
+
+        private void AtualizarCaminhosDosItensDaColecao(TreeNodeCollection nos, string caminhoPai)
+        {
+            foreach (TreeNode no in nos)
+            {
+                InfrastructureItem item = no.Tag as InfrastructureItem;
+                string nome = item != null ? item.NomeExibicao : no.Text;
+                string caminho = string.IsNullOrWhiteSpace(caminhoPai)
+                    ? nome
+                    : string.Concat(caminhoPai, "/", nome);
+
+                if (item != null)
+                {
+                    item.Caminho = caminho;
+                    item.SincronizarMetadados();
+                }
+
+                AtualizarCaminhosDosItensDaColecao(no.Nodes, caminho);
+            }
+        }
+
+        private TreeNode CriarNoAPartirDoItem(Item itemPersistido)
         {
             InfrastructureItem item = new InfrastructureItem(
-                itemPersistido.NomeExibicao,
+                itemPersistido.Nome,
                 itemPersistido.Descricao,
-                itemPersistido.IconeKey,
-                itemPersistido.Observacao);
+                itemPersistido.Icone,
+                string.Empty);
 
-            DateTime criadoEm;
-            if (DateTime.TryParse(itemPersistido.CriadoEm, null, DateTimeStyles.RoundtripKind, out criadoEm))
-                item.CriadoEm = criadoEm;
-
-            item.TipoItem = itemPersistido.TipoItem ?? string.Empty;
-
-            if (itemPersistido.Propriedades != null)
-            {
-                foreach (PropriedadePersistida propriedade in itemPersistido.Propriedades)
-                {
-                    item.Builder.AdicionarPropriedade(
-                        propriedade.Nome,
-                        propriedade.Valor,
-                        propriedade.Descricao,
-                        propriedade.Categoria,
-                        propriedade.Local,
-                        ConverterTextoParaTipoValor(propriedade.Tipo));
-                }
-            }
-
+            item.ID = itemPersistido.ID;
+            item.Valor = itemPersistido.Valor ?? string.Empty;
+            item.TipoDoValor = itemPersistido.TipoDoValor;
+            item.CriadoEm = itemPersistido.DataDeCriacao;
+            item.DataDeEdicao = itemPersistido.DataDeEdicao;
+            item.Caminho = itemPersistido.Caminho ?? string.Empty;
             item.SincronizarMetadados();
 
             TreeNode no = CriarNoParaItem(item);
 
-            if (itemPersistido.Children != null)
+            if (itemPersistido.Subitens != null)
             {
-                foreach (ItemPersistido filho in itemPersistido.Children)
-                    no.Nodes.Add(CriarNoAPartirDaPersistencia(filho));
+                foreach (Item filho in itemPersistido.Subitens)
+                    no.Nodes.Add(CriarNoAPartirDoItem(filho));
             }
 
             return no;
         }
 
-        private ItemPersistido MapearNoParaPersistencia(TreeNode no)
+        private ItemPersistido MapearNoParaItemPersistido(TreeNode no)
         {
-            InfrastructureItem item = no.Tag as InfrastructureItem;
-
-            return new ItemPersistido
-            {
-                NomeExibicao = item != null ? item.NomeExibicao : no.Text,
-                Descricao = item != null ? item.Descricao : string.Empty,
-                IconeKey = item != null ? item.IconeKey : string.Empty,
-                Observacao = item != null ? item.Observacao : string.Empty,
-                CriadoEm = item != null ? item.CriadoEm.ToString("o") : DateTime.Now.ToString("o"),
-                TipoItem = item != null ? item.TipoItem : string.Empty,
-                Propriedades = item != null
-                    ? item.Builder.Root.EnumeratePropertiesRecursive()
-                        .Where(p => !EhPropriedadeProtegida(p.Name, p.Path))
-                        .Select(MapearPropriedadeParaPersistencia)
-                        .ToList()
-                    : new List<PropriedadePersistida>(),
-                Children = no.Nodes.Cast<TreeNode>()
-                    .Select(MapearNoParaPersistencia)
-                    .ToList()
-            };
+            return MapearItemParaPersistencia(MapearNoParaItem(no));
         }
 
-        private static PropriedadePersistida MapearPropriedadeParaPersistencia(DynamicPropertyItem propriedade)
+        private Item MapearNoParaItem(TreeNode no)
         {
-            return new PropriedadePersistida
+            InfrastructureItem itemVisual = no.Tag as InfrastructureItem;
+            Item item = new Item
+            {
+                Nome = itemVisual != null ? itemVisual.NomeExibicao : no.Text,
+                Valor = itemVisual != null ? itemVisual.Valor ?? string.Empty : string.Empty,
+                TipoDoValor = itemVisual != null ? itemVisual.TipoDoValor : TipoDoValor.Texto,
+                Descricao = itemVisual != null ? itemVisual.Descricao : string.Empty,
+                Icone = itemVisual != null ? itemVisual.IconeKey : string.Empty,
+                ID = itemVisual != null ? itemVisual.ID : string.Empty,
+                DataDeCriacao = itemVisual != null ? itemVisual.CriadoEm : DateTime.Now,
+                DataDeEdicao = itemVisual != null ? itemVisual.DataDeEdicao : DateTime.Now,
+                Caminho = itemVisual != null ? itemVisual.Caminho : string.Empty,
+                Subitens = new List<Item>()
+            };
+
+            if (itemVisual != null)
+            {
+                foreach (DynamicPropertyItem propriedade in itemVisual.Builder.Root.EnumeratePropertiesRecursive()
+                    .Where(p => !EhPropriedadeProtegida(p.Name, p.Path)))
+                {
+                    item.Subitens.Add(MapearPropriedadeParaItem(propriedade));
+                }
+            }
+
+            item.Subitens.AddRange(no.Nodes.Cast<TreeNode>().Select(MapearNoParaItem));
+            return item;
+        }
+
+        private static Item MapearPropriedadeParaItem(DynamicPropertyItem propriedade)
+        {
+            return new Item
             {
                 Nome = propriedade.Name,
                 Valor = Convert.ToString(propriedade.Value) ?? string.Empty,
                 Descricao = propriedade.Description ?? string.Empty,
-                Categoria = propriedade.Category ?? string.Empty,
-                Local = propriedade.Path ?? string.Empty,
-                Tipo = TipoValorPropriedadePersistencia.ParaPersistencia(propriedade.Tipo)
+                TipoDoValor = ConverterTipoPropriedadeParaTipoDoValor(propriedade.Tipo),
+                Caminho = propriedade.Path ?? string.Empty,
+                Subitens = new List<Item>()
             };
+        }
+
+        private static ItemPersistido MapearItemParaPersistencia(Item item)
+        {
+            return new ItemPersistido
+            {
+                Nome = item.Nome ?? string.Empty,
+                Valor = item.Valor ?? string.Empty,
+                TipoDoValor = item.TipoDoValor.ToString(),
+                Descricao = item.Descricao ?? string.Empty,
+                Icone = item.Icone ?? string.Empty,
+                ID = item.ID ?? string.Empty,
+                DataDeCriacao = item.DataDeCriacao.ToString("o"),
+                DataDeEdicao = item.DataDeEdicao.ToString("o"),
+                Caminho = item.Caminho ?? string.Empty,
+                Subitens = item.Subitens != null
+                    ? item.Subitens.Select(MapearItemParaPersistencia).ToList()
+                    : new List<ItemPersistido>()
+            };
+        }
+
+        private static Item MapearPersistenciaParaItem(ItemPersistido itemPersistido)
+        {
+            Item item = new Item
+            {
+                Nome = itemPersistido.Nome ?? string.Empty,
+                Valor = itemPersistido.Valor ?? string.Empty,
+                TipoDoValor = ConverterTextoParaTipoDoValor(itemPersistido.TipoDoValor),
+                Descricao = itemPersistido.Descricao ?? string.Empty,
+                Icone = itemPersistido.Icone ?? string.Empty,
+                ID = itemPersistido.ID ?? string.Empty,
+                Caminho = itemPersistido.Caminho ?? string.Empty,
+                Subitens = itemPersistido.Subitens != null
+                    ? itemPersistido.Subitens.Select(MapearPersistenciaParaItem).ToList()
+                    : new List<Item>()
+            };
+
+            DateTime data;
+            if (DateTime.TryParse(itemPersistido.DataDeCriacao, null, DateTimeStyles.RoundtripKind, out data))
+                item.DataDeCriacao = data;
+
+            if (DateTime.TryParse(itemPersistido.DataDeEdicao, null, DateTimeStyles.RoundtripKind, out data))
+                item.DataDeEdicao = data;
+
+            return item;
         }
 
         private static bool ContemDescendente(TreeNode noPai, TreeNode possivelDescendente)
@@ -1636,20 +1759,155 @@ namespace GerenciadorSistemas
             return false;
         }
 
-        private void AtualizarPropertyGrid(InfrastructureItem item)
+
+
+        private void AtualizarDataGridViewItem(TreeNode noEscopo, TreeNode noParaSelecionar)
         {
-            propertyGridItem.SelectedObject = item.Builder.Root;
-            propertyGridItem.Refresh();
-            ExpandirTudoNoPropertyGrid();
+            _suspenderSelecaoDataGridItem = true;
+
+            try
+            {
+                DataGridViewItem.Rows.Clear();
+
+                if (noEscopo == null)
+                {
+                    _noItemEmEdicao = null;
+                    return;
+                }
+
+                foreach (TreeNode no in EnumerarNoESeusDescendentes(noEscopo))
+                    AdicionarLinhaDataGridViewItem(no);
+
+                if (noParaSelecionar != null)
+                    SelecionarLinhaDataGridViewItem(noParaSelecionar);
+                else if (DataGridViewItem.Rows.Count > 0)
+                    DataGridViewItem.Rows[0].Selected = true;
+            }
+            finally
+            {
+                _suspenderSelecaoDataGridItem = false;
+            }
         }
 
-        private void ExpandirTudoNoPropertyGrid()
+        private void AdicionarLinhaDataGridViewItem(TreeNode no)
         {
-            BeginInvoke(new MethodInvoker(delegate
+            InfrastructureItem item = no != null ? no.Tag as InfrastructureItem : null;
+            if (item == null)
+                return;
+
+            int indice = DataGridViewItem.Rows.Add(
+                ObterImagemDoItem(item),
+                item.NomeExibicao,
+                item.Valor ?? string.Empty,
+                item.TipoDoValor.ToString(),
+                item.Descricao ?? string.Empty,
+                item.ID ?? string.Empty,
+                item.CriadoEm.ToString("dd/MM/yyyy HH:mm:ss"),
+                item.DataDeEdicao.ToString("dd/MM/yyyy HH:mm:ss"));
+
+            DataGridViewRow linha = DataGridViewItem.Rows[indice];
+            linha.Tag = no;
+            linha.Cells["Nome"].Style.Font = new Font(DataGridViewItem.Font, FontStyle.Bold);
+            linha.Cells["Valor"].Style.BackColor = Color.LightYellow;
+        }
+
+        private Image ObterImagemDoItem(InfrastructureItem item)
+        {
+            string chaveIcone = ResolverIconeDoItem(item);
+
+            if (!string.IsNullOrWhiteSpace(chaveIcone) && imageList1.Images.ContainsKey(chaveIcone))
+                return imageList1.Images[chaveIcone];
+
+            GarantirIconeErroCarregado();
+            return imageList1.Images[ChaveIconeErro];
+        }
+
+        private void SelecionarLinhaDataGridViewItem(TreeNode no)
+        {
+            DataGridViewItem.ClearSelection();
+
+            foreach (DataGridViewRow linha in DataGridViewItem.Rows)
             {
-                propertyGridItem.ExpandAllGridItems();
-                propertyGridItem.Refresh();
-            }));
+                if (ReferenceEquals(linha.Tag, no))
+                {
+                    linha.Selected = true;
+                    DataGridViewItem.CurrentCell = linha.Cells["Nome"];
+                    return;
+                }
+            }
+        }
+
+        private void DataGridViewItem_SelectionChanged(object sender, EventArgs e)
+        {
+            if (_suspenderSelecaoDataGridItem)
+                return;
+
+            TreeNode noSelecionado = ObterNoSelecionadoNoDataGridViewItem();
+            if (noSelecionado == null)
+                return;
+
+            CarregarItemNosCamposEdicao(noSelecionado);
+        }
+
+        private TreeNode ObterNoSelecionadoNoDataGridViewItem()
+        {
+            if (DataGridViewItem.CurrentRow != null)
+                return DataGridViewItem.CurrentRow.Tag as TreeNode;
+
+            if (DataGridViewItem.SelectedRows.Count > 0)
+                return DataGridViewItem.SelectedRows[0].Tag as TreeNode;
+
+            return null;
+        }
+
+        private TreeNode ObterNoItemEmEdicao()
+        {
+            if (_noItemEmEdicao != null)
+                return _noItemEmEdicao;
+
+            TreeNode noGrid = ObterNoSelecionadoNoDataGridViewItem();
+            return noGrid ?? treeViewItens.SelectedNode;
+        }
+
+        private void CarregarItemNosCamposEdicao(TreeNode no)
+        {
+            InfrastructureItem item = no != null ? no.Tag as InfrastructureItem : null;
+
+            if (item == null)
+            {
+                _noItemEmEdicao = null;
+                LimparCamposEdicao();
+                AtualizarImagemLateral(null);
+                return;
+            }
+
+            _noItemEmEdicao = no;
+
+            ExecutarSemMonitoramentoCamposEdicao(() =>
+            {
+                textBoxNome.Text = item.NomeExibicao;
+                RichTextBoxValor.Text = item.Valor ?? string.Empty;
+                textBoxDescricao.Text = item.Descricao ?? string.Empty;
+                textBoxID.Text = item.ID ?? string.Empty;
+                textBoxLocal.Text = item.Caminho ?? string.Empty;
+                textBoxDataCriacao.Text = item.CriadoEm.ToString("dd/MM/yyyy HH:mm:ss");
+                textBoxDataEdicao.Text = item.DataDeEdicao.ToString("dd/MM/yyyy HH:mm:ss");
+                SelecionarTipoDoValorNoCombo(item.TipoDoValor);
+                textBoxReferenciaPropriedade.Text = MontarPlaceholderAbsolutoDoItem(no);
+            });
+
+            AtualizarImagemLateral(item);
+            SincronizarEstadoCamposEdicao();
+            AtualizarEstadoButtonRun();
+        }
+
+        private void AtualizarImagemLateral(InfrastructureItem item)
+        {
+            if (pictureBoxImagem == null)
+                return;
+
+            pictureBoxImagem.Image = item == null ? null : ObterImagemDoItem(item);
+            pictureBoxImagem.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
         private string[] ObterChavesDeImagem()
@@ -1825,9 +2083,14 @@ namespace GerenciadorSistemas
                 return false;
 
             return string.Equals(nomePropriedade, "Nome", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(nomePropriedade, "Valor", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(nomePropriedade, "Tipo do Valor", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(nomePropriedade, "Descricao Item", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(nomePropriedade, "Imagem/Icone", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(nomePropriedade, "ID", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(nomePropriedade, "Criado em", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(nomePropriedade, "Editado em", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(nomePropriedade, "Caminho", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(nomePropriedade, "Observacao/Local", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -1854,6 +2117,10 @@ namespace GerenciadorSistemas
                     noSelecionado.Name = nomeAtualizado;
                 }
             }
+            else if (string.Equals(nomePropriedade, "Valor", StringComparison.OrdinalIgnoreCase))
+                item.Valor = valor ?? string.Empty;
+            else if (string.Equals(nomePropriedade, "Tipo do Valor", StringComparison.OrdinalIgnoreCase))
+                item.TipoDoValor = ConverterTextoParaTipoDoValor(valor);
             else if (string.Equals(nomePropriedade, "Descricao Item", StringComparison.OrdinalIgnoreCase))
                 item.Descricao = valor ?? string.Empty;
             else if (string.Equals(nomePropriedade, "Imagem/Icone", StringComparison.OrdinalIgnoreCase))
@@ -1868,17 +2135,31 @@ namespace GerenciadorSistemas
                     noSelecionado.SelectedImageKey = chaveIcone;
                 }
             }
+            else if (string.Equals(nomePropriedade, "ID", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("O ID e gerado automaticamente e nao pode ser alterado manualmente.", "Salvar propriedade",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
             else if (string.Equals(nomePropriedade, "Criado em", StringComparison.OrdinalIgnoreCase))
             {
-                DateTime criadoEm;
-                if (DateTime.TryParse(valor, CultureInfo.CurrentCulture, DateTimeStyles.None, out criadoEm))
-                    item.CriadoEm = criadoEm;
+                MessageBox.Show("A data de criacao nao pode ser alterada depois que o item foi criado.", "Salvar propriedade",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
+            }
+            else if (string.Equals(nomePropriedade, "Editado em", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(nomePropriedade, "Caminho", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Este campo e calculado automaticamente.", "Salvar propriedade",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return false;
             }
             else if (string.Equals(nomePropriedade, "Observacao/Local", StringComparison.OrdinalIgnoreCase))
                 item.Observacao = valor ?? string.Empty;
             else if (string.Equals(nomePropriedade, "Tipo do Item", StringComparison.OrdinalIgnoreCase))
                 item.TipoItem = valor ?? string.Empty;
 
+            item.MarcarEditado();
             item.SincronizarMetadados();
             return true;
         }
@@ -1889,12 +2170,15 @@ namespace GerenciadorSistemas
             {
                 textBoxNome.Text = string.Empty;
                 RichTextBoxValor.Text = string.Empty;
-                textBoxDescri\u00E7\u00E3o.Text = string.Empty;
-                textBoxCategoria.Text = string.Empty;
+                textBoxDescricao.Text = string.Empty;
+                textBoxID.Text = string.Empty;
                 textBoxLocal.Text = string.Empty;
+                textBoxDataCriacao.Text = string.Empty;
+                textBoxDataEdicao.Text = string.Empty;
                 textBoxReferenciaPropriedade.Text = string.Empty;
                 SelecionarTipoNoCombo(TipoValorPropriedade.Texto);
             });
+            AtualizarImagemLateral(null);
             SincronizarEstadoCamposEdicao();
             AtualizarEstadoButtonRun();
         }
@@ -1912,9 +2196,9 @@ namespace GerenciadorSistemas
 
         private bool PodeExecutarTipoSelecionado()
         {
-            TipoValorPropriedade tipoSelecionado = ObterTipoSelecionado();
-            return tipoSelecionado == TipoValorPropriedade.Comando
-                || tipoSelecionado == TipoValorPropriedade.Script;
+            TipoDoValor tipoSelecionado = ObterTipoDoValorSelecionado();
+            return tipoSelecionado == TipoDoValor.Comando
+                || tipoSelecionado == TipoDoValor.Script;
         }
 
         private TipoValorPropriedade ObterTipoSelecionado()
@@ -1924,10 +2208,39 @@ namespace GerenciadorSistemas
             if (valorSelecionado is TipoValorPropriedade)
                 return (TipoValorPropriedade)valorSelecionado;
 
+            if (valorSelecionado is TipoDoValor)
+            {
+                TipoDoValor tipoDoValor = (TipoDoValor)valorSelecionado;
+
+                if (tipoDoValor == TipoDoValor.Comando)
+                    return TipoValorPropriedade.Comando;
+
+                if (tipoDoValor == TipoDoValor.Script)
+                    return TipoValorPropriedade.Script;
+            }
+
             return TipoValorPropriedade.Texto;
         }
 
         private void SelecionarTipoNoCombo(TipoValorPropriedade tipo)
+        {
+            comboBoxTipo.SelectedItem = ConverterTipoPropriedadeParaTipoDoValor(tipo);
+        }
+
+        private TipoDoValor ObterTipoDoValorSelecionado()
+        {
+            object valorSelecionado = comboBoxTipo.SelectedItem;
+
+            if (valorSelecionado is TipoDoValor)
+                return (TipoDoValor)valorSelecionado;
+
+            if (valorSelecionado is TipoValorPropriedade)
+                return ConverterTipoPropriedadeParaTipoDoValor((TipoValorPropriedade)valorSelecionado);
+
+            return TipoDoValor.Texto;
+        }
+
+        private void SelecionarTipoDoValorNoCombo(TipoDoValor tipo)
         {
             comboBoxTipo.SelectedItem = tipo;
         }
@@ -1945,41 +2258,43 @@ namespace GerenciadorSistemas
             return TipoValorPropriedade.Texto;
         }
 
+        private static TipoDoValor ConverterTextoParaTipoDoValor(string tipo)
+        {
+            TipoDoValor tipoConvertido;
+
+            if (Enum.TryParse(tipo ?? string.Empty, true, out tipoConvertido))
+                return tipoConvertido;
+
+            return TipoDoValor.Texto;
+        }
+
+        private static TipoDoValor ConverterTipoPropriedadeParaTipoDoValor(TipoValorPropriedade tipo)
+        {
+            switch (tipo)
+            {
+                case TipoValorPropriedade.Comando:
+                    return TipoDoValor.Comando;
+                case TipoValorPropriedade.Script:
+                    return TipoDoValor.Script;
+                default:
+                    return TipoDoValor.Texto;
+            }
+        }
+
         private string MontarPlaceholderDaPropriedade(PropertyGridSelectionInfo info, TreeNode noItem)
         {
             if (info == null || noItem == null)
                 return string.Empty;
 
-            string caminhoItem = ObterCaminhoCompletoDoNo(noItem);
             string referenciaPropriedade = MontarReferenciaDaPropriedade(info.Local, info.Nome);
-            string referenciaCompleta = MontarReferenciaCompleta(caminhoItem, referenciaPropriedade);
+            string referenciaCompleta = MontarReferenciaCompleta(string.Empty, referenciaPropriedade);
 
-            return string.IsNullOrWhiteSpace(referenciaCompleta) ? string.Empty : "{" + referenciaCompleta + "}";
+            return string.IsNullOrWhiteSpace(referenciaCompleta) ? string.Empty : "~REF[/" + referenciaCompleta + "]~";
         }
 
         private bool TryResolverTextoComReferencias(string template, out string valorResolvido, out string erro)
         {
-            valorResolvido = template ?? string.Empty;
-            erro = null;
-
-            MatchCollection matches = Regex.Matches(valorResolvido, @"\{([^{}]+)\}");
-
-            foreach (Match match in matches)
-            {
-                string referencia = match.Groups[1].Value.Trim();
-                DynamicPropertyItem propriedadeReferenciada;
-
-                if (!TryResolverPropriedadePorReferencia(referencia, out propriedadeReferenciada, out erro))
-                {
-                    return false;
-                }
-                
-                valorResolvido = valorResolvido.Replace(
-                    match.Value,
-                    Convert.ToString(propriedadeReferenciada.Value) ?? string.Empty);
-            }
-
-            return true;
+            return TryResolverTextoComReferenciasRef(template, out valorResolvido, out erro);
         }
 
         private bool TryResolverPropriedadePorReferencia(string referencia, out DynamicPropertyItem propriedadeReferenciada, out string erro)
@@ -2227,8 +2542,8 @@ namespace GerenciadorSistemas
                 _localPropriedadeSelecionadaOriginal,
                 novoNomePropriedade,
                 RichTextBoxValor.Text,
-                textBoxDescri\u00E7\u00E3o.Text,
-                textBoxCategoria.Text,
+                textBoxDescricao.Text,
+                textBoxID.Text,
                 novoLocalPropriedade,
                 ObterTipoSelecionado(),
                 out conflitoDestino);
@@ -2308,6 +2623,12 @@ namespace GerenciadorSistemas
             if (string.Equals(nomePropriedade, "Nome", StringComparison.OrdinalIgnoreCase))
                 return item.NomeExibicao ?? string.Empty;
 
+            if (string.Equals(nomePropriedade, "Valor", StringComparison.OrdinalIgnoreCase))
+                return item.Valor ?? string.Empty;
+
+            if (string.Equals(nomePropriedade, "Tipo do Valor", StringComparison.OrdinalIgnoreCase))
+                return item.TipoDoValor.ToString();
+
             if (string.Equals(nomePropriedade, "Descricao Item", StringComparison.OrdinalIgnoreCase))
                 return item.Descricao ?? string.Empty;
 
@@ -2316,6 +2637,15 @@ namespace GerenciadorSistemas
 
             if (string.Equals(nomePropriedade, "Criado em", StringComparison.OrdinalIgnoreCase))
                 return item.CriadoEm.ToString("dd/MM/yyyy HH:mm:ss");
+
+            if (string.Equals(nomePropriedade, "ID", StringComparison.OrdinalIgnoreCase))
+                return item.ID ?? string.Empty;
+
+            if (string.Equals(nomePropriedade, "Editado em", StringComparison.OrdinalIgnoreCase))
+                return item.DataDeEdicao.ToString("dd/MM/yyyy HH:mm:ss");
+
+            if (string.Equals(nomePropriedade, "Caminho", StringComparison.OrdinalIgnoreCase))
+                return item.Caminho ?? string.Empty;
 
             if (string.Equals(nomePropriedade, "Observacao/Local", StringComparison.OrdinalIgnoreCase))
                 return item.Observacao ?? string.Empty;
@@ -2355,6 +2685,7 @@ namespace GerenciadorSistemas
                 itemSelecionado.Descricao = dialog.ItemDescricao;
                 itemSelecionado.Observacao = dialog.Observacao;
                 itemSelecionado.IconeKey = dialog.IconeSelecionado;
+                itemSelecionado.MarcarEditado();
                 itemSelecionado.SincronizarMetadados();
                 string chaveIcone = ResolverIconeDoItem(itemSelecionado);
 
@@ -2363,7 +2694,8 @@ namespace GerenciadorSistemas
                 noSelecionado.ImageKey = chaveIcone;
                 noSelecionado.SelectedImageKey = chaveIcone;
 
-                AtualizarPropertyGrid(itemSelecionado);
+                AtualizarDataGridViewItem(treeViewItens.SelectedNode, noSelecionado);
+                CarregarItemNosCamposEdicao(noSelecionado);
                 treeViewItens.SelectedNode = noSelecionado;
                 noSelecionado.EnsureVisible();
                 PersistirCadastro();
@@ -2386,7 +2718,7 @@ namespace GerenciadorSistemas
 
     }
 
-    internal sealed class InfrastructureItem
+    internal sealed class InfrastructureItem : Item
     {
         public InfrastructureItem(string nomeExibicao, string descricao, string iconeKey, string observacao)
         {
@@ -2395,24 +2727,49 @@ namespace GerenciadorSistemas
             IconeKey = iconeKey ?? string.Empty;
             Observacao = observacao ?? string.Empty;
             CriadoEm = DateTime.Now;
+            DataDeEdicao = CriadoEm;
             Builder = new PropertyGridRuntimeBuilder();
             SincronizarMetadados();
         }
 
-        public string NomeExibicao { get; set; }
+        public string NomeExibicao
+        {
+            get { return Nome ?? string.Empty; }
+            set { Nome = value ?? string.Empty; }
+        }
+
         public string TipoItem { get; set; }
-        public string Descricao { get; set; }
-        public string IconeKey { get; set; }
-        public DateTime CriadoEm { get; set; }
+        public string IconeKey
+        {
+            get { return Icone ?? string.Empty; }
+            set { Icone = value ?? string.Empty; }
+        }
+
+        public DateTime CriadoEm
+        {
+            get { return DataDeCriacao; }
+            set { DataDeCriacao = value; }
+        }
+
         public string Observacao { get; set; }
         public PropertyGridRuntimeBuilder Builder { get; private set; }
+
+        public void MarcarEditado()
+        {
+            DataDeEdicao = DateTime.Now;
+        }
 
         public void SincronizarMetadados()
         {
             Builder.AdicionarPropriedade("Nome", NomeExibicao, "Nome exibido no item", " Info", "");
+            Builder.AdicionarPropriedade("Valor", Valor ?? string.Empty, "Valor bruto do item", " Info", "");
+            Builder.AdicionarPropriedade("Tipo do Valor", TipoDoValor.ToString(), "Tipo do valor do item", " Info", "");
             Builder.AdicionarPropriedade("Descricao Item", Descricao, "Descricao funcional do item", " Info", "");
             Builder.AdicionarPropriedade("Imagem/Icone", IconeKey, "Chave do icone usado no no da arvore", " Info", "");
+            Builder.AdicionarPropriedade("ID", ID ?? string.Empty, "Identificador tecnico unico do item", " Info", "");
             Builder.AdicionarPropriedade("Criado em", CriadoEm.ToString("dd/MM/yyyy HH:mm:ss"), "Data e hora de criacao do item", " Info", "");
+            Builder.AdicionarPropriedade("Editado em", DataDeEdicao.ToString("dd/MM/yyyy HH:mm:ss"), "Data e hora da ultima edicao do item", " Info", "");
+            Builder.AdicionarPropriedade("Caminho", Caminho ?? string.Empty, "Caminho logico derivado da posicao na arvore", " Info", "");
             Builder.AdicionarPropriedade("Observacao/Local", Observacao, "Observacao, local fisico ou local logico do item", " Info", "");
         }
 
@@ -2421,6 +2778,11 @@ namespace GerenciadorSistemas
             InfrastructureItem clone = new InfrastructureItem(NomeExibicao, Descricao, IconeKey, Observacao);
             clone.TipoItem = TipoItem;
             clone.CriadoEm = CriadoEm;
+            clone.DataDeEdicao = DataDeEdicao;
+            clone.ID = ID;
+            clone.Valor = Valor;
+            clone.TipoDoValor = TipoDoValor;
+            clone.Caminho = Caminho;
             clone.Builder = Builder.Clone();
             clone.SincronizarMetadados();
             return clone;
