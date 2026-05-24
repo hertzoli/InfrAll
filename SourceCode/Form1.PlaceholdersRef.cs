@@ -23,7 +23,7 @@ namespace GerenciadorSistemas
 
             return _refPlaceholderResolver.TryResolverTexto(
                 template,
-                EncontrarRefNodeCorrespondente(itensRaiz, treeViewItens.SelectedNode),
+                EncontrarRefNodeCorrespondente(itensRaiz, ObterNoItemEmEdicao()),
                 itensRaiz,
                 out valorResolvido,
                 out erro);

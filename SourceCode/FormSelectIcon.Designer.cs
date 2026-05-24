@@ -1,7 +1,7 @@
 ﻿
 namespace GerenciadorSistemas
 {
-    partial class FormNovoItem
+    partial class FormSelectIcon
     {
         /// <summary>
         /// Required designer variable.
@@ -29,12 +29,6 @@ namespace GerenciadorSistemas
         /// </summary>
         private void InitializeComponent()
         {
-            this._textBoxObservacao = new System.Windows.Forms.TextBox();
-            this._textBoxDescricao = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this._textBoxNome = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.TreeViewImages = new System.Windows.Forms.TreeView();
             this.buttonNovoIcone = new System.Windows.Forms.Button();
@@ -43,62 +37,10 @@ namespace GerenciadorSistemas
             this.buttonDefinirIconePadrao = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // _textBoxObservacao
-            // 
-            this._textBoxObservacao.Location = new System.Drawing.Point(12, 444);
-            this._textBoxObservacao.Multiline = true;
-            this._textBoxObservacao.Name = "_textBoxObservacao";
-            this._textBoxObservacao.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this._textBoxObservacao.Size = new System.Drawing.Size(376, 78);
-            this._textBoxObservacao.TabIndex = 17;
-            // 
-            // _textBoxDescricao
-            // 
-            this._textBoxDescricao.Location = new System.Drawing.Point(12, 339);
-            this._textBoxDescricao.Multiline = true;
-            this._textBoxDescricao.Name = "_textBoxDescricao";
-            this._textBoxDescricao.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this._textBoxDescricao.Size = new System.Drawing.Size(376, 69);
-            this._textBoxDescricao.TabIndex = 15;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 428);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 13);
-            this.label4.TabIndex = 14;
-            this.label4.Text = "Descrição:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 323);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 13);
-            this.label2.TabIndex = 12;
-            this.label2.Text = "Valor:";
-            // 
-            // _textBoxNome
-            // 
-            this._textBoxNome.Location = new System.Drawing.Point(59, 12);
-            this._textBoxNome.Name = "_textBoxNome";
-            this._textBoxNome.Size = new System.Drawing.Size(332, 20);
-            this._textBoxNome.TabIndex = 11;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "Nome:";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 63);
+            this.label3.Location = new System.Drawing.Point(15, 15);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 13);
             this.label3.TabIndex = 18;
@@ -107,9 +49,9 @@ namespace GerenciadorSistemas
             // TreeViewImages
             // 
             this.TreeViewImages.HideSelection = false;
-            this.TreeViewImages.Location = new System.Drawing.Point(15, 79);
+            this.TreeViewImages.Location = new System.Drawing.Point(15, 31);
             this.TreeViewImages.Name = "TreeViewImages";
-            this.TreeViewImages.Size = new System.Drawing.Size(376, 199);
+            this.TreeViewImages.Size = new System.Drawing.Size(376, 247);
             this.TreeViewImages.TabIndex = 20;
             // 
             // buttonNovoIcone
@@ -124,7 +66,7 @@ namespace GerenciadorSistemas
             // 
             // botaoOk
             // 
-            this.botaoOk.Location = new System.Drawing.Point(313, 540);
+            this.botaoOk.Location = new System.Drawing.Point(313, 323);
             this.botaoOk.Name = "botaoOk";
             this.botaoOk.Size = new System.Drawing.Size(75, 23);
             this.botaoOk.TabIndex = 22;
@@ -133,7 +75,7 @@ namespace GerenciadorSistemas
             // 
             // botaoCancelar
             // 
-            this.botaoCancelar.Location = new System.Drawing.Point(232, 540);
+            this.botaoCancelar.Location = new System.Drawing.Point(232, 323);
             this.botaoCancelar.Name = "botaoCancelar";
             this.botaoCancelar.Size = new System.Drawing.Size(75, 23);
             this.botaoCancelar.TabIndex = 23;
@@ -150,25 +92,19 @@ namespace GerenciadorSistemas
             this.buttonDefinirIconePadrao.UseVisualStyleBackColor = true;
             this.buttonDefinirIconePadrao.Click += new System.EventHandler(this.buttonDefinirIconePadrao_Click);
             // 
-            // FormNovoItem
+            // FormSelectIcon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(399, 575);
+            this.ClientSize = new System.Drawing.Size(399, 358);
             this.Controls.Add(this.buttonDefinirIconePadrao);
             this.Controls.Add(this.botaoCancelar);
             this.Controls.Add(this.botaoOk);
             this.Controls.Add(this.buttonNovoIcone);
             this.Controls.Add(this.TreeViewImages);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this._textBoxObservacao);
-            this.Controls.Add(this._textBoxDescricao);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this._textBoxNome);
-            this.Controls.Add(this.label1);
-            this.Name = "FormNovoItem";
-            this.Text = "Novo item";
+            this.Name = "FormSelectIcon";
+            this.Text = "Selecionar icone";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -176,12 +112,6 @@ namespace GerenciadorSistemas
 
         #endregion
 
-        private System.Windows.Forms.TextBox _textBoxObservacao;
-        private System.Windows.Forms.TextBox _textBoxDescricao;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox _textBoxNome;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TreeView TreeViewImages;
         private System.Windows.Forms.Button buttonNovoIcone;

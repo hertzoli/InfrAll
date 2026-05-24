@@ -60,17 +60,20 @@
     <Compile Include="FormIconGenerator.Designer.cs">
       <DependentUpon>FormIconGenerator.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormNovoItem.cs">
+    <Compile Include="FormSelectIcon.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormNovoItem.Designer.cs">
-      <DependentUpon>FormNovoItem.cs</DependentUpon>
+    <Compile Include="FormSelectIcon.Designer.cs">
+      <DependentUpon>FormSelectIcon.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\CadastroYamlContract.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\TipoDoValor.cs" />
     <Compile Include="OnlineAutoUpdateUltra.cs" />
     <Compile Include="PropertyGridRuntimeBuilder.cs" />
+    <Compile Include="RichTextBoxSemSnap.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Services\ItemHierarchyService.cs" />
     <Compile Include="Services\ItemIdService.cs" />
     <Compile Include="Services\ItemClipboardService.cs" />
@@ -108,8 +111,8 @@
     <EmbeddedResource Include="FormIconGenerator.resx">
       <DependentUpon>FormIconGenerator.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormNovoItem.resx">
-      <DependentUpon>FormNovoItem.cs</DependentUpon>
+    <EmbeddedResource Include="FormSelectIcon.resx">
+      <DependentUpon>FormSelectIcon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

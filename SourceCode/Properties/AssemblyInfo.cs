@@ -32,10 +32,23 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.6.8")]
-[assembly: AssemblyFileVersion("1.6.8")]
+[assembly: AssemblyVersion("2.0")]
+[assembly: AssemblyFileVersion("2.0")]
 
 /*
+
+
+
+v2.0
+ - no `DataGridViewItem` as colunas [TipoDoValor, Descricao, ID, DataDeCriacao, DataDeEdicao] foram ser removidas. apenas as colunas [Icone, Nome, Valor] continua sendo exibindas e uma quarta coluna foi adicionada com o conteúdo do "Local" do item (mesmo conteudo de `textBoxLocal`) 
+ - o `FormNovoItem.cs` não deve ser mais usado para criar um novo item, inserir os dados de um novo item deve ser feita usando os controles dentro de `groupBox1` (pictureBoxImagem, textBoxNome, RichTextBoxValor, comboBoxTipo, textBoxDescricao).
+o `FormNovoItem.cs` deve ser renomeado para `FormSelectIcon.cs` que agora deve ser convertido para ser o form apenas de seleção de ícone do item, e _textBoxNome, _textBoxDescricao, _textBoxObservacao devem ser removidos dete formulário. 
+o botão `buttonAlterarIcone` do `Form1` deve abrir o novo `FormSelectIcon.cs` para o usuário selecionar o icone desejado para o item que está sendo criado ou editado.
+ - o botão `buttonNovoItem` e `buttonNovoSubItem`  inica os controles do `groupBox1` (pictureBoxImagem, textBoxNome, RichTextBoxValor, comboBoxTipo, textBoxDescricao) vazios para que o usuário possa preencher.
+ - o nome do item não permitir o uso do caractere '/' para evitar conflito com a referencia (palaceholder) relativa.
+ - durante o processo de criar ou editar um item se o usuaria fizer qualquer operação que pode perder os dados editados, então perguntar se quer salvar antes de sair.
+ajuste o `RichTextBoxValor` para usar o `RichTextBoxSemSnap` afim de resolver esse problema do "snap" que não permite selecionar regiões do texto de forma fluida
+ - resolvido bug que fazia executar um comando a partir de um subitem selecionado em `DataGridViewItem` dá um erro informando que a referencia "~REF[/IP]~" não foi encontrada.
 
 
 v1.6.8

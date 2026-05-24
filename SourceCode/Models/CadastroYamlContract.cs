@@ -28,6 +28,9 @@ namespace GerenciadorSistemas
 
         [YamlMember(Alias = "itensExpandidos")]
         public List<string> ItensExpandidos { get; set; }
+
+        [YamlMember(Alias = "intBaseID")]
+        public long IntBaseID { get; set; }
     }
 
     [Obfuscation(Exclude = true, ApplyToMembers = true)]

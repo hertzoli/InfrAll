@@ -34,6 +34,8 @@ namespace GerenciadorSistemas
         private bool _suspenderConfirmacaoSaidaPropriedade;
         private bool _suspenderSelecaoDataGridItem;
         private bool _suspenderFormatacaoRichTextBoxValor;
+        private bool _persistindoCadastro;
+        private bool _intBaseIDConsumidoSemPersistir;
         private bool _arrastandoItemTreeView;
         private bool _suspenderAtualizacaoSelecaoPorDrag;
         private bool _suspenderConfirmacaoSelecaoPorDrag;
@@ -41,6 +43,10 @@ namespace GerenciadorSistemas
         private TreeNode _noItemEmEdicao;
         private TreeNode _noSelecionadoAntesDoDrag;
         private TreeNode _noItemEmEdicaoAntesDoDrag;
+        private TreeNode _noPaiNovoItemEmCriacao;
+        private bool _criandoNovoItem;
+        private string _iconeSelecionadoCamposEdicao;
+        private string _iconeSelecionadoCamposEdicaoOriginal;
         private readonly ToolTip _toolTipBotoes;
         private readonly Dictionary<Control, string> _snapshotCamposEdicao;
         private readonly List<Control> _camposTextoEditaveis;
@@ -82,6 +88,7 @@ namespace GerenciadorSistemas
             _corFundoValorPadrao = RichTextBoxValor.BackColor;
             _corTextoValorPadrao = RichTextBoxValor.ForeColor;
             _itemIdService = new ItemIdService();
+            _itemIdService.IntBaseIDConsumido += itemIdService_IntBaseIDConsumido;
             _itemHierarchyService = new ItemHierarchyService(_itemIdService);
             _itemClipboardService = new ItemClipboardService();
             _undoHistoryService = new ItemUndoHistoryService(50);
@@ -120,6 +127,17 @@ namespace GerenciadorSistemas
             CarregarCadastroPersistido();
         }
 
+        private void itemIdService_IntBaseIDConsumido(object sender, EventArgs e)
+        {
+            if (_suspenderPersistencia || _persistindoCadastro)
+            {
+                _intBaseIDConsumidoSemPersistir = true;
+                return;
+            }
+
+            PersistirCadastro();
+        }
+
         private void ConfigurarComboBoxTipo()
         {
             comboBoxTipo.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -145,11 +163,7 @@ namespace GerenciadorSistemas
             DataGridViewItem.Columns.Add(colunaIcone);
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Nome", "Nome", 140));
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Valor", "Valor", 180));
-            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("TipoDoValor", "TipoDoValor", 90));
-            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Descricao", "Descricao", 180));
-            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("ID", "ID", 90));
-            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("DataDeCriacao", "DataDeCriacao", 120));
-            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("DataDeEdicao", "DataDeEdicao", 120));
+            DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Local", "Local", 160));
 
             DataGridViewItem.Columns["Nome"].DefaultCellStyle.Font = new Font(DataGridViewItem.Font, FontStyle.Bold);
             DataGridViewItem.Columns["Valor"].DefaultCellStyle.BackColor = Color.LightYellow;
@@ -174,6 +188,7 @@ namespace GerenciadorSistemas
             _toolTipBotoes.SetToolTip(buttonRun, "Executar o valor informado como comando.");
             _toolTipBotoes.SetToolTip(buttonCopy, "Copiar o valor informado para a area de transferencia.");
             _toolTipBotoes.SetToolTip(buttonCopyPlaceholder, "Copiar o placeholder da propriedade para a area de transferencia.");
+            _toolTipBotoes.SetToolTip(buttonAlterarIcone, "Selecionar o icone do item atual ou do novo item.");
             _toolTipBotoes.SetToolTip(buttonSalvar, "Salvar as alteracoes da propriedade atual.");
             _toolTipBotoes.SetToolTip(textBoxLocal, "Informar o local associado a propriedade selecionada.");
             _toolTipBotoes.SetToolTip(textBoxID, "Informar a categoria usada para organizar a propriedade.");
@@ -228,14 +243,15 @@ namespace GerenciadorSistemas
             AtualizarFormatoRichTextBoxValor();
 
             _tipoPropriedadeSelecionadaOriginal = ObterTipoSelecionado();
+            _iconeSelecionadoCamposEdicaoOriginal = _iconeSelecionadoCamposEdicao ?? string.Empty;
         }
 
         private bool ExistemAlteracoesNaoSalvasNaPropriedadeSelecionada()
         {
-            if (_suspenderConfirmacaoSaidaPropriedade || string.IsNullOrWhiteSpace(_nomePropriedadeSelecionadaOriginal))
+            if (_suspenderConfirmacaoSaidaPropriedade)
                 return false;
 
-            foreach (Control campo in _camposTextoEditaveis)
+            foreach (Control campo in ObterCamposEditaveisDoItem())
             {
                 string valorBase;
 
@@ -247,7 +263,15 @@ namespace GerenciadorSistemas
                     return true;
             }
 
-            return ObterTipoSelecionado() != _tipoPropriedadeSelecionadaOriginal;
+            return ObterTipoSelecionado() != _tipoPropriedadeSelecionadaOriginal
+                || !string.Equals(_iconeSelecionadoCamposEdicao ?? string.Empty, _iconeSelecionadoCamposEdicaoOriginal ?? string.Empty, StringComparison.Ordinal);
+        }
+
+        private IEnumerable<Control> ObterCamposEditaveisDoItem()
+        {
+            yield return textBoxNome;
+            yield return RichTextBoxValor;
+            yield return textBoxDescricao;
         }
 
         private bool ConfirmarSaidaDaPropriedadeComAlteracoes()
@@ -256,13 +280,19 @@ namespace GerenciadorSistemas
                 return true;
 
             DialogResult resultado = MessageBox.Show(
-                "A propriedade selecionada possui alteracoes nao salvas. Deseja sair sem salvar a modificacao?",
+                "Existem dados nao salvos nos campos do item. Deseja salvar antes de sair?",
                 "Alteracoes nao salvas",
-                MessageBoxButtons.YesNo,
+                MessageBoxButtons.YesNoCancel,
                 MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2);
+                MessageBoxDefaultButton.Button1);
 
-            return resultado == DialogResult.Yes;
+            if (resultado == DialogResult.Cancel)
+                return false;
+
+            if (resultado == DialogResult.No)
+                return true;
+
+            return SalvarCamposEdicaoAtual();
         }
 
         private void ExecutarSemConfirmacaoSaidaPropriedade(Action acao)
@@ -401,7 +431,10 @@ namespace GerenciadorSistemas
 
         private void buttonNovoItem_Click(object sender, EventArgs e)
         {
-            CriarNovoItem(null);
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+                return;
+
+            IniciarCriacaoNovoItem(null);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -417,6 +450,9 @@ namespace GerenciadorSistemas
 
         private void buttonNovoSubItem_Click(object sender, EventArgs e)
         {
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+                return;
+
             TreeNode noPai = treeViewItens.SelectedNode;
 
             if (noPai == null)
@@ -426,11 +462,14 @@ namespace GerenciadorSistemas
                 return;
             }
 
-            CriarNovoItem(noPai);
+            IniciarCriacaoNovoItem(noPai);
         }
 
         private void buttonExcluirItem_Click(object sender, EventArgs e)
         {
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+                return;
+
             TreeNode noSelecionado = treeViewItens.SelectedNode;
 
             if (noSelecionado == null)
@@ -463,6 +502,9 @@ namespace GerenciadorSistemas
 
         private void buttonDuplicar_Click(object sender, EventArgs e)
         {
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+                return;
+
             DuplicarItemSelecionado();
         }
 
@@ -804,24 +846,28 @@ namespace GerenciadorSistemas
 
         private void buttonSalvar_Click(object sender, EventArgs e)
         {
+            SalvarCamposEdicaoAtual();
+        }
+
+        private bool SalvarCamposEdicaoAtual()
+        {
             TreeNode noEmEdicao = ObterNoItemEmEdicao();
             InfrastructureItem itemSelecionado = noEmEdicao != null ? noEmEdicao.Tag as InfrastructureItem : null;
+
+            if (_criandoNovoItem)
+                return CriarNovoItem(_noPaiNovoItemEmCriacao);
 
             if (itemSelecionado == null)
             {
                 MessageBox.Show("Selecione um item antes de salvar.", "Salvar item",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                return false;
             }
 
             string nomeItem = (textBoxNome.Text ?? string.Empty).Trim();
 
-            if (string.IsNullOrWhiteSpace(nomeItem))
-            {
-                MessageBox.Show("Informe o nome do item.", "Salvar item",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            if (!ValidarNomeItem(nomeItem, "Salvar item"))
+                return false;
 
             RegistrarHistoricoAntesDaAcao("Editar item");
 
@@ -829,6 +875,7 @@ namespace GerenciadorSistemas
             itemSelecionado.Valor = RichTextBoxValor.Text ?? string.Empty;
             itemSelecionado.TipoDoValor = ObterTipoDoValorSelecionado();
             itemSelecionado.Descricao = textBoxDescricao.Text ?? string.Empty;
+            itemSelecionado.IconeKey = _iconeSelecionadoCamposEdicao ?? string.Empty;
             itemSelecionado.MarcarEditado();
             itemSelecionado.SincronizarMetadados();
 
@@ -844,6 +891,7 @@ namespace GerenciadorSistemas
             });
             SincronizarEstadoCamposEdicao();
             PersistirCadastro();
+            return true;
         }
          
 
@@ -1104,38 +1152,99 @@ namespace GerenciadorSistemas
                 DesenharIndicadorDrop(e.Graphics, e.Bounds, _posicaoDropHover.Value);
         }
 
-        private void CriarNovoItem(TreeNode noPai)
+        private void IniciarCriacaoNovoItem(TreeNode noPai)
         {
-            using (FormNovoItem dialog = new FormNovoItem())
+            _criandoNovoItem = true;
+            _noPaiNovoItemEmCriacao = noPai;
+            _noItemEmEdicao = null;
+            _iconeSelecionadoCamposEdicao = string.Empty;
+
+            ExecutarSemMonitoramentoCamposEdicao(() =>
             {
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                    return;
+                textBoxNome.Text = string.Empty;
+                RichTextBoxValor.Text = string.Empty;
+                textBoxDescricao.Text = string.Empty;
+                textBoxID.Text = string.Empty;
+                textBoxLocal.Text = noPai == null ? string.Empty : ObterCaminhoCompletoDoNo(noPai);
+                textBoxDataCriacao.Text = string.Empty;
+                textBoxDataEdicao.Text = string.Empty;
+                textBoxReferenciaPropriedade.Text = string.Empty;
+                SelecionarTipoDoValorNoCombo(TipoDoValor.Texto);
+            });
 
-                GarantirIconeCarregadoNoImageListPrincipal(dialog.IconeSelecionado);
+            AtualizarImagemLateral(null);
+            SincronizarEstadoCamposEdicao();
+            AtualizarEstadoButtonRun();
+            textBoxNome.Focus();
+        }
 
-                InfrastructureItem novoItem = new InfrastructureItem(
-                    dialog.ItemNome,
-                    dialog.ItemDescricao,
-                    dialog.IconeSelecionado,
-                    dialog.Observacao);
-                PrepararNovoItem(novoItem);
+        private bool CriarNovoItem(TreeNode noPai)
+        {
+            string nomeItem = (textBoxNome.Text ?? string.Empty).Trim();
 
-                TreeNode novoNo = CriarNoParaItem(novoItem);
+            if (!ValidarNomeItem(nomeItem, "Novo item"))
+                return false;
 
-                RegistrarHistoricoAntesDaAcao(noPai == null ? "Adicionar item raiz" : "Adicionar subitem");
+            string iconeSelecionado = (_iconeSelecionadoCamposEdicao ?? string.Empty).Trim();
+            GarantirIconeCarregadoNoImageListPrincipal(iconeSelecionado);
 
-                if (noPai == null)
-                    treeViewItens.Nodes.Add(novoNo);
-                else
-                {
-                    noPai.Nodes.Add(novoNo);
-                    noPai.Expand();
-                }
+            InfrastructureItem novoItem = new InfrastructureItem(
+                nomeItem,
+                textBoxDescricao.Text ?? string.Empty,
+                iconeSelecionado,
+                string.Empty);
+            novoItem.Valor = RichTextBoxValor.Text ?? string.Empty;
+            novoItem.TipoDoValor = ObterTipoDoValorSelecionado();
+            PrepararNovoItem(novoItem);
 
+            TreeNode novoNo = CriarNoParaItem(novoItem);
+
+            RegistrarHistoricoAntesDaAcao(noPai == null ? "Adicionar item raiz" : "Adicionar subitem");
+
+            if (noPai == null)
+                treeViewItens.Nodes.Add(novoNo);
+            else
+            {
+                noPai.Nodes.Add(novoNo);
+                noPai.Expand();
+            }
+
+            _criandoNovoItem = false;
+            _noPaiNovoItemEmCriacao = null;
+
+            ExecutarSemConfirmacaoSaidaPropriedade(() =>
+            {
                 treeViewItens.SelectedNode = novoNo;
                 novoNo.EnsureVisible();
-                PersistirCadastro();
+                CarregarItemNosCamposEdicao(novoNo);
+            });
+
+            PersistirCadastro();
+            return true;
+        }
+
+        private static bool NomeItemPossuiCaractereInvalido(string nomeItem)
+        {
+            return (nomeItem ?? string.Empty).IndexOf('/') >= 0;
+        }
+
+        private bool ValidarNomeItem(string nomeItem, string tituloMensagem)
+        {
+            if (string.IsNullOrWhiteSpace(nomeItem))
+            {
+                MessageBox.Show("Informe o nome do item.", tituloMensagem,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
             }
+
+            if (NomeItemPossuiCaractereInvalido(nomeItem))
+            {
+                MessageBox.Show("O nome do item nao pode conter o caractere '/'.", tituloMensagem,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
         }
 
         private TreeNode CriarNoParaItem(InfrastructureItem item)
@@ -1159,7 +1268,6 @@ namespace GerenciadorSistemas
             item.ID = _itemIdService.GerarIdUnico(idsExistentes);
             item.CriadoEm = DateTime.Now;
             item.DataDeEdicao = item.CriadoEm;
-            item.TipoDoValor = TipoDoValor.Texto;
             item.SincronizarMetadados();
         }
 
@@ -1261,6 +1369,8 @@ namespace GerenciadorSistemas
 
             try
             {
+                _suspenderPersistencia = true;
+
                 IDeserializer deserializer = new DeserializerBuilder()
                     .WithNamingConvention(CamelCaseNamingConvention.Instance)
                     .IgnoreUnmatchedProperties()
@@ -1285,10 +1395,11 @@ namespace GerenciadorSistemas
                     if (cadastro.Itens == null)
                         throw new InvalidDataException("O arquivo cadastro.yaml nao contem a lista de itens.");
 
+                    _itemIdService.DefinirIntBaseID(ObterIntBaseIDPersistido(cadastro));
+
                     List<Item> itens = cadastro.Itens.Select(MapearPersistenciaParaItem).ToList();
                     _itemHierarchyService.PrepararHierarquia(itens);
 
-                    _suspenderPersistencia = true;
                     treeViewItens.Nodes.Clear();
 
                     foreach (Item item in itens)
@@ -1309,8 +1420,18 @@ namespace GerenciadorSistemas
             finally
             {
                 _suspenderPersistencia = false;
+                if (_intBaseIDConsumidoSemPersistir)
+                    PersistirCadastro();
                 LimparHistoricoDeAcoes();
             }
+        }
+
+        private static long ObterIntBaseIDPersistido(CadastroPersistido cadastro)
+        {
+            if (cadastro == null || cadastro.Configuracoes == null || cadastro.Configuracoes.IntBaseID < 1)
+                return 1;
+
+            return cadastro.Configuracoes.IntBaseID;
         }
 
         private void TratarFalhaAoCarregarCadastro(string caminhoArquivo, Exception erroOriginal)
@@ -1401,7 +1522,8 @@ namespace GerenciadorSistemas
                 SavedAt = DateTime.Now.ToString("o"),
                 Configuracoes = new ConfiguracoesPersistidas
                 {
-                    IconePadrao = FormNovoItem.CarregarIconePadraoPersistido(),
+                    IconePadrao = FormSelectIcon.CarregarIconePadraoPersistido(),
+                    IntBaseID = _itemIdService.IntBaseID,
                     ItensExpandidos = new List<string>()
                 },
                 Itens = new List<ItemPersistido>()
@@ -1428,10 +1550,14 @@ namespace GerenciadorSistemas
         private void PersistirCadastro()
         {
             if (_suspenderPersistencia)
+            {
+                _intBaseIDConsumidoSemPersistir = true;
                 return;
+            }
 
             try
             {
+                _persistindoCadastro = true;
                 AtualizarCaminhosDosItensDaArvore();
 
                 CadastroPersistido cadastro = new CadastroPersistido
@@ -1440,7 +1566,8 @@ namespace GerenciadorSistemas
                     SavedAt = DateTime.Now.ToString("o"),
                     Configuracoes = new ConfiguracoesPersistidas
                     {
-                        IconePadrao = FormNovoItem.CarregarIconePadraoPersistido(),
+                        IconePadrao = FormSelectIcon.CarregarIconePadraoPersistido(),
+                        IntBaseID = _itemIdService.IntBaseID,
                         ItensExpandidos = ColetarIdsDosNosExpandidos()
                     },
                     Itens = treeViewItens.Nodes.Cast<TreeNode>()
@@ -1466,6 +1593,7 @@ namespace GerenciadorSistemas
                     File.Delete(caminhoArquivo);
 
                 File.Move(caminhoTemporario, caminhoArquivo);
+                _intBaseIDConsumidoSemPersistir = false;
             }
             catch (Exception ex)
             {
@@ -1474,6 +1602,10 @@ namespace GerenciadorSistemas
                     "Erro ao salvar cadastro",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                _persistindoCadastro = false;
             }
         }
 
@@ -1799,11 +1931,7 @@ namespace GerenciadorSistemas
                 ObterImagemDoItem(item),
                 item.NomeExibicao,
                 item.Valor ?? string.Empty,
-                item.TipoDoValor.ToString(),
-                item.Descricao ?? string.Empty,
-                item.ID ?? string.Empty,
-                item.CriadoEm.ToString("dd/MM/yyyy HH:mm:ss"),
-                item.DataDeEdicao.ToString("dd/MM/yyyy HH:mm:ss"));
+                item.Caminho ?? string.Empty);
 
             DataGridViewRow linha = DataGridViewItem.Rows[indice];
             linha.Tag = no;
@@ -1849,7 +1977,39 @@ namespace GerenciadorSistemas
             if (noSelecionado == null)
                 return;
 
+            if (!ConfirmarSaidaDaPropriedadeComAlteracoes())
+            {
+                if (_noItemEmEdicao != null)
+                {
+                    _suspenderSelecaoDataGridItem = true;
+                    try
+                    {
+                        SelecionarLinhaDataGridViewItem(_noItemEmEdicao);
+                    }
+                    finally
+                    {
+                        _suspenderSelecaoDataGridItem = false;
+                    }
+                }
+
+                return;
+            }
+
             CarregarItemNosCamposEdicao(noSelecionado);
+        }
+
+        private void DataGridViewItem_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+                return;
+
+            TreeNode noSelecionado = DataGridViewItem.Rows[e.RowIndex].Tag as TreeNode;
+
+            if (noSelecionado == null)
+                return;
+
+            if (ExecutarItemSeForComandoOuScript(noSelecionado))
+                return;
         }
 
         private TreeNode ObterNoSelecionadoNoDataGridViewItem()
@@ -1879,12 +2039,17 @@ namespace GerenciadorSistemas
             if (item == null)
             {
                 _noItemEmEdicao = null;
+                _criandoNovoItem = false;
+                _noPaiNovoItemEmCriacao = null;
                 LimparCamposEdicao();
                 AtualizarImagemLateral(null);
                 return;
             }
 
             _noItemEmEdicao = no;
+            _criandoNovoItem = false;
+            _noPaiNovoItemEmCriacao = null;
+            _iconeSelecionadoCamposEdicao = item.IconeKey ?? string.Empty;
 
             ExecutarSemMonitoramentoCamposEdicao(() =>
             {
@@ -1909,8 +2074,21 @@ namespace GerenciadorSistemas
             if (pictureBoxImagem == null)
                 return;
 
-            pictureBoxImagem.Image = item == null ? null : ObterImagemDoItem(item);
+            pictureBoxImagem.Image = item == null ? ObterImagemPorChave(_iconeSelecionadoCamposEdicao) : ObterImagemDoItem(item);
             pictureBoxImagem.SizeMode = PictureBoxSizeMode.Zoom;
+        }
+
+        private Image ObterImagemPorChave(string chaveIcone)
+        {
+            if (string.IsNullOrWhiteSpace(chaveIcone))
+                return null;
+
+            GarantirIconeCarregadoNoImageListPrincipal(chaveIcone);
+
+            if (imageList1.Images.ContainsKey(chaveIcone))
+                return imageList1.Images[chaveIcone];
+
+            return null;
         }
 
         private void CarregarImagensDaPastaDoPrograma()
@@ -2111,12 +2289,8 @@ namespace GerenciadorSistemas
             {
                 string nomeAtualizado = (valor ?? string.Empty).Trim();
 
-                if (string.IsNullOrWhiteSpace(nomeAtualizado))
-                {
-                    MessageBox.Show("O nome do item nao pode ficar vazio.", "Salvar propriedade",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (!ValidarNomeItem(nomeAtualizado, "Salvar propriedade"))
                     return false;
-                }
 
                 item.NomeExibicao = nomeAtualizado;
 
@@ -2172,6 +2346,8 @@ namespace GerenciadorSistemas
 
         private void LimparCamposEdicao()
         {
+            _iconeSelecionadoCamposEdicao = string.Empty;
+
             ExecutarSemMonitoramentoCamposEdicao(() =>
             {
                 textBoxNome.Text = string.Empty;
@@ -2187,6 +2363,21 @@ namespace GerenciadorSistemas
             AtualizarImagemLateral(null);
             SincronizarEstadoCamposEdicao();
             AtualizarEstadoButtonRun();
+        }
+
+        private void buttonAlterarIcone_Click(object sender, EventArgs e)
+        {
+            using (FormSelectIcon dialog = new FormSelectIcon())
+            {
+                dialog.ConfigurarSelecao(_iconeSelecionadoCamposEdicao);
+
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                _iconeSelecionadoCamposEdicao = dialog.IconeSelecionado ?? string.Empty;
+                GarantirIconeCarregadoNoImageListPrincipal(_iconeSelecionadoCamposEdicao);
+                AtualizarImagemLateral(null);
+            }
         }
 
         private void CampoTipoOuValorAlterado(object sender, EventArgs e)
@@ -2674,37 +2865,8 @@ namespace GerenciadorSistemas
                 return;
             }
 
-            using (FormNovoItem dialog = new FormNovoItem())
-            {
-                dialog.ConfigurarParaEdicao(
-                    itemSelecionado.NomeExibicao,
-                    itemSelecionado.Descricao,
-                    itemSelecionado.Observacao,
-                    itemSelecionado.IconeKey);
-
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                    return;
-
-                GarantirIconeCarregadoNoImageListPrincipal(dialog.IconeSelecionado);
-
-                itemSelecionado.NomeExibicao = dialog.ItemNome;
-                itemSelecionado.Descricao = dialog.ItemDescricao;
-                itemSelecionado.Observacao = dialog.Observacao;
-                itemSelecionado.IconeKey = dialog.IconeSelecionado;
-                itemSelecionado.MarcarEditado();
-                itemSelecionado.SincronizarMetadados();
-                string chaveIcone = ResolverIconeDoItem(itemSelecionado);
-
-                noSelecionado.Text = itemSelecionado.NomeExibicao;
-                noSelecionado.Name = itemSelecionado.NomeExibicao;
-                AplicarIconeNoNo(noSelecionado, chaveIcone);
-
-                AtualizarDataGridViewItem(treeViewItens.SelectedNode, noSelecionado);
-                CarregarItemNosCamposEdicao(noSelecionado);
-                treeViewItens.SelectedNode = noSelecionado;
-                noSelecionado.EnsureVisible();
-                PersistirCadastro();
-            }
+            CarregarItemNosCamposEdicao(noSelecionado);
+            textBoxNome.Focus();
         }
 
      
@@ -2713,7 +2875,28 @@ namespace GerenciadorSistemas
             if (e.Node != null)
                 treeViewItens.SelectedNode = e.Node;
 
+            if (ExecutarItemSeForComandoOuScript(e.Node))
+                return;
+
             buttonEditar_Click(sender, EventArgs.Empty);
+        }
+
+        private bool ExecutarItemSeForComandoOuScript(TreeNode no)
+        {
+            InfrastructureItem item = no != null ? no.Tag as InfrastructureItem : null;
+
+            if (item == null || !EhTipoExecutavel(item.TipoDoValor))
+                return false;
+
+            CarregarItemNosCamposEdicao(no);
+            buttonRun_Click(this, EventArgs.Empty);
+            return true;
+        }
+
+        private static bool EhTipoExecutavel(TipoDoValor tipo)
+        {
+            return tipo == TipoDoValor.Comando
+                || tipo == TipoDoValor.Script;
         }
 
         private void buttonIssue_Click(object sender, EventArgs e)
@@ -2721,6 +2904,10 @@ namespace GerenciadorSistemas
             Process.Start("https://github.com/hertzoli/InfrAll/issues");
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            textBoxDescricao.Text = RichTextBoxValor.AutoWordSelection.ToString();
+        }
     }
 
     internal sealed class InfrastructureItem : Item

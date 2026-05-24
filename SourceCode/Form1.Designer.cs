@@ -37,7 +37,7 @@ namespace GerenciadorSistemas
             this.panel3 = new System.Windows.Forms.Panel();
             this.buttonIssue = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.buttonAlterarIcone = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.textBoxDataEdicao = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -55,7 +55,7 @@ namespace GerenciadorSistemas
             this.buttonCopy = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.buttonRun = new System.Windows.Forms.Button();
-            this.RichTextBoxValor = new System.Windows.Forms.RichTextBox();
+            this.RichTextBoxValor = new GerenciadorSistemas.RichTextBoxSemSnap();
             this.buttonSalvar = new System.Windows.Forms.Button();
             this.textBoxDescricao = new System.Windows.Forms.TextBox();
             this.textBoxLocal = new System.Windows.Forms.TextBox();
@@ -73,6 +73,7 @@ namespace GerenciadorSistemas
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.panel4 = new System.Windows.Forms.Panel();
             this.DataGridViewItem = new System.Windows.Forms.DataGridView();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImagem)).BeginInit();
@@ -139,6 +140,7 @@ namespace GerenciadorSistemas
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.buttonAlterarIcone);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.textBoxDataEdicao);
             this.groupBox1.Controls.Add(this.label8);
@@ -169,15 +171,16 @@ namespace GerenciadorSistemas
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Item";
             // 
-            // button1
+            // buttonAlterarIcone
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(38, 16);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(103, 22);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "Selecionar Icone";
-            this.button1.UseVisualStyleBackColor = true;
+            this.buttonAlterarIcone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonAlterarIcone.Location = new System.Drawing.Point(50, 16);
+            this.buttonAlterarIcone.Name = "buttonAlterarIcone";
+            this.buttonAlterarIcone.Size = new System.Drawing.Size(103, 22);
+            this.buttonAlterarIcone.TabIndex = 25;
+            this.buttonAlterarIcone.Text = "Alterar Icone";
+            this.buttonAlterarIcone.UseVisualStyleBackColor = true;
+            this.buttonAlterarIcone.Click += new System.EventHandler(this.buttonAlterarIcone_Click);
             // 
             // label9
             // 
@@ -221,7 +224,7 @@ namespace GerenciadorSistemas
             // 
             // pictureBoxImagem
             // 
-            this.pictureBoxImagem.Location = new System.Drawing.Point(12, 18);
+            this.pictureBoxImagem.Location = new System.Drawing.Point(20, 18);
             this.pictureBoxImagem.Name = "pictureBoxImagem";
             this.pictureBoxImagem.Size = new System.Drawing.Size(20, 20);
             this.pictureBoxImagem.TabIndex = 20;
@@ -250,9 +253,9 @@ namespace GerenciadorSistemas
             // 
             this.textBoxNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxNome.Location = new System.Drawing.Point(56, 45);
+            this.textBoxNome.Location = new System.Drawing.Point(51, 45);
             this.textBoxNome.Name = "textBoxNome";
-            this.textBoxNome.Size = new System.Drawing.Size(242, 20);
+            this.textBoxNome.Size = new System.Drawing.Size(246, 20);
             this.textBoxNome.TabIndex = 1;
             // 
             // buttonCopyPlaceholder
@@ -548,7 +551,19 @@ namespace GerenciadorSistemas
             this.DataGridViewItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DataGridViewItem.Size = new System.Drawing.Size(417, 590);
             this.DataGridViewItem.TabIndex = 20;
+            this.DataGridViewItem.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewItem_CellDoubleClick);
             this.DataGridViewItem.SelectionChanged += new System.EventHandler(this.DataGridViewItem_SelectionChanged);
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(305, 259);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(44, 21);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "Copy";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
@@ -604,7 +619,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.Button buttonCopy;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button buttonRun;
-        private System.Windows.Forms.RichTextBox RichTextBoxValor;
+        private GerenciadorSistemas.RichTextBoxSemSnap RichTextBoxValor;
         private System.Windows.Forms.Button buttonSalvar;
         private System.Windows.Forms.TextBox textBoxDescricao;
         private System.Windows.Forms.TextBox textBoxLocal;
@@ -620,6 +635,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TextBox textBoxDataEdicao;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBoxDataCriacao;
+        private System.Windows.Forms.Button buttonAlterarIcone;
         private System.Windows.Forms.Button button1;
     }
 }

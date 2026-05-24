@@ -9,31 +9,16 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace GerenciadorSistemas
 {
-    public partial class FormNovoItem : Form
+    public partial class FormSelectIcon : Form
     {
         private const string ChaveIconePasta = "__folder__";
         private readonly ImageList _imageListIcons = new ImageList();
         private readonly Dictionary<string, string> _arquivosPorChave = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public FormNovoItem()
+        public FormSelectIcon()
         {
             InitializeComponent();
             InicializarFormulario();
-        }
-
-        public string ItemNome
-        {
-            get { return (_textBoxNome.Text ?? string.Empty).Trim(); }
-        }
-
-        public string ItemDescricao
-        {
-            get { return (_textBoxDescricao.Text ?? string.Empty).Trim(); }
-        }
-
-        public string Observacao
-        {
-            get { return (_textBoxObservacao.Text ?? string.Empty).Trim(); }
         }
 
         public string IconeSelecionado
@@ -54,12 +39,9 @@ namespace GerenciadorSistemas
             get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Imagens"); }
         }
 
-        public void ConfigurarParaEdicao(string nome, string descricao, string observacao, string iconeSelecionado)
+        public void ConfigurarSelecao(string iconeSelecionado)
         {
-            Text = "Editar item";
-            _textBoxNome.Text = nome ?? string.Empty;
-            _textBoxDescricao.Text = descricao ?? string.Empty;
-            _textBoxObservacao.Text = observacao ?? string.Empty;
+            Text = "Selecionar icone";
 
             if (!string.IsNullOrWhiteSpace(iconeSelecionado))
                 SelecionarItemPorChave(iconeSelecionado);
@@ -67,7 +49,7 @@ namespace GerenciadorSistemas
 
         private void InicializarFormulario()
         {
-            Text = "Novo item";
+            Text = "Selecionar icone";
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterParent;
             MaximizeBox = false;
@@ -83,23 +65,12 @@ namespace GerenciadorSistemas
             botaoOk.DialogResult = DialogResult.OK;
             botaoCancelar.DialogResult = DialogResult.Cancel;
 
-            botaoOk.Click += BotaoOk_Click;
             botaoCancelar.Click += BotaoCancelar_Click;
 
             AcceptButton = botaoOk;
             CancelButton = botaoCancelar;
 
             CarregarImagensDaPasta();
-        }
-
-        private void BotaoOk_Click(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(ItemNome))
-                return;
-
-            MessageBox.Show("Informe um nome para o item.", "Novo item",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            DialogResult = DialogResult.None;
         }
 
         private void BotaoCancelar_Click(object sender, EventArgs e)
@@ -377,6 +348,9 @@ namespace GerenciadorSistemas
                 cadastro.Configuracoes = new ConfiguracoesPersistidas();
 
             cadastro.Configuracoes.IconePadrao = iconePadrao ?? string.Empty;
+            if (cadastro.Configuracoes.IntBaseID < 1)
+                cadastro.Configuracoes.IntBaseID = 1;
+
             cadastro.SavedAt = DateTime.Now.ToString("o");
 
             ISerializer serializer = new SerializerBuilder()
@@ -441,7 +415,7 @@ namespace GerenciadorSistemas
 
                 CarregarImagensDaPasta();
                 SelecionarItemPorChave(nomeIconeGerado);
-                _textBoxNome.Focus();
+                TreeViewImages.Focus();
             }
         }
     }
