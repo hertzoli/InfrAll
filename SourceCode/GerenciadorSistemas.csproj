@@ -73,6 +73,7 @@
     <Compile Include="Services\ItemClipboardService.cs" />
     <Compile Include="Services\ItemUndoHistoryService.cs" />
     <Compile Include="Services\RefPlaceholderResolver.cs" />
+    <Compile Include="Services\VirtualKeyboardService.cs" />
     <Compile Include="Form1.ClipboardItens.cs">
       <SubType>Form</SubType>
       <DependentUpon>Form1.cs</DependentUpon>

@@ -73,6 +73,7 @@ namespace GerenciadorSistemas
             this.textBoxID = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.RichTextBoxValor = new GerenciadorSistemas.RichTextBoxSemSnap();
+            this.labelInfo = new System.Windows.Forms.Label();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -115,6 +116,7 @@ namespace GerenciadorSistemas
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.labelInfo);
             this.panel3.Controls.Add(this.groupBox1);
             this.panel3.Controls.Add(this.buttonIssue);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
@@ -494,12 +496,13 @@ namespace GerenciadorSistemas
             // buttonSalvar
             // 
             this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
-            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.buttonSalvar.Location = new System.Drawing.Point(187, 495);
             this.buttonSalvar.Name = "buttonSalvar";
             this.buttonSalvar.Size = new System.Drawing.Size(113, 46);
             this.buttonSalvar.TabIndex = 37;
             this.buttonSalvar.Text = "Salvar";
+            this.buttonSalvar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.buttonSalvar.UseVisualStyleBackColor = true;
             this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
             // 
@@ -553,6 +556,14 @@ namespace GerenciadorSistemas
             this.RichTextBoxValor.TabIndex = 32;
             this.RichTextBoxValor.Text = "";
             // 
+            // labelInfo
+            // 
+            this.labelInfo.AutoSize = true;
+            this.labelInfo.Location = new System.Drawing.Point(72, 14);
+            this.labelInfo.Name = "labelInfo";
+            this.labelInfo.Size = new System.Drawing.Size(0, 13);
+            this.labelInfo.TabIndex = 30;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -570,6 +581,7 @@ namespace GerenciadorSistemas
             this.Name = "Form1";
             this.Text = "InfrAll";
             this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
@@ -624,6 +636,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.TextBox textBoxLocal;
         private System.Windows.Forms.TextBox textBoxID;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label labelInfo;
     }
 }
 

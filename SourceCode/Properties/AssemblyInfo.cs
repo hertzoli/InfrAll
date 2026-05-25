@@ -32,14 +32,16 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.2")]
-[assembly: AssemblyFileVersion("2.2")]
+[assembly: AssemblyVersion("2.3")]
+[assembly: AssemblyFileVersion("2.3")]
 
 /*
 
 
-
-
+v2.3
+ - posição da imagem do botão `buttonSalvar` ajustada para ficar centralizada
+ - melhorias na exibição dos item em `DataGridViewItem` com hierarquia de profundidade refinada por cor e identação.
+ - implementado a funcionalidade de enviar Password como teclas de teclado (emulando um teclado virtual) ao pressionar o botão RUN. permite que o usuário envie Password para destinos que não aceitam copiar, colar eu envio de teclas comuns (exemplo: VMs, acesso web a console de VM e etc)
 
 v2.2
  - adicionado a funcionalidade de mover e renomear imagens a partir do `TreeViewImages` do formulário `FormSelectIcon`
@@ -48,7 +50,7 @@ v2.2
  - implementado em `TreeViewImages` o recurso de deletar uma imagem. se o usuário pressionar 'Delete' exibi um messagebox pedindo confirmação. se confirmado então exclui o arquivo de imagem.
  - agora ao renomear pelo `TreeViewImages`, a extensão real/original é preservada. (evitando o usuário de trocar a extensão original do arquivo de forma equivocada)
  - agora se se tiver alguma imagem com extensão trocada (uma disk.png com o nome disk.ico) o programa não quebra mais.
-
+ - 
 
 
 v2.1

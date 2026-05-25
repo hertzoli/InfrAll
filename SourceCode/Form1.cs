@@ -6,9 +6,13 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using GerenciadorSistemas.Services;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -61,6 +65,8 @@ namespace GerenciadorSistemas
         private readonly ItemClipboardService _itemClipboardService;
         private readonly ItemUndoHistoryService _undoHistoryService;
         private readonly RefPlaceholderResolver _refPlaceholderResolver;
+        private readonly VirtualKeyboardService _virtualKeyboardService;
+        private CancellationTokenSource _envioPasswordTecladoCts;
         private bool _restaurandoHistorico;
         private ItemUndoSnapshot _snapshotAntesAlteracaoPropertyGrid;
 
@@ -93,6 +99,7 @@ namespace GerenciadorSistemas
             _itemClipboardService = new ItemClipboardService();
             _undoHistoryService = new ItemUndoHistoryService(50);
             _refPlaceholderResolver = new RefPlaceholderResolver();
+            _virtualKeyboardService = new VirtualKeyboardService();
             KeyPreview = true;
             KeyDown += Form1_KeyDown;
             FormClosing += Form1_FormClosing;
@@ -165,7 +172,6 @@ namespace GerenciadorSistemas
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Valor", "Valor", 180));
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Local", "Local", 160));
 
-            DataGridViewItem.Columns["Nome"].DefaultCellStyle.Font = new Font(DataGridViewItem.Font, FontStyle.Bold);
             DataGridViewItem.Columns["Valor"].DefaultCellStyle.BackColor = Color.LightYellow;
         }
 
@@ -348,7 +354,7 @@ namespace GerenciadorSistemas
             {
                 int inicioSelecao = RichTextBoxValor.SelectionStart;
                 int tamanhoSelecao = RichTextBoxValor.SelectionLength;
-                bool usaFormatoCodigo = PodeExecutarTipoSelecionado();
+                bool usaFormatoCodigo = UsaFormatoCodigoTipoSelecionado();
 
                 RichTextBoxValor.Font = usaFormatoCodigo ? _fonteValorComando : _fonteValorPadrao;
                 RichTextBoxValor.BackColor = usaFormatoCodigo
@@ -445,6 +451,7 @@ namespace GerenciadorSistemas
                 return;
             }
 
+            CancelarEnvioPasswordPendente();
             PersistirCadastro();
         }
 
@@ -522,8 +529,10 @@ namespace GerenciadorSistemas
             Clipboard.SetText(valorResolvido ?? string.Empty);
         }
 
-        private void buttonRun_Click(object sender, EventArgs e)
+        private async void buttonRun_Click(object sender, EventArgs e)
         {
+            CancelarEnvioPasswordPendente();
+
             if (!PodeExecutarTipoSelecionado())
             {
                 MessageBox.Show("O tipo da propriedade atual nao permite execucao.", "Run",
@@ -540,12 +549,25 @@ namespace GerenciadorSistemas
                 return;
             }
 
+            TipoDoValor tipoDoValor = ObterTipoDoValorSelecionado();
+
             if (string.IsNullOrWhiteSpace(valorResolvido))
             {
-                MessageBox.Show("Nao ha comando para executar.", "Run", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string mensagem = tipoDoValor == TipoDoValor.Password
+                    ? "Nao ha Password para enviar."
+                    : "Nao ha comando para executar.";
+
+                MessageBox.Show(mensagem, "Run", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-                try
+
+            if (tipoDoValor == TipoDoValor.Password)
+            {
+                await PrepararEnvioPasswordPorTecladoAsync(valorResolvido);
+                return;
+            }
+
+            try
             {
                 ProcessStartInfo processInfo = CriarProcessStartInfoParaExecucao(valorResolvido, ObterTipoSelecionado());
                 IniciarProcessoComElevacaoQuandoNecessario(processInfo);
@@ -559,6 +581,108 @@ namespace GerenciadorSistemas
                 });
                 MessageBox.Show("Nao foi possivel executar o comando.\r\n" + ex.Message,
                     "Erro ao executar comando", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async Task PrepararEnvioPasswordPorTecladoAsync(string password)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            _envioPasswordTecladoCts = cts;
+            CancellationToken cancellationToken = cts.Token;
+
+            try
+            {
+                if (!ProcessoAtualEstaElevado())
+                {
+                    MessageBox.Show(
+                        "O programa nao esta sendo executado com direitos de administrador.\r\n\r\n"
+                        + "As teclas enviadas podem nao funcionar se o programa de destino tiver privilegio superior.",
+                        "Envio de Password",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+
+                labelInfo.Text = "Preparado para enviar Password";
+
+                await AguardarPerdaDeFocoDoFormularioAsync(cancellationToken);
+
+                labelInfo.Text = "Contagem regressiva do envio do Password";
+                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+
+                await Task.Run(() => _virtualKeyboardService.EnviarTexto(password, cancellationToken), cancellationToken);
+
+                labelInfo.Text = "Password enviado";
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                labelInfo.Text = string.Empty;
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriter.LogErroDetalhado(ex, "Erro ao enviar Password por teclado virtual", new
+                {
+                    TamanhoPassword = password != null ? password.Length : 0
+                });
+
+                labelInfo.Text = string.Empty;
+                MessageBox.Show("Nao foi possivel enviar o Password pelo teclado virtual.\r\n" + ex.Message,
+                    "Erro ao enviar Password", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (ReferenceEquals(_envioPasswordTecladoCts, cts))
+                    _envioPasswordTecladoCts = null;
+
+                cts.Dispose();
+            }
+        }
+
+        private Task AguardarPerdaDeFocoDoFormularioAsync(CancellationToken cancellationToken)
+        {
+            if (!ContainsFocus)
+                return Task.FromResult(true);
+
+            TaskCompletionSource<bool> espera = new TaskCompletionSource<bool>();
+            CancellationTokenRegistration registroCancelamento = new CancellationTokenRegistration();
+            EventHandler handler = null;
+
+            handler = (sender, e) =>
+            {
+                Deactivate -= handler;
+                registroCancelamento.Dispose();
+                espera.TrySetResult(true);
+            };
+
+            registroCancelamento = cancellationToken.Register(() =>
+            {
+                Deactivate -= handler;
+                espera.TrySetCanceled();
+            });
+
+            Deactivate += handler;
+            return espera.Task;
+        }
+
+        private void CancelarEnvioPasswordPendente()
+        {
+            if (_envioPasswordTecladoCts == null)
+                return;
+
+            _envioPasswordTecladoCts.Cancel();
+            _envioPasswordTecladoCts.Dispose();
+            _envioPasswordTecladoCts = null;
+        }
+
+        private static bool ProcessoAtualEstaElevado()
+        {
+            using (WindowsIdentity identidade = WindowsIdentity.GetCurrent())
+            {
+                if (identidade == null)
+                    return false;
+
+                WindowsPrincipal principal = new WindowsPrincipal(identidade);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
         }
 
@@ -1908,7 +2032,7 @@ namespace GerenciadorSistemas
                 }
 
                 foreach (TreeNode no in EnumerarNoESeusDescendentes(noEscopo))
-                    AdicionarLinhaDataGridViewItem(no);
+                    AdicionarLinhaDataGridViewItem(no, ObterNivelRelativoDataGridViewItem(noEscopo, no));
 
                 if (noParaSelecionar != null)
                     SelecionarLinhaDataGridViewItem(noParaSelecionar);
@@ -1921,7 +2045,7 @@ namespace GerenciadorSistemas
             }
         }
 
-        private void AdicionarLinhaDataGridViewItem(TreeNode no)
+        private void AdicionarLinhaDataGridViewItem(TreeNode no, int nivelRelativo)
         {
             InfrastructureItem item = no != null ? no.Tag as InfrastructureItem : null;
             if (item == null)
@@ -1929,14 +2053,64 @@ namespace GerenciadorSistemas
 
             int indice = DataGridViewItem.Rows.Add(
                 ObterImagemDoItem(item),
-                item.NomeExibicao,
+                ObterNomeIndentadoDataGridViewItem(item.NomeExibicao, nivelRelativo),
                 item.Valor ?? string.Empty,
                 item.Caminho ?? string.Empty);
 
             DataGridViewRow linha = DataGridViewItem.Rows[indice];
             linha.Tag = no;
-            linha.Cells["Nome"].Style.Font = new Font(DataGridViewItem.Font, FontStyle.Bold);
+            AplicarEstiloHierarquiaDataGridViewItem(linha, nivelRelativo);
             linha.Cells["Valor"].Style.BackColor = Color.FromArgb(240 ,255, 240);
+        }
+
+        private static int ObterNivelRelativoDataGridViewItem(TreeNode noEscopo, TreeNode no)
+        {
+            if (noEscopo == null || no == null)
+                return 0;
+
+            int nivelRelativo = no.Level - noEscopo.Level;
+            return nivelRelativo < 0 ? 0 : nivelRelativo;
+        }
+
+        private static string ObterNomeIndentadoDataGridViewItem(string nome, int nivelRelativo)
+        {
+            string nomeNormalizado = nome ?? string.Empty;
+
+            if (nivelRelativo <= 0)
+                return nomeNormalizado;
+
+            if (nivelRelativo == 1)
+                return "   " + nomeNormalizado;
+
+            if (nivelRelativo == 2)
+                return "      " + nomeNormalizado;
+
+            return "         " + nomeNormalizado;
+        }
+
+        private void AplicarEstiloHierarquiaDataGridViewItem(DataGridViewRow linha, int nivelRelativo)
+        {
+            if (linha == null)
+                return;
+
+            FontStyle estiloFonte = nivelRelativo <= 1 ? FontStyle.Bold : FontStyle.Regular;
+            Color corTexto = ObterCorTextoHierarquiaDataGridViewItem(nivelRelativo);
+
+            linha.DefaultCellStyle.Font = new Font(DataGridViewItem.Font, estiloFonte);
+            linha.DefaultCellStyle.ForeColor = corTexto;
+            linha.DefaultCellStyle.SelectionForeColor = corTexto;
+            linha.DefaultCellStyle.SelectionBackColor = Color.FromArgb(230, 240, 255);
+        }
+
+        private static Color ObterCorTextoHierarquiaDataGridViewItem(int nivelRelativo)
+        {
+            if (nivelRelativo <= 0)
+                return Color.Blue;
+
+            if (nivelRelativo <= 2)
+                return Color.Black;
+
+            return Color.Gray;
         }
 
         private Image ObterImagemDoItem(InfrastructureItem item)
@@ -2475,6 +2649,14 @@ namespace GerenciadorSistemas
         {
             TipoDoValor tipoSelecionado = ObterTipoDoValorSelecionado();
             return tipoSelecionado == TipoDoValor.Comando
+                || tipoSelecionado == TipoDoValor.Script
+                || tipoSelecionado == TipoDoValor.Password;
+        }
+
+        private bool UsaFormatoCodigoTipoSelecionado()
+        {
+            TipoDoValor tipoSelecionado = ObterTipoDoValorSelecionado();
+            return tipoSelecionado == TipoDoValor.Comando
                 || tipoSelecionado == TipoDoValor.Script;
         }
 
@@ -2976,7 +3158,8 @@ namespace GerenciadorSistemas
         private static bool EhTipoExecutavel(TipoDoValor tipo)
         {
             return tipo == TipoDoValor.Comando
-                || tipo == TipoDoValor.Script;
+                || tipo == TipoDoValor.Script
+                || tipo == TipoDoValor.Password;
         }
 
         private void buttonIssue_Click(object sender, EventArgs e)
