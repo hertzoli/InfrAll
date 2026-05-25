@@ -32,12 +32,22 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1")]
-[assembly: AssemblyFileVersion("2.1")]
+[assembly: AssemblyVersion("2.2")]
+[assembly: AssemblyFileVersion("2.2")]
 
 /*
 
 
+
+
+
+v2.2
+ - adicionado a funcionalidade de mover e renomear imagens a partir do `TreeViewImages` do formulário `FormSelectIcon`
+ - correção de bug que fez o botões [buttonRun, buttonCopy, buttonCopyPlaceholder, buttonSalvar] parar de funcionar após Ctrl+X e Ctrl+V para mudar a posição deles no formulario.
+ - o formulário dos icones agora pode ser redimentionado
+ - implementado em `TreeViewImages` o recurso de deletar uma imagem. se o usuário pressionar 'Delete' exibi um messagebox pedindo confirmação. se confirmado então exclui o arquivo de imagem.
+ - agora ao renomear pelo `TreeViewImages`, a extensão real/original é preservada. (evitando o usuário de trocar a extensão original do arquivo de forma equivocada)
+ - agora se se tiver alguma imagem com extensão trocada (uma disk.png com o nome disk.ico) o programa não quebra mais.
 
 
 

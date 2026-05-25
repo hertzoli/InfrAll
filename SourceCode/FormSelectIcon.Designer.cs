@@ -53,7 +53,7 @@ namespace GerenciadorSistemas
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 15);
+            this.label3.Location = new System.Drawing.Point(15, 5);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 13);
             this.label3.TabIndex = 18;
@@ -61,15 +61,28 @@ namespace GerenciadorSistemas
             // 
             // TreeViewImages
             // 
+            this.TreeViewImages.AllowDrop = true;
+            this.TreeViewImages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TreeViewImages.HideSelection = false;
-            this.TreeViewImages.Location = new System.Drawing.Point(15, 31);
+            this.TreeViewImages.LabelEdit = true;
+            this.TreeViewImages.Location = new System.Drawing.Point(15, 21);
             this.TreeViewImages.Name = "TreeViewImages";
-            this.TreeViewImages.Size = new System.Drawing.Size(376, 285);
+            this.TreeViewImages.Size = new System.Drawing.Size(332, 358);
             this.TreeViewImages.TabIndex = 20;
+            this.TreeViewImages.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeViewImages_BeforeLabelEdit);
+            this.TreeViewImages.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.TreeViewImages_AfterLabelEdit);
+            this.TreeViewImages.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.TreeViewImages_ItemDrag);
+            this.TreeViewImages.DragDrop += new System.Windows.Forms.DragEventHandler(this.TreeViewImages_DragDrop);
+            this.TreeViewImages.DragEnter += new System.Windows.Forms.DragEventHandler(this.TreeViewImages_DragEnter);
+            this.TreeViewImages.DragOver += new System.Windows.Forms.DragEventHandler(this.TreeViewImages_DragOver);
+            this.TreeViewImages.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TreeViewImages_KeyDown);
             // 
             // botaoOk
             // 
-            this.botaoOk.Location = new System.Drawing.Point(699, 392);
+            this.botaoOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.botaoOk.Location = new System.Drawing.Point(655, 385);
             this.botaoOk.Name = "botaoOk";
             this.botaoOk.Size = new System.Drawing.Size(75, 23);
             this.botaoOk.TabIndex = 22;
@@ -78,7 +91,8 @@ namespace GerenciadorSistemas
             // 
             // botaoCancelar
             // 
-            this.botaoCancelar.Location = new System.Drawing.Point(618, 392);
+            this.botaoCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.botaoCancelar.Location = new System.Drawing.Point(574, 385);
             this.botaoCancelar.Name = "botaoCancelar";
             this.botaoCancelar.Size = new System.Drawing.Size(75, 23);
             this.botaoCancelar.TabIndex = 23;
@@ -87,7 +101,8 @@ namespace GerenciadorSistemas
             // 
             // buttonDefinirIconePadrao
             // 
-            this.buttonDefinirIconePadrao.Location = new System.Drawing.Point(15, 322);
+            this.buttonDefinirIconePadrao.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonDefinirIconePadrao.Location = new System.Drawing.Point(15, 385);
             this.buttonDefinirIconePadrao.Name = "buttonDefinirIconePadrao";
             this.buttonDefinirIconePadrao.Size = new System.Drawing.Size(121, 22);
             this.buttonDefinirIconePadrao.TabIndex = 24;
@@ -97,7 +112,8 @@ namespace GerenciadorSistemas
             // 
             // buttonAbrirPastaImagens
             // 
-            this.buttonAbrirPastaImagens.Location = new System.Drawing.Point(257, 322);
+            this.buttonAbrirPastaImagens.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonAbrirPastaImagens.Location = new System.Drawing.Point(209, 385);
             this.buttonAbrirPastaImagens.Name = "buttonAbrirPastaImagens";
             this.buttonAbrirPastaImagens.Size = new System.Drawing.Size(134, 22);
             this.buttonAbrirPastaImagens.TabIndex = 25;
@@ -107,6 +123,7 @@ namespace GerenciadorSistemas
             // 
             // groupBoxGerarIcone
             // 
+            this.groupBoxGerarIcone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxGerarIcone.Controls.Add(this.pictureBoxPreviwIcon);
             this.groupBoxGerarIcone.Controls.Add(this.label4);
             this.groupBoxGerarIcone.Controls.Add(this.label1);
@@ -116,12 +133,12 @@ namespace GerenciadorSistemas
             this.groupBoxGerarIcone.Controls.Add(this.label2);
             this.groupBoxGerarIcone.Controls.Add(this.textBoxNomeIconeSaida);
             this.groupBoxGerarIcone.Controls.Add(this.buttonGerarIcone);
-            this.groupBoxGerarIcone.Location = new System.Drawing.Point(409, 15);
+            this.groupBoxGerarIcone.Location = new System.Drawing.Point(365, 15);
             this.groupBoxGerarIcone.Name = "groupBoxGerarIcone";
             this.groupBoxGerarIcone.Size = new System.Drawing.Size(365, 353);
             this.groupBoxGerarIcone.TabIndex = 26;
             this.groupBoxGerarIcone.TabStop = false;
-            this.groupBoxGerarIcone.Text = "Gerar icone";
+            this.groupBoxGerarIcone.Text = "Gerar icone a partir de imagens JPEG, BMP, PNG, ICO e WEBP";
             // 
             // pictureBoxPreviwIcon
             // 
@@ -215,7 +232,7 @@ namespace GerenciadorSistemas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(786, 427);
+            this.ClientSize = new System.Drawing.Size(742, 420);
             this.Controls.Add(this.groupBoxGerarIcone);
             this.Controls.Add(this.buttonAbrirPastaImagens);
             this.Controls.Add(this.buttonDefinirIconePadrao);

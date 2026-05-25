@@ -21,9 +21,11 @@ namespace GerenciadorSistemas
         private static readonly HttpClient httpClient = new HttpClient();
         private readonly ImageList _imageListIcons = new ImageList();
         private readonly Dictionary<string, string> _arquivosPorChave = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> _iconesAtualizados = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private CancellationTokenSource previewCancellationTokenSource;
         private int previewRequestVersion;
         private Image imagemPreviewOriginal;
+        private bool permitirEdicaoRotuloTreeViewImages;
 
         public FormSelectIcon()
         {
@@ -51,6 +53,11 @@ namespace GerenciadorSistemas
 
         public string NomeIconeGerado { get; private set; }
 
+        public IDictionary<string, string> IconesAtualizados
+        {
+            get { return _iconesAtualizados; }
+        }
+
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             CancelarAtualizacaoPreview();
@@ -69,7 +76,7 @@ namespace GerenciadorSistemas
         private void InicializarFormulario()
         {
             Text = "Selecionar icone";
-            FormBorderStyle = FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.Sizable;
             StartPosition = FormStartPosition.CenterParent;
             MaximizeBox = false;
             MinimizeBox = false;
@@ -96,8 +103,6 @@ namespace GerenciadorSistemas
         {
             Close();
         }
-
-  
 
         private void CarregarImagensDaPasta()
         {
@@ -190,7 +195,7 @@ namespace GerenciadorSistemas
                 return chave;
             }
 
-            using (Image imagemOriginal = CarregarImagem(caminhoArquivo))
+            using (Image imagemOriginal = TentarCarregarImagem(caminhoArquivo))
             {
                 if (imagemOriginal == null)
                     return string.Empty;
@@ -221,6 +226,18 @@ namespace GerenciadorSistemas
             return chave;
         }
 
+        private static Image TentarCarregarImagem(string caminhoArquivo)
+        {
+            try
+            {
+                return CarregarImagem(caminhoArquivo);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private void SelecionarItemPorChave(string chave)
         {
             TreeNode item = EncontrarNoPorChave(TreeViewImages.Nodes, chave);
@@ -239,6 +256,331 @@ namespace GerenciadorSistemas
                 SelecionarItemPorChave(chave);
                 return;
             }
+        }
+
+        private void TreeViewImages_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete && EhNoImagem(TreeViewImages.SelectedNode))
+            {
+                e.Handled = true;
+                ExcluirImagemSelecionada(TreeViewImages.SelectedNode);
+                return;
+            }
+
+            if (e.KeyCode != Keys.F2 || !EhNoImagem(TreeViewImages.SelectedNode))
+                return;
+
+            e.Handled = true;
+            permitirEdicaoRotuloTreeViewImages = true;
+            TreeViewImages.SelectedNode.BeginEdit();
+        }
+
+        private void TreeViewImages_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (!permitirEdicaoRotuloTreeViewImages || !EhNoImagem(e.Node))
+                e.CancelEdit = true;
+
+            permitirEdicaoRotuloTreeViewImages = false;
+        }
+
+        private void TreeViewImages_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Label == null)
+                return;
+
+            e.CancelEdit = true;
+
+            if (!EhNoImagem(e.Node))
+                return;
+
+            RenomearImagemSelecionada(e.Node, e.Label);
+        }
+
+        private void TreeViewImages_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            TreeNode no = e.Item as TreeNode;
+
+            if (!EhNoImagem(no))
+                return;
+
+            DoDragDrop(no, DragDropEffects.Move);
+        }
+
+        private void TreeViewImages_DragEnter(object sender, DragEventArgs e)
+        {
+            AtualizarEfeitoDragDropImagem(e);
+        }
+
+        private void TreeViewImages_DragOver(object sender, DragEventArgs e)
+        {
+            AtualizarEfeitoDragDropImagem(e);
+        }
+
+        private void TreeViewImages_DragDrop(object sender, DragEventArgs e)
+        {
+            TreeNode noImagem = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            TreeNode noDestino = ObterNoTreeViewNoPonto(e.X, e.Y);
+
+            if (!EhNoImagem(noImagem) || !EhNoPasta(noDestino))
+                return;
+
+            MoverImagemParaPasta(noImagem, noDestino);
+        }
+
+        private void AtualizarEfeitoDragDropImagem(DragEventArgs e)
+        {
+            TreeNode noImagem = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            TreeNode noDestino = ObterNoTreeViewNoPonto(e.X, e.Y);
+
+            if (EhNoImagem(noImagem) && EhNoPasta(noDestino))
+            {
+                TreeViewImages.SelectedNode = noDestino;
+                e.Effect = DragDropEffects.Move;
+                return;
+            }
+
+            e.Effect = DragDropEffects.None;
+        }
+
+        private TreeNode ObterNoTreeViewNoPonto(int xTela, int yTela)
+        {
+            Point ponto = TreeViewImages.PointToClient(new Point(xTela, yTela));
+            return TreeViewImages.GetNodeAt(ponto);
+        }
+
+        private bool EhNoImagem(TreeNode no)
+        {
+            return no != null && _arquivosPorChave.ContainsKey(no.Name);
+        }
+
+        private static bool EhNoPasta(TreeNode no)
+        {
+            return no != null && string.Equals(no.ImageKey, ChaveIconePasta, StringComparison.Ordinal);
+        }
+
+        private void RenomearImagemSelecionada(TreeNode noImagem, string novoNomeInformado)
+        {
+            string chaveAntiga = noImagem.Name;
+            string caminhoAntigo;
+
+            if (!_arquivosPorChave.TryGetValue(chaveAntiga, out caminhoAntigo))
+                return;
+
+            try
+            {
+                string novoNomeArquivo = NormalizarNomeArquivoRenomeado(novoNomeInformado, caminhoAntigo);
+                if (string.IsNullOrWhiteSpace(novoNomeArquivo))
+                    return;
+
+                string caminhoNovo = Path.Combine(Path.GetDirectoryName(caminhoAntigo), novoNomeArquivo);
+
+                AplicarMovimentoImagem(chaveAntiga, caminhoAntigo, caminhoNovo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel renomear a imagem.\r\n" + ex.Message,
+                    "Renomear imagem", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CarregarImagensDaPasta();
+                SelecionarItemPorChave(chaveAntiga);
+            }
+        }
+
+        private void MoverImagemParaPasta(TreeNode noImagem, TreeNode noPastaDestino)
+        {
+            string chaveAntiga = noImagem.Name;
+            string caminhoAntigo;
+
+            if (!_arquivosPorChave.TryGetValue(chaveAntiga, out caminhoAntigo))
+                return;
+
+            string chavePastaDestino = noPastaDestino.Name ?? string.Empty;
+            string pastaDestino = Path.Combine(PastaImagens, chavePastaDestino.Replace('/', Path.DirectorySeparatorChar));
+            string caminhoNovo = Path.Combine(pastaDestino, Path.GetFileName(caminhoAntigo));
+
+            try
+            {
+                AplicarMovimentoImagem(chaveAntiga, caminhoAntigo, caminhoNovo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel mover a imagem.\r\n" + ex.Message,
+                    "Mover imagem", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CarregarImagensDaPasta();
+                SelecionarItemPorChave(chaveAntiga);
+            }
+        }
+
+        private void ExcluirImagemSelecionada(TreeNode noImagem)
+        {
+            string chaveAntiga = noImagem.Name;
+            string caminhoArquivo;
+
+            if (!_arquivosPorChave.TryGetValue(chaveAntiga, out caminhoArquivo))
+                return;
+
+            DialogResult confirmacao = MessageBox.Show(
+                string.Format("Deseja excluir a imagem \"{0}\"?", chaveAntiga),
+                "Excluir imagem",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirmacao != DialogResult.Yes)
+                return;
+
+            try
+            {
+                File.Delete(caminhoArquivo);
+                AtualizarReferenciasIconePersistidas(chaveAntiga, string.Empty);
+                RegistrarIconeAtualizado(chaveAntiga, string.Empty);
+
+                CarregarImagensDaPasta();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nao foi possivel excluir a imagem.\r\n" + ex.Message,
+                    "Excluir imagem", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                CarregarImagensDaPasta();
+                SelecionarItemPorChave(chaveAntiga);
+            }
+        }
+
+        private void AplicarMovimentoImagem(string chaveAntiga, string caminhoAntigo, string caminhoNovo)
+        {
+            caminhoAntigo = Path.GetFullPath(caminhoAntigo);
+            caminhoNovo = Path.GetFullPath(caminhoNovo);
+
+            if (string.Equals(caminhoAntigo, caminhoNovo, StringComparison.OrdinalIgnoreCase))
+            {
+                CarregarImagensDaPasta();
+                SelecionarItemPorChave(chaveAntiga);
+                return;
+            }
+
+            ValidarCaminhoImagemDentroDaPastaImagens(caminhoNovo);
+            Directory.CreateDirectory(Path.GetDirectoryName(caminhoNovo));
+
+            if (File.Exists(caminhoNovo))
+                throw new IOException("Ja existe uma imagem com esse nome na pasta de destino.");
+
+            string chaveNova = ObterChaveRelativaDaImagem(caminhoNovo);
+
+            File.Move(caminhoAntigo, caminhoNovo);
+            AtualizarReferenciasIconePersistidas(chaveAntiga, chaveNova);
+            RegistrarIconeAtualizado(chaveAntiga, chaveNova);
+
+            CarregarImagensDaPasta();
+            SelecionarItemPorChave(chaveNova);
+        }
+
+        private void RegistrarIconeAtualizado(string chaveAntiga, string chaveNova)
+        {
+            if (string.Equals(chaveAntiga, chaveNova, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            List<string> chavesOriginais = _iconesAtualizados
+                .Where(par => string.Equals(par.Value, chaveAntiga, StringComparison.OrdinalIgnoreCase))
+                .Select(par => par.Key)
+                .ToList();
+
+            if (chavesOriginais.Count == 0)
+            {
+                _iconesAtualizados[chaveAntiga] = chaveNova;
+                return;
+            }
+
+            foreach (string chaveOriginal in chavesOriginais)
+                _iconesAtualizados[chaveOriginal] = chaveNova;
+        }
+
+        private string NormalizarNomeArquivoRenomeado(string novoNomeInformado, string caminhoAntigo)
+        {
+            string nome = (novoNomeInformado ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(nome))
+                return string.Empty;
+
+            if (nome.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+                nome.IndexOf(Path.DirectorySeparatorChar) >= 0 ||
+                nome.IndexOf(Path.AltDirectorySeparatorChar) >= 0)
+            {
+                throw new ArgumentException("Informe apenas o nome do arquivo, sem pasta ou caracteres invalidos.");
+            }
+
+            string extensaoInformada = Path.GetExtension(nome);
+            string extensaoAntiga = Path.GetExtension(caminhoAntigo);
+
+            if (string.IsNullOrWhiteSpace(extensaoInformada))
+            {
+                nome += extensaoAntiga;
+            }
+            else if (!string.Equals(extensaoInformada, extensaoAntiga, StringComparison.OrdinalIgnoreCase))
+            {
+                nome += extensaoAntiga;
+            }
+
+            return Path.GetFileName(nome);
+        }
+
+        private void ValidarCaminhoImagemDentroDaPastaImagens(string caminhoArquivo)
+        {
+            string caminhoBase = Path.GetFullPath(PastaImagens).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                + Path.DirectorySeparatorChar;
+            string caminhoCompleto = Path.GetFullPath(caminhoArquivo);
+
+            if (!caminhoCompleto.StartsWith(caminhoBase, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("A imagem deve permanecer dentro da pasta Imagens.");
+        }
+
+        private static void AtualizarReferenciasIconePersistidas(string chaveAntiga, string chaveNova)
+        {
+            if (string.Equals(chaveAntiga, chaveNova, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            string caminhoArquivo = ObterCaminhoArquivoCadastro();
+
+            if (!File.Exists(caminhoArquivo))
+                return;
+
+            CadastroPersistido cadastro = CarregarCadastroPersistidoParaConfiguracao();
+            bool alterado = false;
+
+            if (cadastro.Configuracoes != null &&
+                string.Equals(cadastro.Configuracoes.IconePadrao, chaveAntiga, StringComparison.OrdinalIgnoreCase))
+            {
+                cadastro.Configuracoes.IconePadrao = chaveNova;
+                alterado = true;
+            }
+
+            alterado |= AtualizarReferenciasIconePersistidas(cadastro.Itens, chaveAntiga, chaveNova);
+
+            if (alterado)
+                SalvarCadastroPersistido(cadastro);
+        }
+
+        private static bool AtualizarReferenciasIconePersistidas(IEnumerable<ItemPersistido> itens, string chaveAntiga, string chaveNova)
+        {
+            bool alterado = false;
+
+            if (itens == null)
+                return false;
+
+            foreach (ItemPersistido item in itens)
+            {
+                if (item == null)
+                    continue;
+
+                if (string.Equals(item.Icone, chaveAntiga, StringComparison.OrdinalIgnoreCase))
+                {
+                    item.Icone = chaveNova;
+                    alterado = true;
+                }
+
+                if (AtualizarReferenciasIconePersistidas(item.Subitens, chaveAntiga, chaveNova))
+                    alterado = true;
+            }
+
+            return alterado;
         }
 
         private static TreeNode EncontrarNoPorChave(TreeNodeCollection nos, string chave)
@@ -278,15 +620,24 @@ namespace GerenciadorSistemas
 
             if (string.Equals(extensao, ".ico", StringComparison.OrdinalIgnoreCase))
             {
-                using (Icon icon = new Icon(caminhoArquivo))
+                try
                 {
-                    return icon.ToBitmap();
+                    using (Icon icon = new Icon(caminhoArquivo))
+                    {
+                        return icon.ToBitmap();
+                    }
+                }
+                catch (ArgumentException)
+                {
                 }
             }
 
             using (FileStream stream = new FileStream(caminhoArquivo, FileMode.Open, FileAccess.Read))
             {
-                return Image.FromStream(stream);
+                using (Image imagem = Image.FromStream(stream))
+                {
+                    return new Bitmap(imagem);
+                }
             }
         }
 
@@ -370,22 +721,7 @@ namespace GerenciadorSistemas
             if (cadastro.Configuracoes.IntBaseID < 1)
                 cadastro.Configuracoes.IntBaseID = 1;
 
-            cadastro.SavedAt = DateTime.Now.ToString("o");
-
-            ISerializer serializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .Build();
-
-            string caminhoArquivo = ObterCaminhoArquivoCadastro();
-            string caminhoTemporario = caminhoArquivo + ".tmp";
-
-            using (StreamWriter writer = new StreamWriter(caminhoTemporario, false))
-                serializer.Serialize(writer, cadastro);
-
-            if (File.Exists(caminhoArquivo))
-                File.Delete(caminhoArquivo);
-
-            File.Move(caminhoTemporario, caminhoArquivo);
+            SalvarCadastroPersistido(cadastro);
         }
 
         private static CadastroPersistido CarregarCadastroPersistidoParaConfiguracao()
@@ -418,6 +754,32 @@ namespace GerenciadorSistemas
 
                 return cadastro;
             }
+        }
+
+        private static void SalvarCadastroPersistido(CadastroPersistido cadastro)
+        {
+            if (cadastro == null)
+                cadastro = new CadastroPersistido();
+
+            if (cadastro.Itens == null)
+                cadastro.Itens = new List<ItemPersistido>();
+
+            cadastro.SavedAt = DateTime.Now.ToString("o");
+
+            ISerializer serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+
+            string caminhoArquivo = ObterCaminhoArquivoCadastro();
+            string caminhoTemporario = caminhoArquivo + ".tmp";
+
+            using (StreamWriter writer = new StreamWriter(caminhoTemporario, false))
+                serializer.Serialize(writer, cadastro);
+
+            if (File.Exists(caminhoArquivo))
+                File.Delete(caminhoArquivo);
+
+            File.Move(caminhoTemporario, caminhoArquivo);
         }
 
         private void buttonAbrirPastaImagens_Click(object sender, EventArgs e)
@@ -763,10 +1125,16 @@ namespace GerenciadorSistemas
         {
             if (EhArquivoIco(caminhoImagem))
             {
-                using (var streamIcone = new MemoryStream(imagemOriginal))
-                using (var icon = new Icon(streamIcone))
+                try
                 {
-                    return icon.ToBitmap();
+                    using (var streamIcone = new MemoryStream(imagemOriginal))
+                    using (var icon = new Icon(streamIcone))
+                    {
+                        return icon.ToBitmap();
+                    }
+                }
+                catch (ArgumentException)
+                {
                 }
             }
 
@@ -815,7 +1183,13 @@ namespace GerenciadorSistemas
             {
                 if (EhArquivoIco(caminhoImagem))
                 {
-                    return CriarIcone16x16DeIco(imagemOriginal);
+                    try
+                    {
+                        return CriarIcone16x16DeIco(imagemOriginal);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
                 }
 
                 byte[] imagemParaGerar = EhArquivoWebp(caminhoImagem)

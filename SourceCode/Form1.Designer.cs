@@ -36,6 +36,18 @@ namespace GerenciadorSistemas
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel3 = new System.Windows.Forms.Panel();
             this.buttonIssue = new System.Windows.Forms.Button();
+            this.splitter4 = new System.Windows.Forms.Splitter();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.treeViewItens = new System.Windows.Forms.TreeView();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.buttonEditar = new System.Windows.Forms.Button();
+            this.buttonDuplicar = new System.Windows.Forms.Button();
+            this.buttonExcluirItem = new System.Windows.Forms.Button();
+            this.buttonNovoSubItem = new System.Windows.Forms.Button();
+            this.buttonNovoItem = new System.Windows.Forms.Button();
+            this.splitter3 = new System.Windows.Forms.Splitter();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.DataGridViewItem = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonAlterarIcone = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
@@ -55,32 +67,19 @@ namespace GerenciadorSistemas
             this.buttonCopy = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.buttonRun = new System.Windows.Forms.Button();
-            this.RichTextBoxValor = new GerenciadorSistemas.RichTextBoxSemSnap();
             this.buttonSalvar = new System.Windows.Forms.Button();
             this.textBoxDescricao = new System.Windows.Forms.TextBox();
             this.textBoxLocal = new System.Windows.Forms.TextBox();
             this.textBoxID = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.splitter4 = new System.Windows.Forms.Splitter();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.treeViewItens = new System.Windows.Forms.TreeView();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.buttonEditar = new System.Windows.Forms.Button();
-            this.buttonDuplicar = new System.Windows.Forms.Button();
-            this.buttonExcluirItem = new System.Windows.Forms.Button();
-            this.buttonNovoSubItem = new System.Windows.Forms.Button();
-            this.buttonNovoItem = new System.Windows.Forms.Button();
-            this.splitter3 = new System.Windows.Forms.Splitter();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.DataGridViewItem = new System.Windows.Forms.DataGridView();
-            this.button1 = new System.Windows.Forms.Button();
+            this.RichTextBoxValor = new GerenciadorSistemas.RichTextBoxSemSnap();
             this.panel3.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImagem)).BeginInit();
             this.panel2.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewItem)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImagem)).BeginInit();
             this.SuspendLayout();
             // 
             // imageList1
@@ -116,18 +115,18 @@ namespace GerenciadorSistemas
             // 
             // panel3
             // 
-            this.panel3.Controls.Add(this.buttonIssue);
             this.panel3.Controls.Add(this.groupBox1);
+            this.panel3.Controls.Add(this.buttonIssue);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(768, 0);
+            this.panel3.Location = new System.Drawing.Point(858, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(416, 590);
+            this.panel3.Size = new System.Drawing.Size(326, 590);
             this.panel3.TabIndex = 15;
             // 
             // buttonIssue
             // 
             this.buttonIssue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonIssue.Location = new System.Drawing.Point(362, 10);
+            this.buttonIssue.Location = new System.Drawing.Point(4, 2);
             this.buttonIssue.Name = "buttonIssue";
             this.buttonIssue.Size = new System.Drawing.Size(41, 22);
             this.buttonIssue.TabIndex = 19;
@@ -135,284 +134,12 @@ namespace GerenciadorSistemas
             this.buttonIssue.UseVisualStyleBackColor = true;
             this.buttonIssue.Click += new System.EventHandler(this.buttonIssue_Click);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.buttonAlterarIcone);
-            this.groupBox1.Controls.Add(this.label9);
-            this.groupBox1.Controls.Add(this.textBoxDataEdicao);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.textBoxDataCriacao);
-            this.groupBox1.Controls.Add(this.pictureBoxImagem);
-            this.groupBox1.Controls.Add(this.comboBoxTipo);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.textBoxNome);
-            this.groupBox1.Controls.Add(this.buttonCopyPlaceholder);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBoxReferenciaPropriedade);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.buttonCopy);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.buttonRun);
-            this.groupBox1.Controls.Add(this.RichTextBoxValor);
-            this.groupBox1.Controls.Add(this.buttonSalvar);
-            this.groupBox1.Controls.Add(this.textBoxDescricao);
-            this.groupBox1.Controls.Add(this.textBoxLocal);
-            this.groupBox1.Controls.Add(this.textBoxID);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Location = new System.Drawing.Point(13, 46);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(391, 518);
-            this.groupBox1.TabIndex = 18;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Item";
-            // 
-            // buttonAlterarIcone
-            // 
-            this.buttonAlterarIcone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAlterarIcone.Location = new System.Drawing.Point(50, 16);
-            this.buttonAlterarIcone.Name = "buttonAlterarIcone";
-            this.buttonAlterarIcone.Size = new System.Drawing.Size(103, 22);
-            this.buttonAlterarIcone.TabIndex = 25;
-            this.buttonAlterarIcone.Text = "Alterar Icone";
-            this.buttonAlterarIcone.UseVisualStyleBackColor = true;
-            this.buttonAlterarIcone.Click += new System.EventHandler(this.buttonAlterarIcone_Click);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 462);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(84, 13);
-            this.label9.TabIndex = 24;
-            this.label9.Text = "Data de Edição:";
-            // 
-            // textBoxDataEdicao
-            // 
-            this.textBoxDataEdicao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDataEdicao.Location = new System.Drawing.Point(117, 459);
-            this.textBoxDataEdicao.Name = "textBoxDataEdicao";
-            this.textBoxDataEdicao.ReadOnly = true;
-            this.textBoxDataEdicao.Size = new System.Drawing.Size(119, 20);
-            this.textBoxDataEdicao.TabIndex = 23;
-            this.textBoxDataEdicao.Text = "10/10/2025 18:32";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 437);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(87, 13);
-            this.label8.TabIndex = 22;
-            this.label8.Text = "Data de Criação:";
-            // 
-            // textBoxDataCriacao
-            // 
-            this.textBoxDataCriacao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDataCriacao.Location = new System.Drawing.Point(117, 434);
-            this.textBoxDataCriacao.Name = "textBoxDataCriacao";
-            this.textBoxDataCriacao.ReadOnly = true;
-            this.textBoxDataCriacao.Size = new System.Drawing.Size(119, 20);
-            this.textBoxDataCriacao.TabIndex = 21;
-            this.textBoxDataCriacao.Text = "10/10/2025 18:32";
-            // 
-            // pictureBoxImagem
-            // 
-            this.pictureBoxImagem.Location = new System.Drawing.Point(20, 18);
-            this.pictureBoxImagem.Name = "pictureBoxImagem";
-            this.pictureBoxImagem.Size = new System.Drawing.Size(20, 20);
-            this.pictureBoxImagem.TabIndex = 20;
-            this.pictureBoxImagem.TabStop = false;
-            // 
-            // comboBoxTipo
-            // 
-            this.comboBoxTipo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBoxTipo.FormattingEnabled = true;
-            this.comboBoxTipo.Location = new System.Drawing.Point(49, 177);
-            this.comboBoxTipo.Name = "comboBoxTipo";
-            this.comboBoxTipo.Size = new System.Drawing.Size(249, 21);
-            this.comboBoxTipo.TabIndex = 19;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 180);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(31, 13);
-            this.label7.TabIndex = 18;
-            this.label7.Text = "Tipo:";
-            // 
-            // textBoxNome
-            // 
-            this.textBoxNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxNome.Location = new System.Drawing.Point(51, 45);
-            this.textBoxNome.Name = "textBoxNome";
-            this.textBoxNome.Size = new System.Drawing.Size(246, 20);
-            this.textBoxNome.TabIndex = 1;
-            // 
-            // buttonCopyPlaceholder
-            // 
-            this.buttonCopyPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCopyPlaceholder.Location = new System.Drawing.Point(301, 404);
-            this.buttonCopyPlaceholder.Name = "buttonCopyPlaceholder";
-            this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 22);
-            this.buttonCopyPlaceholder.TabIndex = 17;
-            this.buttonCopyPlaceholder.Text = "Copy";
-            this.buttonCopyPlaceholder.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Nome:";
-            // 
-            // textBoxReferenciaPropriedade
-            // 
-            this.textBoxReferenciaPropriedade.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(81, 406);
-            this.textBoxReferenciaPropriedade.Name = "textBoxReferenciaPropriedade";
-            this.textBoxReferenciaPropriedade.ReadOnly = true;
-            this.textBoxReferenciaPropriedade.Size = new System.Drawing.Size(217, 20);
-            this.textBoxReferenciaPropriedade.TabIndex = 16;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 72);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Valor:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 409);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(62, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Referencia:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 206);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Descrição:";
-            // 
-            // buttonCopy
-            // 
-            this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCopy.Location = new System.Drawing.Point(302, 143);
-            this.buttonCopy.Name = "buttonCopy";
-            this.buttonCopy.Size = new System.Drawing.Size(44, 21);
-            this.buttonCopy.TabIndex = 14;
-            this.buttonCopy.Text = "Copy";
-            this.buttonCopy.UseVisualStyleBackColor = true;
-            this.buttonCopy.Click += new System.EventHandler(this.buttonCopy_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 386);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(21, 13);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "ID:";
-            // 
-            // buttonRun
-            // 
-            this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRun.Location = new System.Drawing.Point(302, 91);
-            this.buttonRun.Name = "buttonRun";
-            this.buttonRun.Size = new System.Drawing.Size(44, 21);
-            this.buttonRun.TabIndex = 13;
-            this.buttonRun.Text = "Run";
-            this.buttonRun.UseVisualStyleBackColor = true;
-            this.buttonRun.Click += new System.EventHandler(this.buttonRun_Click);
-            // 
-            // RichTextBoxValor
-            // 
-            this.RichTextBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.RichTextBoxValor.Location = new System.Drawing.Point(12, 88);
-            this.RichTextBoxValor.Name = "RichTextBoxValor";
-            this.RichTextBoxValor.Size = new System.Drawing.Size(286, 81);
-            this.RichTextBoxValor.TabIndex = 5;
-            this.RichTextBoxValor.Text = "";
-            // 
-            // buttonSalvar
-            // 
-            this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
-            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonSalvar.Location = new System.Drawing.Point(314, 483);
-            this.buttonSalvar.Name = "buttonSalvar";
-            this.buttonSalvar.Size = new System.Drawing.Size(70, 29);
-            this.buttonSalvar.TabIndex = 12;
-            this.buttonSalvar.Text = "Salvar";
-            this.buttonSalvar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.buttonSalvar.UseVisualStyleBackColor = true;
-            this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
-            // 
-            // textBoxDescricao
-            // 
-            this.textBoxDescricao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxDescricao.Location = new System.Drawing.Point(12, 222);
-            this.textBoxDescricao.Multiline = true;
-            this.textBoxDescricao.Name = "textBoxDescricao";
-            this.textBoxDescricao.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxDescricao.Size = new System.Drawing.Size(286, 108);
-            this.textBoxDescricao.TabIndex = 6;
-            // 
-            // textBoxLocal
-            // 
-            this.textBoxLocal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLocal.Location = new System.Drawing.Point(81, 357);
-            this.textBoxLocal.Name = "textBoxLocal";
-            this.textBoxLocal.Size = new System.Drawing.Size(217, 20);
-            this.textBoxLocal.TabIndex = 9;
-            // 
-            // textBoxID
-            // 
-            this.textBoxID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxID.Location = new System.Drawing.Point(81, 381);
-            this.textBoxID.Name = "textBoxID";
-            this.textBoxID.ReadOnly = true;
-            this.textBoxID.Size = new System.Drawing.Size(217, 20);
-            this.textBoxID.TabIndex = 7;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 360);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(36, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Local:";
-            // 
             // splitter4
             // 
             this.splitter4.BackColor = System.Drawing.SystemColors.Control;
             this.splitter4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitter4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.splitter4.Location = new System.Drawing.Point(762, 0);
+            this.splitter4.Location = new System.Drawing.Point(852, 0);
             this.splitter4.Name = "splitter4";
             this.splitter4.Size = new System.Drawing.Size(6, 590);
             this.splitter4.TabIndex = 16;
@@ -531,7 +258,7 @@ namespace GerenciadorSistemas
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(345, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(417, 590);
+            this.panel4.Size = new System.Drawing.Size(507, 590);
             this.panel4.TabIndex = 19;
             // 
             // DataGridViewItem
@@ -549,21 +276,282 @@ namespace GerenciadorSistemas
             this.DataGridViewItem.ReadOnly = true;
             this.DataGridViewItem.RowHeadersVisible = false;
             this.DataGridViewItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DataGridViewItem.Size = new System.Drawing.Size(417, 590);
+            this.DataGridViewItem.Size = new System.Drawing.Size(507, 590);
             this.DataGridViewItem.TabIndex = 20;
             this.DataGridViewItem.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewItem_CellDoubleClick);
             this.DataGridViewItem.SelectionChanged += new System.EventHandler(this.DataGridViewItem_SelectionChanged);
             // 
-            // button1
+            // groupBox1
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(305, 259);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(44, 21);
-            this.button1.TabIndex = 26;
-            this.button1.Text = "Copy";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.buttonAlterarIcone);
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.textBoxDataEdicao);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.textBoxDataCriacao);
+            this.groupBox1.Controls.Add(this.pictureBoxImagem);
+            this.groupBox1.Controls.Add(this.comboBoxTipo);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.textBoxNome);
+            this.groupBox1.Controls.Add(this.buttonCopyPlaceholder);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.textBoxReferenciaPropriedade);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.buttonCopy);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.buttonRun);
+            this.groupBox1.Controls.Add(this.RichTextBoxValor);
+            this.groupBox1.Controls.Add(this.buttonSalvar);
+            this.groupBox1.Controls.Add(this.textBoxDescricao);
+            this.groupBox1.Controls.Add(this.textBoxLocal);
+            this.groupBox1.Controls.Add(this.textBoxID);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Location = new System.Drawing.Point(8, 30);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(310, 549);
+            this.groupBox1.TabIndex = 20;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Item";
+            // 
+            // buttonAlterarIcone
+            // 
+            this.buttonAlterarIcone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonAlterarIcone.Location = new System.Drawing.Point(53, 16);
+            this.buttonAlterarIcone.Name = "buttonAlterarIcone";
+            this.buttonAlterarIcone.Size = new System.Drawing.Size(103, 22);
+            this.buttonAlterarIcone.TabIndex = 50;
+            this.buttonAlterarIcone.Text = "Alterar Icone";
+            this.buttonAlterarIcone.UseVisualStyleBackColor = true;
+            this.buttonAlterarIcone.Click += new System.EventHandler(this.buttonAlterarIcone_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(15, 482);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(63, 13);
+            this.label9.TabIndex = 49;
+            this.label9.Text = "Editado em:";
+            // 
+            // textBoxDataEdicao
+            // 
+            this.textBoxDataEdicao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxDataEdicao.Location = new System.Drawing.Point(78, 479);
+            this.textBoxDataEdicao.Name = "textBoxDataEdicao";
+            this.textBoxDataEdicao.ReadOnly = true;
+            this.textBoxDataEdicao.Size = new System.Drawing.Size(102, 20);
+            this.textBoxDataEdicao.TabIndex = 48;
+            this.textBoxDataEdicao.Text = "10/10/2025 18:32";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(15, 457);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(57, 13);
+            this.label8.TabIndex = 47;
+            this.label8.Text = "Criado em:";
+            // 
+            // textBoxDataCriacao
+            // 
+            this.textBoxDataCriacao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxDataCriacao.Location = new System.Drawing.Point(78, 453);
+            this.textBoxDataCriacao.Name = "textBoxDataCriacao";
+            this.textBoxDataCriacao.ReadOnly = true;
+            this.textBoxDataCriacao.Size = new System.Drawing.Size(103, 20);
+            this.textBoxDataCriacao.TabIndex = 46;
+            this.textBoxDataCriacao.Text = "10/10/2025 18:32";
+            // 
+            // pictureBoxImagem
+            // 
+            this.pictureBoxImagem.Location = new System.Drawing.Point(23, 18);
+            this.pictureBoxImagem.Name = "pictureBoxImagem";
+            this.pictureBoxImagem.Size = new System.Drawing.Size(20, 20);
+            this.pictureBoxImagem.TabIndex = 45;
+            this.pictureBoxImagem.TabStop = false;
+            // 
+            // comboBoxTipo
+            // 
+            this.comboBoxTipo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxTipo.FormattingEnabled = true;
+            this.comboBoxTipo.Location = new System.Drawing.Point(52, 213);
+            this.comboBoxTipo.Name = "comboBoxTipo";
+            this.comboBoxTipo.Size = new System.Drawing.Size(249, 21);
+            this.comboBoxTipo.TabIndex = 44;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(15, 216);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(31, 13);
+            this.label7.TabIndex = 43;
+            this.label7.Text = "Tipo:";
+            // 
+            // textBoxNome
+            // 
+            this.textBoxNome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxNome.Location = new System.Drawing.Point(54, 45);
+            this.textBoxNome.Name = "textBoxNome";
+            this.textBoxNome.Size = new System.Drawing.Size(246, 20);
+            this.textBoxNome.TabIndex = 28;
+            // 
+            // buttonCopyPlaceholder
+            // 
+            this.buttonCopyPlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCopyPlaceholder.Location = new System.Drawing.Point(253, 425);
+            this.buttonCopyPlaceholder.Name = "buttonCopyPlaceholder";
+            this.buttonCopyPlaceholder.Size = new System.Drawing.Size(48, 22);
+            this.buttonCopyPlaceholder.TabIndex = 42;
+            this.buttonCopyPlaceholder.Text = "Copy";
+            this.buttonCopyPlaceholder.UseVisualStyleBackColor = true;
+            this.buttonCopyPlaceholder.Click += new System.EventHandler(this.buttonCopyPlaceholder_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(15, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "Nome:";
+            // 
+            // textBoxReferenciaPropriedade
+            // 
+            this.textBoxReferenciaPropriedade.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxReferenciaPropriedade.Location = new System.Drawing.Point(143, 426);
+            this.textBoxReferenciaPropriedade.Name = "textBoxReferenciaPropriedade";
+            this.textBoxReferenciaPropriedade.ReadOnly = true;
+            this.textBoxReferenciaPropriedade.Size = new System.Drawing.Size(105, 20);
+            this.textBoxReferenciaPropriedade.TabIndex = 41;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(15, 86);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.TabIndex = 29;
+            this.label2.Text = "Valor:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(79, 428);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(62, 13);
+            this.label6.TabIndex = 40;
+            this.label6.Text = "Referencia:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(15, 257);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 13);
+            this.label3.TabIndex = 30;
+            this.label3.Text = "Descrição:";
+            // 
+            // buttonCopy
+            // 
+            this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCopy.Location = new System.Drawing.Point(256, 80);
+            this.buttonCopy.Name = "buttonCopy";
+            this.buttonCopy.Size = new System.Drawing.Size(44, 21);
+            this.buttonCopy.TabIndex = 39;
+            this.buttonCopy.Text = "Copy";
+            this.buttonCopy.UseVisualStyleBackColor = true;
+            this.buttonCopy.Click += new System.EventHandler(this.buttonCopy_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(15, 428);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(21, 13);
+            this.label4.TabIndex = 31;
+            this.label4.Text = "ID:";
+            // 
+            // buttonRun
+            // 
+            this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonRun.Location = new System.Drawing.Point(84, 80);
+            this.buttonRun.Name = "buttonRun";
+            this.buttonRun.Size = new System.Drawing.Size(44, 21);
+            this.buttonRun.TabIndex = 38;
+            this.buttonRun.Text = "Run";
+            this.buttonRun.UseVisualStyleBackColor = true;
+            this.buttonRun.Click += new System.EventHandler(this.buttonRun_Click);
+            // 
+            // buttonSalvar
+            // 
+            this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
+            this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonSalvar.Location = new System.Drawing.Point(187, 495);
+            this.buttonSalvar.Name = "buttonSalvar";
+            this.buttonSalvar.Size = new System.Drawing.Size(113, 46);
+            this.buttonSalvar.TabIndex = 37;
+            this.buttonSalvar.Text = "Salvar";
+            this.buttonSalvar.UseVisualStyleBackColor = true;
+            this.buttonSalvar.Click += new System.EventHandler(this.buttonSalvar_Click);
+            // 
+            // textBoxDescricao
+            // 
+            this.textBoxDescricao.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxDescricao.Location = new System.Drawing.Point(15, 273);
+            this.textBoxDescricao.Multiline = true;
+            this.textBoxDescricao.Name = "textBoxDescricao";
+            this.textBoxDescricao.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxDescricao.Size = new System.Drawing.Size(286, 108);
+            this.textBoxDescricao.TabIndex = 33;
+            // 
+            // textBoxLocal
+            // 
+            this.textBoxLocal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxLocal.Location = new System.Drawing.Point(84, 400);
+            this.textBoxLocal.Name = "textBoxLocal";
+            this.textBoxLocal.Size = new System.Drawing.Size(217, 20);
+            this.textBoxLocal.TabIndex = 36;
+            // 
+            // textBoxID
+            // 
+            this.textBoxID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxID.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxID.Location = new System.Drawing.Point(37, 424);
+            this.textBoxID.Name = "textBoxID";
+            this.textBoxID.ReadOnly = true;
+            this.textBoxID.Size = new System.Drawing.Size(39, 20);
+            this.textBoxID.TabIndex = 34;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(15, 403);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.TabIndex = 35;
+            this.label5.Text = "Local:";
+            // 
+            // RichTextBoxValor
+            // 
+            this.RichTextBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.RichTextBoxValor.Location = new System.Drawing.Point(15, 102);
+            this.RichTextBoxValor.Name = "RichTextBoxValor";
+            this.RichTextBoxValor.Size = new System.Drawing.Size(286, 105);
+            this.RichTextBoxValor.TabIndex = 32;
+            this.RichTextBoxValor.Text = "";
             // 
             // Form1
             // 
@@ -582,13 +570,13 @@ namespace GerenciadorSistemas
             this.Name = "Form1";
             this.Text = "InfrAll";
             this.panel3.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImagem)).EndInit();
             this.panel2.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewItem)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImagem)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -608,7 +596,18 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.DataGridView DataGridViewItem;
         private System.Windows.Forms.Button buttonDuplicar;
         private System.Windows.Forms.Button buttonNovoItem;
+        private System.Windows.Forms.Button buttonEditar;
+        private System.Windows.Forms.TreeView treeViewItens;
+        private System.Windows.Forms.Button buttonIssue;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button buttonAlterarIcone;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textBoxDataEdicao;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBoxDataCriacao;
+        private System.Windows.Forms.PictureBox pictureBoxImagem;
+        private System.Windows.Forms.ComboBox comboBoxTipo;
+        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBoxNome;
         private System.Windows.Forms.Button buttonCopyPlaceholder;
         private System.Windows.Forms.Label label1;
@@ -619,24 +618,12 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.Button buttonCopy;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button buttonRun;
-        private GerenciadorSistemas.RichTextBoxSemSnap RichTextBoxValor;
+        private RichTextBoxSemSnap RichTextBoxValor;
         private System.Windows.Forms.Button buttonSalvar;
         private System.Windows.Forms.TextBox textBoxDescricao;
         private System.Windows.Forms.TextBox textBoxLocal;
         private System.Windows.Forms.TextBox textBoxID;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button buttonEditar;
-        private System.Windows.Forms.TreeView treeViewItens;
-        private System.Windows.Forms.ComboBox comboBoxTipo;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Button buttonIssue;
-        private System.Windows.Forms.PictureBox pictureBoxImagem;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox textBoxDataEdicao;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBoxDataCriacao;
-        private System.Windows.Forms.Button buttonAlterarIcone;
-        private System.Windows.Forms.Button button1;
     }
 }
 

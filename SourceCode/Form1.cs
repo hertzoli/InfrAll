@@ -2132,7 +2132,7 @@ namespace GerenciadorSistemas
             if (!File.Exists(caminhoArquivo))
                 return;
 
-            using (Image imagemOriginal = CarregarImagemParaImageList(caminhoArquivo))
+            using (Image imagemOriginal = TentarCarregarImagemParaImageList(caminhoArquivo))
             {
                 if (imagemOriginal == null)
                     return;
@@ -2144,15 +2144,33 @@ namespace GerenciadorSistemas
             }
         }
 
+        private static Image TentarCarregarImagemParaImageList(string caminhoArquivo)
+        {
+            try
+            {
+                return CarregarImagemParaImageList(caminhoArquivo);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private static Image CarregarImagemParaImageList(string caminhoArquivo)
         {
             string extensao = Path.GetExtension(caminhoArquivo);
 
             if (string.Equals(extensao, ".ico", StringComparison.OrdinalIgnoreCase))
             {
-                using (Icon icon = new Icon(caminhoArquivo))
+                try
                 {
-                    return icon.ToBitmap();
+                    using (Icon icon = new Icon(caminhoArquivo))
+                    {
+                        return icon.ToBitmap();
+                    }
+                }
+                catch (ArgumentException)
+                {
                 }
             }
 
@@ -2374,10 +2392,72 @@ namespace GerenciadorSistemas
                 if (dialog.ShowDialog(this) != DialogResult.OK)
                     return;
 
+                AplicarIconesAtualizados(dialog.IconesAtualizados);
+
                 _iconeSelecionadoCamposEdicao = dialog.IconeSelecionado ?? string.Empty;
                 GarantirIconeCarregadoNoImageListPrincipal(_iconeSelecionadoCamposEdicao);
                 AtualizarImagemLateral(null);
             }
+        }
+
+        private void AplicarIconesAtualizados(IDictionary<string, string> iconesAtualizados)
+        {
+            if (iconesAtualizados == null || iconesAtualizados.Count == 0)
+                return;
+
+            CarregarImagensDaPastaDoPrograma();
+
+            if (!string.IsNullOrWhiteSpace(_iconeSelecionadoCamposEdicao))
+                _iconeSelecionadoCamposEdicao = ResolverChaveIconeAtualizada(_iconeSelecionadoCamposEdicao, iconesAtualizados);
+
+            foreach (TreeNode no in treeViewItens.Nodes)
+                AplicarIconesAtualizados(no, iconesAtualizados);
+
+            PersistirCadastro();
+        }
+
+        private void AplicarIconesAtualizados(TreeNode no, IDictionary<string, string> iconesAtualizados)
+        {
+            if (no == null)
+                return;
+
+            InfrastructureItem item = no.Tag as InfrastructureItem;
+
+            if (item != null && !string.IsNullOrWhiteSpace(item.IconeKey))
+            {
+                string chaveAtualizada = ResolverChaveIconeAtualizada(item.IconeKey, iconesAtualizados);
+
+                if (!string.Equals(item.IconeKey, chaveAtualizada, StringComparison.OrdinalIgnoreCase))
+                {
+                    item.IconeKey = chaveAtualizada;
+                    item.SincronizarMetadados();
+                    GarantirIconeCarregadoNoImageListPrincipal(chaveAtualizada);
+                    AplicarIconeNoNo(no, ResolverIconeDoItem(item));
+                }
+            }
+
+            foreach (TreeNode noFilho in no.Nodes)
+                AplicarIconesAtualizados(noFilho, iconesAtualizados);
+        }
+
+        private static string ResolverChaveIconeAtualizada(string chaveIcone, IDictionary<string, string> iconesAtualizados)
+        {
+            string chaveAtual = chaveIcone ?? string.Empty;
+
+            for (int i = 0; i < iconesAtualizados.Count; i++)
+            {
+                string proximaChave;
+
+                if (!iconesAtualizados.TryGetValue(chaveAtual, out proximaChave) ||
+                    string.Equals(chaveAtual, proximaChave, StringComparison.OrdinalIgnoreCase))
+                {
+                    return chaveAtual;
+                }
+
+                chaveAtual = proximaChave;
+            }
+
+            return chaveAtual;
         }
 
         private void CampoTipoOuValorAlterado(object sender, EventArgs e)
@@ -2902,11 +2982,6 @@ namespace GerenciadorSistemas
         private void buttonIssue_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/hertzoli/InfrAll/issues");
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            textBoxDescricao.Text = RichTextBoxValor.AutoWordSelection.ToString();
         }
     }
 
