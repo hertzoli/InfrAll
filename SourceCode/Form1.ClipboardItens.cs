@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GerenciadorSistemas
 {
     public partial class Form1
     {
+        private const int IntervaloProgressoColagemItens = 25;
+        private bool _colandoItemClipboard;
+
         private void CopiarItemSelecionadoParaClipboard()
         {
             TreeNode noSelecionado = ObterDestinoColagemPeloFoco();
@@ -27,8 +31,14 @@ namespace GerenciadorSistemas
             Clipboard.SetDataObject(dados, true);
         }
 
-        private void ColarItemDoClipboardNoDestino(TreeNode noDestino)
+        private async void ColarItemDoClipboardNoDestino(TreeNode noDestino)
         {
+            if (_colandoItemClipboard)
+            {
+                RegistrarMensagemLogBar("Colagem ignorada: ja existe uma colagem de item em andamento.");
+                return;
+            }
+
             if (noDestino == null)
             {
                 MessageBox.Show("Selecione o item de destino antes de colar.", "Colar item",
@@ -44,26 +54,84 @@ namespace GerenciadorSistemas
                 return;
             }
 
-            Item item;
-            string erro;
-            if (!_itemClipboardService.TryDesserializar(conteudo, out item, out erro))
+            _colandoItemClipboard = true;
+
+            try
             {
-                MessageBox.Show(erro, "Colar item", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                Item item;
+                string erro;
+                if (!_itemClipboardService.TryDesserializar(conteudo, out item, out erro))
+                {
+                    MessageBox.Show(erro, "Colar item", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int totalItens = ContarItensRecursivamente(item);
+                RegistrarMensagemLogBar(string.Format(
+                    "Iniciando colagem de item em '{0}'. Total estimado: {1} item(ns).",
+                    noDestino.Text,
+                    totalItens));
+                await Task.Yield();
+
+                HashSet<string> idsExistentes = ColetarIdsExistentesDaTreeView();
+                ProgressoColagemItens progresso = new ProgressoColagemItens(totalItens);
+                TreeNode novoNo;
+                bool suspenderPersistenciaAnterior = _suspenderPersistencia;
+                _suspenderPersistencia = true;
+
+                try
+                {
+                    _itemHierarchyService.RenovarIdentidadeRecursiva(item, idsExistentes);
+                    RegistrarMensagemLogBar("Identidades renovadas para a estrutura colada.");
+                    await Task.Yield();
+
+                    novoNo = await CriarNoAPartirDoItemComProgressoAsync(item, progresso);
+                }
+                finally
+                {
+                    _suspenderPersistencia = suspenderPersistenciaAnterior;
+                }
+
+                RegistrarHistoricoAntesDaAcao("Colar item");
+
+                treeViewItens.BeginUpdate();
+                try
+                {
+                    noDestino.Nodes.Add(novoNo);
+                    noDestino.Expand();
+                    AtualizarAposOperacaoEstrutural(novoNo);
+                }
+                finally
+                {
+                    treeViewItens.EndUpdate();
+                }
+
+                RegistrarMensagemLogBar("Estrutura colada na arvore. Salvando cadastro...");
+                await Task.Yield();
+
+                PersistirCadastro();
+                RegistrarMensagemLogBar(string.Format(
+                    "Colagem concluida: {0} item(ns) adicionados em '{1}'.",
+                    progresso.Processados,
+                    noDestino.Text));
             }
+            catch (Exception ex)
+            {
+                Logger.LogWriter.LogErroDetalhado(ex, "Erro ao colar item do clipboard", new
+                {
+                    Destino = noDestino.Text
+                });
 
-            HashSet<string> idsExistentes = _itemHierarchyService.ColetarIds(
-                treeViewItens.Nodes.Cast<TreeNode>().Select(MapearNoParaItem));
-
-            _itemHierarchyService.RenovarIdentidadeRecursiva(item, idsExistentes);
-
-            TreeNode novoNo = CriarNoAPartirDoItem(item);
-            RegistrarHistoricoAntesDaAcao("Colar item");
-            noDestino.Nodes.Add(novoNo);
-            noDestino.Expand();
-
-            AtualizarAposOperacaoEstrutural(novoNo);
-            PersistirCadastro();
+                MessageBox.Show(
+                    "Nao foi possivel colar o item do clipboard.\r\n" + ex.Message,
+                    "Colar item",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                _colandoItemClipboard = false;
+            }
         }
 
         private bool TryObterConteudoDeItemDoClipboard(out string conteudo)
@@ -147,6 +215,124 @@ namespace GerenciadorSistemas
                 LimparCamposEdicao();
                 LimparContextoDaPropriedadeSelecionada();
             }
+        }
+
+        private async Task<TreeNode> CriarNoAPartirDoItemComProgressoAsync(
+            Item itemPersistido,
+            ProgressoColagemItens progresso)
+        {
+            InfrastructureItem item = new InfrastructureItem(
+                itemPersistido.Nome,
+                itemPersistido.Descricao,
+                itemPersistido.Icone,
+                string.Empty);
+
+            item.ID = itemPersistido.ID;
+            item.Valor = itemPersistido.Valor ?? string.Empty;
+            item.TipoDoValor = itemPersistido.TipoDoValor;
+            item.CriadoEm = itemPersistido.DataDeCriacao;
+            item.DataDeEdicao = itemPersistido.DataDeEdicao;
+            item.Caminho = itemPersistido.Caminho ?? string.Empty;
+            item.SincronizarMetadados();
+
+            TreeNode no = CriarNoParaItem(item);
+
+            progresso.Processados++;
+            if (DeveAtualizarProgressoColagem(progresso))
+            {
+                RegistrarMensagemLogBar(string.Format(
+                    "Colando itens: {0}/{1} processado(s)...",
+                    progresso.Processados,
+                    progresso.Total));
+                await Task.Yield();
+            }
+
+            if (itemPersistido.Subitens != null)
+            {
+                foreach (Item filho in itemPersistido.Subitens)
+                    no.Nodes.Add(await CriarNoAPartirDoItemComProgressoAsync(filho, progresso));
+            }
+
+            return no;
+        }
+
+        private static bool DeveAtualizarProgressoColagem(ProgressoColagemItens progresso)
+        {
+            if (progresso == null)
+                return false;
+
+            return progresso.Processados == 1
+                || progresso.Processados == progresso.Total
+                || progresso.Processados % IntervaloProgressoColagemItens == 0;
+        }
+
+        private static int ContarItensRecursivamente(Item item)
+        {
+            if (item == null)
+                return 0;
+
+            int total = 1;
+
+            if (item.Subitens != null)
+            {
+                foreach (Item filho in item.Subitens)
+                    total += ContarItensRecursivamente(filho);
+            }
+
+            return total;
+        }
+
+        private HashSet<string> ColetarIdsExistentesDaTreeView()
+        {
+            HashSet<string> ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (TreeNode no in treeViewItens.Nodes)
+                ColetarIdsExistentesDoNo(no, ids);
+
+            return ids;
+        }
+
+        private void ColetarIdsExistentesDoNo(TreeNode no, ISet<string> ids)
+        {
+            if (no == null || ids == null)
+                return;
+
+            InfrastructureItem item = no.Tag as InfrastructureItem;
+            string id = item != null ? _itemIdService.NormalizarId(item.ID) : string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(id))
+                ids.Add(id);
+
+            foreach (TreeNode filho in no.Nodes)
+                ColetarIdsExistentesDoNo(filho, ids);
+        }
+
+        private void RegistrarMensagemLogBar(string mensagem)
+        {
+            if (richTextBoxLogBar == null || richTextBoxLogBar.IsDisposed)
+                return;
+
+            string linha = string.Format(
+                "[{0:HH:mm:ss}] {1}{2}",
+                DateTime.Now,
+                mensagem ?? string.Empty,
+                Environment.NewLine);
+
+            richTextBoxLogBar.AppendText(linha);
+            richTextBoxLogBar.SelectionStart = richTextBoxLogBar.TextLength;
+            richTextBoxLogBar.ScrollToCaret();
+            richTextBoxLogBar.Update();
+        }
+
+        private sealed class ProgressoColagemItens
+        {
+            public ProgressoColagemItens(int total)
+            {
+                Total = Math.Max(0, total);
+            }
+
+            public int Total { get; private set; }
+            public int Processados { get; set; }
         }
     }
 }

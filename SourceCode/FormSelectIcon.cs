@@ -70,7 +70,9 @@ namespace GerenciadorSistemas
             Text = "Selecionar icone";
 
             if (!string.IsNullOrWhiteSpace(iconeSelecionado))
-                SelecionarItemPorChave(iconeSelecionado);
+                SelecionarItemPorChave(iconeSelecionado, true);
+            else
+                TreeViewImages.CollapseAll();
         }
 
         private void InicializarFormulario()
@@ -126,11 +128,11 @@ namespace GerenciadorSistemas
                 AdicionarImagemAoTreeView(arquivo, false);
             }
 
-            TreeViewImages.ExpandAll();
+            //TreeViewImages.ExpandAll();
 
             string iconePadrao = CarregarIconePadraoPersistido();
             if (!string.IsNullOrWhiteSpace(iconePadrao) && _arquivosPorChave.ContainsKey(iconePadrao))
-                SelecionarItemPorChave(iconePadrao);
+                SelecionarItemPorChave(iconePadrao, true);
             else
                 SelecionarPrimeiraImagemDisponivel();
         }
@@ -240,20 +242,42 @@ namespace GerenciadorSistemas
 
         private void SelecionarItemPorChave(string chave)
         {
+            SelecionarItemPorChave(chave, false);
+        }
+
+        private void SelecionarItemPorChave(string chave, bool recolherOutrasPastas)
+        {
             TreeNode item = EncontrarNoPorChave(TreeViewImages.Nodes, chave);
 
             if (item == null)
                 return;
 
+            if (recolherOutrasPastas)
+            {
+                TreeViewImages.CollapseAll();
+                ExpandirNosPais(item);
+            }
+
             TreeViewImages.SelectedNode = item;
             item.EnsureVisible();
+        }
+
+        private static void ExpandirNosPais(TreeNode no)
+        {
+            TreeNode noPai = no != null ? no.Parent : null;
+
+            if (noPai == null)
+                return;
+
+            ExpandirNosPais(noPai);
+            noPai.Expand();
         }
 
         private void SelecionarPrimeiraImagemDisponivel()
         {
             foreach (string chave in _arquivosPorChave.Keys.OrderBy(k => k))
             {
-                SelecionarItemPorChave(chave);
+                SelecionarItemPorChave(chave, true);
                 return;
             }
         }
@@ -381,7 +405,7 @@ namespace GerenciadorSistemas
                 MessageBox.Show("Nao foi possivel renomear a imagem.\r\n" + ex.Message,
                     "Renomear imagem", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 CarregarImagensDaPasta();
-                SelecionarItemPorChave(chaveAntiga);
+                SelecionarItemPorChave(chaveAntiga, true);
             }
         }
 
@@ -406,7 +430,7 @@ namespace GerenciadorSistemas
                 MessageBox.Show("Nao foi possivel mover a imagem.\r\n" + ex.Message,
                     "Mover imagem", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 CarregarImagensDaPasta();
-                SelecionarItemPorChave(chaveAntiga);
+                SelecionarItemPorChave(chaveAntiga, true);
             }
         }
 
@@ -441,7 +465,7 @@ namespace GerenciadorSistemas
                 MessageBox.Show("Nao foi possivel excluir a imagem.\r\n" + ex.Message,
                     "Excluir imagem", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 CarregarImagensDaPasta();
-                SelecionarItemPorChave(chaveAntiga);
+                SelecionarItemPorChave(chaveAntiga, true);
             }
         }
 
@@ -453,7 +477,7 @@ namespace GerenciadorSistemas
             if (string.Equals(caminhoAntigo, caminhoNovo, StringComparison.OrdinalIgnoreCase))
             {
                 CarregarImagensDaPasta();
-                SelecionarItemPorChave(chaveAntiga);
+                SelecionarItemPorChave(chaveAntiga, true);
                 return;
             }
 
@@ -470,7 +494,7 @@ namespace GerenciadorSistemas
             RegistrarIconeAtualizado(chaveAntiga, chaveNova);
 
             CarregarImagensDaPasta();
-            SelecionarItemPorChave(chaveNova);
+            SelecionarItemPorChave(chaveNova, true);
         }
 
         private void RegistrarIconeAtualizado(string chaveAntiga, string chaveNova)
@@ -901,7 +925,7 @@ namespace GerenciadorSistemas
 
                 NomeIconeGerado = Path.GetFileName(caminhoIcone);
                 CarregarImagensDaPasta();
-                SelecionarItemPorChave(NomeIconeGerado);
+                SelecionarItemPorChave(NomeIconeGerado, true);
                 TreeViewImages.Focus();
             }
             catch (FileNotFoundException ex)

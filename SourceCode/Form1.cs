@@ -43,6 +43,8 @@ namespace GerenciadorSistemas
         private bool _arrastandoItemTreeView;
         private bool _suspenderAtualizacaoSelecaoPorDrag;
         private bool _suspenderConfirmacaoSelecaoPorDrag;
+        private bool _ignorarSelecaoPorBotaoExpansaoTreeView;
+        private TreeNode _noCliqueBotaoExpansaoTreeView;
         private TipoValorPropriedade _tipoPropriedadeSelecionadaOriginal;
         private TreeNode _noItemEmEdicao;
         private TreeNode _noSelecionadoAntesDoDrag;
@@ -1042,6 +1044,12 @@ namespace GerenciadorSistemas
 
         private void treeViewItens_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
+            if (DeveIgnorarSelecaoPorBotaoExpansao(e.Node))
+            {
+                e.Cancel = true;
+                return;
+            }
+
             if (_suspenderConfirmacaoSelecaoPorDrag)
                 return;
 
@@ -1097,21 +1105,47 @@ namespace GerenciadorSistemas
 
         private void treeViewItens_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Node != null)
+            if (e.Node != null && CliqueSelecionaNoTreeView(e.X, e.Y))
                 treeViewItens.SelectedNode = e.Node;
         }
 
         private void treeViewItens_MouseDown(object sender, MouseEventArgs e)
         {
+            _ignorarSelecaoPorBotaoExpansaoTreeView = false;
+            _noCliqueBotaoExpansaoTreeView = null;
+
             if (e.Button != MouseButtons.Left)
                 return;
 
-            TreeNode noMouse = treeViewItens.GetNodeAt(e.Location);
-            if (noMouse == null)
+            TreeViewHitTestInfo hitTest = treeViewItens.HitTest(e.Location);
+            if (hitTest.Node == null)
                 return;
+
+            if (hitTest.Location == TreeViewHitTestLocations.PlusMinus)
+            {
+                _ignorarSelecaoPorBotaoExpansaoTreeView = true;
+                _noCliqueBotaoExpansaoTreeView = hitTest.Node;
+                return;
+            }
 
             _noSelecionadoAntesDoDrag = treeViewItens.SelectedNode;
             _noItemEmEdicaoAntesDoDrag = ObterNoItemEmEdicao();
+        }
+
+        private bool DeveIgnorarSelecaoPorBotaoExpansao(TreeNode no)
+        {
+            return _ignorarSelecaoPorBotaoExpansaoTreeView
+                && no != null
+                && no == _noCliqueBotaoExpansaoTreeView
+                && Control.MouseButtons == MouseButtons.Left;
+        }
+
+        private bool CliqueSelecionaNoTreeView(int x, int y)
+        {
+            TreeViewHitTestInfo hitTest = treeViewItens.HitTest(x, y);
+
+            return hitTest.Location == TreeViewHitTestLocations.Label
+                || hitTest.Location == TreeViewHitTestLocations.Image;
         }
 
         private void treeViewItens_ItemDrag(object sender, ItemDragEventArgs e)
@@ -3165,6 +3199,11 @@ namespace GerenciadorSistemas
         private void buttonIssue_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/hertzoli/InfrAll/issues");
+        }
+
+        private void buttonDesfazer_Click(object sender, EventArgs e)
+        {
+            DesfazerUltimaAcao();
         }
     }
 

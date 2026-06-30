@@ -54,20 +54,47 @@ namespace GerenciadorSistemas
             if (e == null || !e.Control || e.KeyCode != Keys.Z)
                 return false;
 
+            if (DevePreservarDesfazerNativoDoControle())
+                return false;
+
             DesfazerUltimaAcao();
             e.SuppressKeyPress = true;
             e.Handled = true;
             return true;
         }
 
+        private bool DevePreservarDesfazerNativoDoControle()
+        {
+            if (_camposTextoEditaveis == null)
+                return false;
+
+            foreach (Control campo in _camposTextoEditaveis)
+            {
+                TextBoxBase campoTexto = campo as TextBoxBase;
+
+                if (campoTexto == null || campoTexto.ReadOnly)
+                    continue;
+
+                if (campoTexto.Focused || campoTexto.ContainsFocus)
+                    return true;
+            }
+
+            return false;
+        }
+
         private void DesfazerUltimaAcao()
         {
-            ItemUndoSnapshot snapshot;
+            if (MessageBox.Show("Deseja desfazer a modificação anterior? se você pressionar sim, o sistema irá desfazer a última alteração salva em algum item, ou restaurar itens excluidos.","",MessageBoxButtons.YesNoCancel) == DialogResult.Yes)
+            {
 
-            if (!_undoHistoryService.TryDesfazer(out snapshot))
-                return;
+                ItemUndoSnapshot snapshot;
 
-            RestaurarSnapshotHistorico(snapshot);
+                if (!_undoHistoryService.TryDesfazer(out snapshot))
+                    return;
+
+                RestaurarSnapshotHistorico(snapshot);
+            }
+
         }
 
         private void RestaurarSnapshotHistorico(ItemUndoSnapshot snapshot)
