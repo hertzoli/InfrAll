@@ -63,6 +63,16 @@ namespace GerenciadorSistemas.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Desfazer {
+            get {
+                object obj = ResourceManager.GetObject("Desfazer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Duplicar_Item_32x32 {
             get {
                 object obj = ResourceManager.GetObject("Duplicar_Item_32x32", resourceCulture);

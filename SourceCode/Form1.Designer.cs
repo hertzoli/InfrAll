@@ -33,6 +33,7 @@ namespace GerenciadorSistemas
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
+            this.richTextBoxLogBar = new System.Windows.Forms.RichTextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel3 = new System.Windows.Forms.Panel();
             this.labelInfo = new System.Windows.Forms.Label();
@@ -55,6 +56,7 @@ namespace GerenciadorSistemas
             this.buttonCopy = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.buttonRun = new System.Windows.Forms.Button();
+            this.RichTextBoxValor = new GerenciadorSistemas.RichTextBoxSemSnap();
             this.buttonSalvar = new System.Windows.Forms.Button();
             this.textBoxDescricao = new System.Windows.Forms.TextBox();
             this.textBoxLocal = new System.Windows.Forms.TextBox();
@@ -65,6 +67,7 @@ namespace GerenciadorSistemas
             this.panel2 = new System.Windows.Forms.Panel();
             this.treeViewItens = new System.Windows.Forms.TreeView();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.buttonDesfazer = new System.Windows.Forms.Button();
             this.buttonEditar = new System.Windows.Forms.Button();
             this.buttonDuplicar = new System.Windows.Forms.Button();
             this.buttonExcluirItem = new System.Windows.Forms.Button();
@@ -73,9 +76,6 @@ namespace GerenciadorSistemas
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.panel4 = new System.Windows.Forms.Panel();
             this.DataGridViewItem = new System.Windows.Forms.DataGridView();
-            this.RichTextBoxValor = new GerenciadorSistemas.RichTextBoxSemSnap();
-            this.buttonDesfazer = new System.Windows.Forms.Button();
-            this.richTextBoxLogBar = new System.Windows.Forms.RichTextBox();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -106,6 +106,17 @@ namespace GerenciadorSistemas
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1184, 115);
             this.panel1.TabIndex = 1;
+            // 
+            // richTextBoxLogBar
+            // 
+            this.richTextBoxLogBar.BackColor = System.Drawing.SystemColors.Control;
+            this.richTextBoxLogBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richTextBoxLogBar.ForeColor = System.Drawing.Color.Black;
+            this.richTextBoxLogBar.Location = new System.Drawing.Point(0, 0);
+            this.richTextBoxLogBar.Name = "richTextBoxLogBar";
+            this.richTextBoxLogBar.Size = new System.Drawing.Size(1184, 115);
+            this.richTextBoxLogBar.TabIndex = 0;
+            this.richTextBoxLogBar.Text = "";
             // 
             // splitter1
             // 
@@ -347,6 +358,16 @@ namespace GerenciadorSistemas
             this.buttonRun.UseVisualStyleBackColor = true;
             this.buttonRun.Click += new System.EventHandler(this.buttonRun_Click);
             // 
+            // RichTextBoxValor
+            // 
+            this.RichTextBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.RichTextBoxValor.Location = new System.Drawing.Point(15, 102);
+            this.RichTextBoxValor.Name = "RichTextBoxValor";
+            this.RichTextBoxValor.Size = new System.Drawing.Size(286, 105);
+            this.RichTextBoxValor.TabIndex = 32;
+            this.RichTextBoxValor.Text = "";
+            // 
             // buttonSalvar
             // 
             this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
@@ -468,6 +489,16 @@ namespace GerenciadorSistemas
             this.panel6.Size = new System.Drawing.Size(339, 46);
             this.panel6.TabIndex = 1;
             // 
+            // buttonDesfazer
+            // 
+            this.buttonDesfazer.Image = global::GerenciadorSistemas.Properties.Resources.Desfazer;
+            this.buttonDesfazer.Location = new System.Drawing.Point(293, 2);
+            this.buttonDesfazer.Name = "buttonDesfazer";
+            this.buttonDesfazer.Size = new System.Drawing.Size(40, 40);
+            this.buttonDesfazer.TabIndex = 11;
+            this.buttonDesfazer.UseVisualStyleBackColor = true;
+            this.buttonDesfazer.Click += new System.EventHandler(this.buttonDesfazer_Click);
+            // 
             // buttonEditar
             // 
             this.buttonEditar.Image = global::GerenciadorSistemas.Properties.Resources.Edit_item_32x32;
@@ -558,37 +589,6 @@ namespace GerenciadorSistemas
             this.DataGridViewItem.TabIndex = 20;
             this.DataGridViewItem.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewItem_CellDoubleClick);
             this.DataGridViewItem.SelectionChanged += new System.EventHandler(this.DataGridViewItem_SelectionChanged);
-            // 
-            // RichTextBoxValor
-            // 
-            this.RichTextBoxValor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.RichTextBoxValor.Location = new System.Drawing.Point(15, 102);
-            this.RichTextBoxValor.Name = "RichTextBoxValor";
-            this.RichTextBoxValor.Size = new System.Drawing.Size(286, 105);
-            this.RichTextBoxValor.TabIndex = 32;
-            this.RichTextBoxValor.Text = "";
-            // 
-            // buttonDesfazer
-            // 
-            this.buttonDesfazer.Location = new System.Drawing.Point(293, 2);
-            this.buttonDesfazer.Name = "buttonDesfazer";
-            this.buttonDesfazer.Size = new System.Drawing.Size(40, 40);
-            this.buttonDesfazer.TabIndex = 11;
-            this.buttonDesfazer.Text = "Desfazer";
-            this.buttonDesfazer.UseVisualStyleBackColor = true;
-            this.buttonDesfazer.Click += new System.EventHandler(this.buttonDesfazer_Click);
-            // 
-            // richTextBoxLogBar
-            // 
-            this.richTextBoxLogBar.BackColor = System.Drawing.Color.Black;
-            this.richTextBoxLogBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxLogBar.ForeColor = System.Drawing.Color.Yellow;
-            this.richTextBoxLogBar.Location = new System.Drawing.Point(0, 0);
-            this.richTextBoxLogBar.Name = "richTextBoxLogBar";
-            this.richTextBoxLogBar.Size = new System.Drawing.Size(1184, 115);
-            this.richTextBoxLogBar.TabIndex = 0;
-            this.richTextBoxLogBar.Text = "";
             // 
             // Form1
             // 

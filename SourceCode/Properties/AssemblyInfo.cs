@@ -32,11 +32,14 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.4")]
-[assembly: AssemblyFileVersion("2.4")]
+[assembly: AssemblyVersion("2.5")]
+[assembly: AssemblyFileVersion("2.5")]
 
 /*
 
+
+v2.5
+ - #19: permitir a edição de um item direto no campo valor do controle DataGridViewItem
 
 v2.4
  - #25: O Ctrl+Z global agora verifica se o foco está em um campo textual editável antes de consumir o atalho. Quando o foco estiver em textBoxNome, RichTextBoxValor, textBoxDescricao ou textBoxLocal, o evento fica livre para o undo nativo do
@@ -45,7 +48,7 @@ v2.4
  - #24: A seleção manual do nó em treeViewItens agora fica restrita a clique no texto (Label) ou no ícone (Image).
  - #23: iniciar o TreeViewImages dos icones com as pastas não expandidas.
  - #21: mostrar alguma progresso durante isso o ato de copiar e colar estrutura de itens.
- - 
+ - adicionado o botão desfazer no menu superior
 
 
 v2.3
@@ -158,25 +161,6 @@ alterar para que a resolução de placeholders buscar propriedades em qualquer i
 
 Programa Criado:
 V1.0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 */

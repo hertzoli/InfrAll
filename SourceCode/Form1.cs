@@ -174,6 +174,14 @@ namespace GerenciadorSistemas
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Valor", "Valor", 180));
             DataGridViewItem.Columns.Add(CriarColunaTextoDataGridViewItem("Local", "Local", 160));
 
+            DataGridViewItem.ReadOnly = false;
+            DataGridViewItem.EditMode = DataGridViewEditMode.EditOnEnter;
+            DataGridViewItem.CellEndEdit += DataGridViewItem_CellEndEdit;
+
+            foreach (DataGridViewColumn coluna in DataGridViewItem.Columns)
+                coluna.ReadOnly = true;
+
+            DataGridViewItem.Columns["Valor"].ReadOnly = false;
             DataGridViewItem.Columns["Valor"].DefaultCellStyle.BackColor = Color.LightYellow;
         }
 
@@ -2097,6 +2105,52 @@ namespace GerenciadorSistemas
             linha.Cells["Valor"].Style.BackColor = Color.FromArgb(240 ,255, 240);
         }
 
+        private void DataGridViewItem_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                return;
+
+            DataGridViewColumn coluna = DataGridViewItem.Columns[e.ColumnIndex];
+            if (coluna == null || !string.Equals(coluna.Name, "Valor", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            TreeNode noEditado = DataGridViewItem.Rows[e.RowIndex].Tag as TreeNode;
+            InfrastructureItem itemEditado = noEditado != null ? noEditado.Tag as InfrastructureItem : null;
+            if (itemEditado == null)
+                return;
+
+            string novoValor = Convert.ToString(DataGridViewItem.Rows[e.RowIndex].Cells["Valor"].Value) ?? string.Empty;
+            if (string.Equals(itemEditado.Valor ?? string.Empty, novoValor, StringComparison.Ordinal))
+                return;
+
+            try
+            {
+                RegistrarHistoricoAntesDaAcao("Editar valor do item");
+                itemEditado.Valor = novoValor;
+                itemEditado.MarcarEditado();
+                itemEditado.SincronizarMetadados();
+
+                if (ReferenceEquals(_noItemEmEdicao, noEditado))
+                {
+                    ExecutarSemMonitoramentoCamposEdicao(() =>
+                    {
+                        RichTextBoxValor.Text = novoValor;
+                    });
+                    SincronizarEstadoCamposEdicao();
+                }
+
+                PersistirCadastro();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Nao foi possivel salvar o valor editado no grid.\r\n" + ex.Message,
+                    "Erro ao salvar valor",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+        }
+
         private static int ObterNivelRelativoDataGridViewItem(TreeNode noEscopo, TreeNode no)
         {
             if (noEscopo == null || no == null)
@@ -2210,6 +2264,13 @@ namespace GerenciadorSistemas
         {
             if (e.RowIndex < 0)
                 return;
+
+            if (e.ColumnIndex >= 0
+                && string.Equals(DataGridViewItem.Columns[e.ColumnIndex].Name, "Valor", StringComparison.OrdinalIgnoreCase))
+            {
+                DataGridViewItem.BeginEdit(true);
+                return;
+            }
 
             TreeNode noSelecionado = DataGridViewItem.Rows[e.RowIndex].Tag as TreeNode;
 

@@ -131,6 +131,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Desfazer.png" />
     <None Include="bin\Debug\Imagens\Folder.png" />
     <None Include="bin\Debug\Imagens\ErrorSmall.png" />
     <Content Include="Icon.ico" />
