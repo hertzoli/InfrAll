@@ -210,7 +210,7 @@ namespace GerenciadorSistemas
             this.textBoxDataEdicao.Location = new System.Drawing.Point(78, 479);
             this.textBoxDataEdicao.Name = "textBoxDataEdicao";
             this.textBoxDataEdicao.ReadOnly = true;
-            this.textBoxDataEdicao.Size = new System.Drawing.Size(102, 20);
+            this.textBoxDataEdicao.Size = new System.Drawing.Size(109, 20);
             this.textBoxDataEdicao.TabIndex = 48;
             this.textBoxDataEdicao.Text = "10/10/2025 18:32";
             // 
@@ -230,7 +230,7 @@ namespace GerenciadorSistemas
             this.textBoxDataCriacao.Location = new System.Drawing.Point(78, 453);
             this.textBoxDataCriacao.Name = "textBoxDataCriacao";
             this.textBoxDataCriacao.ReadOnly = true;
-            this.textBoxDataCriacao.Size = new System.Drawing.Size(103, 20);
+            this.textBoxDataCriacao.Size = new System.Drawing.Size(110, 20);
             this.textBoxDataCriacao.TabIndex = 46;
             this.textBoxDataCriacao.Text = "10/10/2025 18:32";
             // 
@@ -370,11 +370,12 @@ namespace GerenciadorSistemas
             // 
             // buttonSalvar
             // 
+            this.buttonSalvar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSalvar.Image = global::GerenciadorSistemas.Properties.Resources.Save;
             this.buttonSalvar.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.buttonSalvar.Location = new System.Drawing.Point(187, 495);
+            this.buttonSalvar.Location = new System.Drawing.Point(187, 508);
             this.buttonSalvar.Name = "buttonSalvar";
-            this.buttonSalvar.Size = new System.Drawing.Size(113, 46);
+            this.buttonSalvar.Size = new System.Drawing.Size(113, 33);
             this.buttonSalvar.TabIndex = 37;
             this.buttonSalvar.Text = "Salvar";
             this.buttonSalvar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -396,15 +397,13 @@ namespace GerenciadorSistemas
             // 
             this.textBoxLocal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLocal.Location = new System.Drawing.Point(84, 400);
+            this.textBoxLocal.Location = new System.Drawing.Point(57, 400);
             this.textBoxLocal.Name = "textBoxLocal";
-            this.textBoxLocal.Size = new System.Drawing.Size(217, 20);
+            this.textBoxLocal.Size = new System.Drawing.Size(244, 20);
             this.textBoxLocal.TabIndex = 36;
             // 
             // textBoxID
             // 
-            this.textBoxID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxID.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxID.Location = new System.Drawing.Point(37, 424);
             this.textBoxID.Name = "textBoxID";

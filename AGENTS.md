@@ -28,3 +28,12 @@ If you add automated tests later, place them in a dedicated sibling project such
 
 ## Commit & Pull Request Guidelines
 This workspace snapshot does not include `.git` history, so no local commit pattern can be verified. Follow the convention already suggested in `README.md`: short imperative commits such as `feat: add property validation` or `fix: refresh property grid after delete`. Pull requests should include a concise summary, impacted screens or files, manual test notes, and screenshots for UI changes.
+
+## GitHub Project Kanban
+This repository uses a GitHub Projects kanban board:
+
+- Project: `InfraALL`
+- Owner: `hertzoli`
+- Number: `3`
+
+Whenever a request mentions the kanban for this project, interpret it as referring to this GitHub Project.
