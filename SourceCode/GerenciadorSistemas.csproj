@@ -60,8 +60,10 @@
     <Compile Include="FormSelectIcon.Designer.cs">
       <DependentUpon>FormSelectIcon.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\CadastroSerializer.cs" />
     <Compile Include="Models\CadastroYamlContract.cs" />
     <Compile Include="Models\Item.cs" />
+    <Compile Include="Models\ItemPadraoPersistencia.cs" />
     <Compile Include="Models\TipoDoValor.cs" />
     <Compile Include="OnlineAutoUpdateUltra.cs" />
     <Compile Include="PropertyGridRuntimeBuilder.cs" />

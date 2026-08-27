@@ -776,6 +776,9 @@ namespace GerenciadorSistemas
                 if (cadastro.Itens == null)
                     cadastro.Itens = new List<ItemPersistido>();
 
+                foreach (ItemPersistido item in cadastro.Itens)
+                    ItemPadraoPersistencia.AplicarPadroes(item);
+
                 return cadastro;
             }
         }
@@ -790,9 +793,7 @@ namespace GerenciadorSistemas
 
             cadastro.SavedAt = DateTime.Now.ToString("o");
 
-            ISerializer serializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .Build();
+            ISerializer serializer = CadastroSerializer.Criar();
 
             string caminhoArquivo = ObterCaminhoArquivoCadastro();
             string caminhoTemporario = caminhoArquivo + ".tmp";

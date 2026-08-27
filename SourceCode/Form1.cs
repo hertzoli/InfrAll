@@ -1559,7 +1559,7 @@ namespace GerenciadorSistemas
                     }
 
                     if (cadastro.Itens == null)
-                        throw new InvalidDataException("O arquivo cadastro.yaml nao contem a lista de itens.");
+                        cadastro.Itens = new List<ItemPersistido>();
 
                     _itemIdService.DefinirIntBaseID(ObterIntBaseIDPersistido(cadastro));
 
@@ -1695,9 +1695,7 @@ namespace GerenciadorSistemas
                 Itens = new List<ItemPersistido>()
             };
 
-            ISerializer serializer = new SerializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                .Build();
+            ISerializer serializer = CadastroSerializer.Criar();
 
             using (StreamWriter writer = new StreamWriter(caminhoArquivo, false))
                 serializer.Serialize(writer, cadastro);
@@ -1745,9 +1743,7 @@ namespace GerenciadorSistemas
                 _itemHierarchyService.PrepararHierarquia(itens);
                 cadastro.Itens = itens.Select(MapearItemParaPersistencia).ToList();
 
-                ISerializer serializer = new SerializerBuilder()
-                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                    .Build();
+                ISerializer serializer = CadastroSerializer.Criar();
 
                 string caminhoArquivo = ObterCaminhoArquivoCadastro();
                 string caminhoTemporario = caminhoArquivo + ".tmp";

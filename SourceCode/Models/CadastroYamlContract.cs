@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using YamlDotNet.Serialization;
 
@@ -40,15 +41,19 @@ namespace GerenciadorSistemas
         public string Nome { get; set; }
 
         [YamlMember(Alias = "valor")]
+        [DefaultValue(ItemPadraoPersistencia.ValorPadrao)]
         public string Valor { get; set; }
 
         [YamlMember(Alias = "tipoDoValor")]
+        [DefaultValue(ItemPadraoPersistencia.TipoDoValorPadrao)]
         public string TipoDoValor { get; set; }
 
         [YamlMember(Alias = "descricao")]
+        [DefaultValue(ItemPadraoPersistencia.DescricaoPadrao)]
         public string Descricao { get; set; }
 
         [YamlMember(Alias = "icone")]
+        [DefaultValue(ItemPadraoPersistencia.IconePadrao)]
         public string Icone { get; set; }
 
         [YamlMember(Alias = "id")]
