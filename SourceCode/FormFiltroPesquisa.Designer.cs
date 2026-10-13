@@ -68,7 +68,7 @@ namespace GerenciadorSistemas
             this.DataGridViewFilter.ReadOnly = true;
             this.DataGridViewFilter.RowHeadersVisible = false;
             this.DataGridViewFilter.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DataGridViewFilter.Size = new System.Drawing.Size(704, 293);
+            this.DataGridViewFilter.Size = new System.Drawing.Size(700, 320);
             this.DataGridViewFilter.TabIndex = 26;
             // 
             // groupBox1
@@ -207,7 +207,8 @@ namespace GerenciadorSistemas
             // 
             // buttonAplicar
             // 
-            this.buttonAplicar.Location = new System.Drawing.Point(641, 416);
+            this.buttonAplicar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonAplicar.Location = new System.Drawing.Point(637, 443);
             this.buttonAplicar.Name = "buttonAplicar";
             this.buttonAplicar.Size = new System.Drawing.Size(75, 22);
             this.buttonAplicar.TabIndex = 40;
@@ -216,7 +217,8 @@ namespace GerenciadorSistemas
             // 
             // buttonCancelar
             // 
-            this.buttonCancelar.Location = new System.Drawing.Point(560, 416);
+            this.buttonCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancelar.Location = new System.Drawing.Point(556, 443);
             this.buttonCancelar.Name = "buttonCancelar";
             this.buttonCancelar.Size = new System.Drawing.Size(75, 22);
             this.buttonCancelar.TabIndex = 41;
@@ -225,7 +227,8 @@ namespace GerenciadorSistemas
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(479, 416);
+            this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOK.Location = new System.Drawing.Point(475, 443);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 22);
             this.buttonOK.TabIndex = 42;
@@ -236,7 +239,7 @@ namespace GerenciadorSistemas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(726, 450);
+            this.ClientSize = new System.Drawing.Size(722, 477);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.buttonCancelar);
             this.Controls.Add(this.buttonAplicar);
@@ -246,6 +249,7 @@ namespace GerenciadorSistemas
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.DataGridViewFilter);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(738, 300);
             this.Name = "FormFiltroPesquisa";
             this.Text = "Filtro Pesquisa";
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewFilter)).EndInit();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,6 +17,7 @@ namespace GerenciadorSistemas
                 {
                     _formularioPesquisa = new FormPesquisar(CriarSnapshotPesquisa, SelecionarResultadoPesquisa,
                         ObterImagemPesquisa);
+                    _formularioPesquisa.SalvarEdicaoEmMassa = AplicarEdicaoEmMassa;
                     _formularioPesquisa.FormClosed += (s, args) => _formularioPesquisa = null;
                     _formularioPesquisa.Show(this);
                 }

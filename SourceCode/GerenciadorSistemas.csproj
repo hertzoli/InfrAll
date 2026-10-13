@@ -60,6 +60,12 @@
     <Compile Include="FormFiltroPesquisa.Designer.cs">
       <DependentUpon>FormFiltroPesquisa.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form1.EdicaoEmMassa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPesquisar.EdicaoEmMassa.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormPesquisar.cs">
       <SubType>Form</SubType>
     </Compile>

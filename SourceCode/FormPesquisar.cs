@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -20,6 +20,7 @@ namespace GerenciadorSistemas
         {
             InitializeComponent();
             ConfigurarTabela();
+            ConfigurarEdicaoEmMassa();
             buttonPesquisar.Click += Pesquisar_Click;
             buttonFiltrar.Click += Filtrar_Click;
             DataGridViewItemPesquisar.CellDoubleClick += Resultado_DoubleClick;
@@ -73,6 +74,7 @@ namespace GerenciadorSistemas
                     return;
                 MostrarResultados(visiveis);
                 _resultados = originais;
+                _textoPesquisaExecutada = texto;
             }
             catch (Exception ex)
             {
@@ -105,6 +107,7 @@ namespace GerenciadorSistemas
                 var linha = new DataGridViewRow();
                 linha.CreateCells(DataGridViewItemPesquisar, valores);
                 linha.Tag = item.ID;
+                linha.Cells[0].Tag = item;
                 linhas.Add(linha);
             }
             DataGridViewItemPesquisar.Rows.Clear();
@@ -146,5 +149,7 @@ namespace GerenciadorSistemas
             Logger.LogWriter.LogErroDetalhado(ex, "Erro na pesquisa de itens");
             MessageBox.Show(this, "Não foi possível concluir a operação de pesquisa.", "Pesquisa", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+
     }
 }
