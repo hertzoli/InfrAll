@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace GerenciadorSistemas
 {
     partial class Form1
@@ -76,6 +78,7 @@ namespace GerenciadorSistemas
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.panel4 = new System.Windows.Forms.Panel();
             this.DataGridViewItem = new System.Windows.Forms.DataGridView();
+            this.buttonPesquisar = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -476,6 +479,7 @@ namespace GerenciadorSistemas
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.buttonPesquisar);
             this.panel6.Controls.Add(this.buttonDesfazer);
             this.panel6.Controls.Add(this.buttonEditar);
             this.panel6.Controls.Add(this.buttonDuplicar);
@@ -589,6 +593,15 @@ namespace GerenciadorSistemas
             this.DataGridViewItem.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewItem_CellDoubleClick);
             this.DataGridViewItem.SelectionChanged += new System.EventHandler(this.DataGridViewItem_SelectionChanged);
             // 
+            // buttonPesquisar
+            // 
+            this.buttonPesquisar.Image = global::GerenciadorSistemas.Properties.Resources.Pesquisar;
+            this.buttonPesquisar.Location = new System.Drawing.Point(223, 3);
+            this.buttonPesquisar.Name = "buttonPesquisar";
+            this.buttonPesquisar.Size = new System.Drawing.Size(40, 40);
+            this.buttonPesquisar.TabIndex = 12;
+            this.buttonPesquisar.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -665,6 +678,7 @@ namespace GerenciadorSistemas
         private System.Windows.Forms.Label labelInfo;
         private System.Windows.Forms.Button buttonDesfazer;
         private System.Windows.Forms.RichTextBox richTextBoxLogBar;
+        private Button buttonPesquisar;
     }
 }
 

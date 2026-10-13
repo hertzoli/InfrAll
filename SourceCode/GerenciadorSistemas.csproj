@@ -54,6 +54,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormFiltroPesquisa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormFiltroPesquisa.Designer.cs">
+      <DependentUpon>FormFiltroPesquisa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPesquisar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPesquisar.Designer.cs">
+      <DependentUpon>FormPesquisar.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormSelectIcon.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +117,12 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormFiltroPesquisa.resx">
+      <DependentUpon>FormFiltroPesquisa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPesquisar.resx">
+      <DependentUpon>FormPesquisar.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormSelectIcon.resx">
       <DependentUpon>FormSelectIcon.cs</DependentUpon>
     </EmbeddedResource>
@@ -133,6 +151,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Pesquisar.png" />
+    <None Include="Resources\Filtro.png" />
     <None Include="Resources\Desfazer.png" />
     <None Include="bin\Debug\Imagens\Folder.png" />
     <None Include="bin\Debug\Imagens\ErrorSmall.png" />

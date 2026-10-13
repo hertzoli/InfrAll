@@ -123,6 +123,16 @@ namespace GerenciadorSistemas.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Filtro {
+            get {
+                object obj = ResourceManager.GetObject("Filtro", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Folder {
             get {
                 object obj = ResourceManager.GetObject("Folder", resourceCulture);
@@ -176,6 +186,16 @@ namespace GerenciadorSistemas.Properties {
         internal static System.Drawing.Bitmap Nova_Sub_propriedade_32x32 {
             get {
                 object obj = ResourceManager.GetObject("Nova_Sub-propriedade_32x32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Pesquisar {
+            get {
+                object obj = ResourceManager.GetObject("Pesquisar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

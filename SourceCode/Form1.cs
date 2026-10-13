@@ -115,7 +115,6 @@ namespace GerenciadorSistemas
             splitter1.SplitterMoved += splitter1_SplitterMoved;
             splitter3.SplitterMoved += splitter3_SplitterMoved;
             splitter4.SplitterMoved += splitter4_SplitterMoved;
-            imageList1.ImageSize = new System.Drawing.Size(16, 16);   // tamanho dos Ã­cones
             InicializarMonitoramentoCamposEdicao();
 
             InicializarTela();
