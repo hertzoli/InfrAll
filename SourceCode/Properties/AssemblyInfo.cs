@@ -32,11 +32,14 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.5.2")]
-[assembly: AssemblyFileVersion("2.5.2")]
+[assembly: AssemblyVersion("2.6")]
+[assembly: AssemblyFileVersion("2.6")]
 
 /*
 
+
+v2.6
+    implementado Pesquisa global de itens com filtros avançados
 
 v2.5.2
     adicionado `imageList1.ColorDepth = ColorDepth.Depth32Bit;` para resolver o problema de renderização de alguns icones nos controles (treeViewItens, DataGridViewItem, pictureBoxImagem do  `Form1`) 

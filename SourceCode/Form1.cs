@@ -75,6 +75,7 @@ namespace GerenciadorSistemas
         public Form1()
         {
             InitializeComponent();
+            buttonPesquisar.Click += buttonPesquisar_Click;
             this.Text += "  v" + Application.ProductVersion;
 
             //---------------- Verifica update online    

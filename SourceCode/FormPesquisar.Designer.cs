@@ -31,10 +31,11 @@ namespace GerenciadorSistemas
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPesquisar));
             this.DataGridViewItemPesquisar = new System.Windows.Forms.DataGridView();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxPesquisar = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonPesquisar = new System.Windows.Forms.Button();
             this.buttonFiltrar = new System.Windows.Forms.Button();
+            this.labelBarraStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewItemPesquisar)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,15 +56,15 @@ namespace GerenciadorSistemas
             this.DataGridViewItemPesquisar.ReadOnly = true;
             this.DataGridViewItemPesquisar.RowHeadersVisible = false;
             this.DataGridViewItemPesquisar.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DataGridViewItemPesquisar.Size = new System.Drawing.Size(627, 333);
+            this.DataGridViewItemPesquisar.Size = new System.Drawing.Size(624, 323);
             this.DataGridViewItemPesquisar.TabIndex = 21;
             // 
-            // textBox1
+            // textBoxPesquisar
             // 
-            this.textBox1.Location = new System.Drawing.Point(74, 12);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(484, 20);
-            this.textBox1.TabIndex = 22;
+            this.textBoxPesquisar.Location = new System.Drawing.Point(74, 12);
+            this.textBoxPesquisar.Name = "textBoxPesquisar";
+            this.textBoxPesquisar.Size = new System.Drawing.Size(484, 20);
+            this.textBoxPesquisar.TabIndex = 22;
             // 
             // label1
             // 
@@ -92,16 +93,26 @@ namespace GerenciadorSistemas
             this.buttonFiltrar.TabIndex = 23;
             this.buttonFiltrar.UseVisualStyleBackColor = true;
             // 
+            // labelBarraStatus
+            // 
+            this.labelBarraStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.labelBarraStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.labelBarraStatus.Location = new System.Drawing.Point(0, 366);
+            this.labelBarraStatus.Name = "labelBarraStatus";
+            this.labelBarraStatus.Size = new System.Drawing.Size(627, 44);
+            this.labelBarraStatus.TabIndex = 26;
+            // 
             // FormPesquisar
             // 
             this.AcceptButton = this.buttonPesquisar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(630, 375);
+            this.ClientSize = new System.Drawing.Size(627, 410);
+            this.Controls.Add(this.labelBarraStatus);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonPesquisar);
             this.Controls.Add(this.buttonFiltrar);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxPesquisar);
             this.Controls.Add(this.DataGridViewItemPesquisar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormPesquisar";
@@ -115,9 +126,10 @@ namespace GerenciadorSistemas
         #endregion
 
         private System.Windows.Forms.DataGridView DataGridViewItemPesquisar;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxPesquisar;
         private System.Windows.Forms.Button buttonFiltrar;
         private System.Windows.Forms.Button buttonPesquisar;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelBarraStatus;
     }
 }

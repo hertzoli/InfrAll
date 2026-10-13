@@ -30,58 +30,58 @@ namespace GerenciadorSistemas
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormFiltroPesquisa));
-            this.DataGridViewItemPesquisar = new System.Windows.Forms.DataGridView();
+            this.DataGridViewFilter = new System.Windows.Forms.DataGridView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.comboBoxAcao = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.comboBoxRelacao = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBoxColuna = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxValor = new System.Windows.Forms.TextBox();
             this.buttonReset = new System.Windows.Forms.Button();
             this.buttonRemover = new System.Windows.Forms.Button();
             this.buttonAdicionar = new System.Windows.Forms.Button();
             this.buttonAplicar = new System.Windows.Forms.Button();
             this.buttonCancelar = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.DataGridViewItemPesquisar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGridViewFilter)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // DataGridViewItemPesquisar
+            // DataGridViewFilter
             // 
-            this.DataGridViewItemPesquisar.AllowUserToAddRows = false;
-            this.DataGridViewItemPesquisar.AllowUserToDeleteRows = false;
-            this.DataGridViewItemPesquisar.AllowUserToResizeRows = false;
-            this.DataGridViewItemPesquisar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.DataGridViewFilter.AllowUserToAddRows = false;
+            this.DataGridViewFilter.AllowUserToDeleteRows = false;
+            this.DataGridViewFilter.AllowUserToResizeRows = false;
+            this.DataGridViewFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.DataGridViewItemPesquisar.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.DataGridViewItemPesquisar.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.DataGridViewItemPesquisar.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DataGridViewItemPesquisar.Location = new System.Drawing.Point(12, 117);
-            this.DataGridViewItemPesquisar.MultiSelect = false;
-            this.DataGridViewItemPesquisar.Name = "DataGridViewItemPesquisar";
-            this.DataGridViewItemPesquisar.ReadOnly = true;
-            this.DataGridViewItemPesquisar.RowHeadersVisible = false;
-            this.DataGridViewItemPesquisar.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DataGridViewItemPesquisar.Size = new System.Drawing.Size(704, 293);
-            this.DataGridViewItemPesquisar.TabIndex = 26;
+            this.DataGridViewFilter.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DataGridViewFilter.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.DataGridViewFilter.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DataGridViewFilter.Location = new System.Drawing.Point(12, 117);
+            this.DataGridViewFilter.MultiSelect = false;
+            this.DataGridViewFilter.Name = "DataGridViewFilter";
+            this.DataGridViewFilter.ReadOnly = true;
+            this.DataGridViewFilter.RowHeadersVisible = false;
+            this.DataGridViewFilter.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DataGridViewFilter.Size = new System.Drawing.Size(704, 293);
+            this.DataGridViewFilter.TabIndex = 26;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.comboBox3);
+            this.groupBox1.Controls.Add(this.comboBoxAcao);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.comboBox2);
+            this.groupBox1.Controls.Add(this.comboBoxRelacao);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Controls.Add(this.comboBoxColuna);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.textBoxValor);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(704, 71);
@@ -98,16 +98,16 @@ namespace GerenciadorSistemas
             this.label5.TabIndex = 44;
             this.label5.Text = "Se o valor da coluna:";
             // 
-            // comboBox3
+            // comboBoxAcao
             // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Items.AddRange(new object[] {
+            this.comboBoxAcao.FormattingEnabled = true;
+            this.comboBoxAcao.Items.AddRange(new object[] {
             "Inclui Item",
             "Exclui Item"});
-            this.comboBox3.Location = new System.Drawing.Point(617, 41);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(78, 21);
-            this.comboBox3.TabIndex = 43;
+            this.comboBoxAcao.Location = new System.Drawing.Point(617, 41);
+            this.comboBoxAcao.Name = "comboBoxAcao";
+            this.comboBoxAcao.Size = new System.Drawing.Size(78, 21);
+            this.comboBoxAcao.TabIndex = 43;
             // 
             // label4
             // 
@@ -127,10 +127,10 @@ namespace GerenciadorSistemas
             this.label3.TabIndex = 41;
             this.label3.Text = "Valor:";
             // 
-            // comboBox2
+            // comboBoxRelacao
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
+            this.comboBoxRelacao.FormattingEnabled = true;
+            this.comboBoxRelacao.Items.AddRange(new object[] {
             "é",
             "não é",
             "Contem",
@@ -139,11 +139,11 @@ namespace GerenciadorSistemas
             "Termina com",
             "Maior que",
             "Menor que"});
-            this.comboBox2.Location = new System.Drawing.Point(240, 41);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(87, 21);
-            this.comboBox2.TabIndex = 40;
-            this.comboBox2.Text = "Termina com";
+            this.comboBoxRelacao.Location = new System.Drawing.Point(240, 41);
+            this.comboBoxRelacao.Name = "comboBoxRelacao";
+            this.comboBoxRelacao.Size = new System.Drawing.Size(87, 21);
+            this.comboBoxRelacao.TabIndex = 40;
+            this.comboBoxRelacao.Text = "Termina com";
             // 
             // label2
             // 
@@ -154,13 +154,13 @@ namespace GerenciadorSistemas
             this.label2.TabIndex = 39;
             this.label2.Text = "Relação:";
             // 
-            // comboBox1
+            // comboBoxColuna
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(119, 41);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(116, 21);
-            this.comboBox1.TabIndex = 38;
+            this.comboBoxColuna.FormattingEnabled = true;
+            this.comboBoxColuna.Location = new System.Drawing.Point(119, 41);
+            this.comboBoxColuna.Name = "comboBoxColuna";
+            this.comboBoxColuna.Size = new System.Drawing.Size(116, 21);
+            this.comboBoxColuna.TabIndex = 38;
             // 
             // label1
             // 
@@ -171,12 +171,12 @@ namespace GerenciadorSistemas
             this.label1.TabIndex = 37;
             this.label1.Text = "Coluna:";
             // 
-            // textBox1
+            // textBoxValor
             // 
-            this.textBox1.Location = new System.Drawing.Point(333, 42);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(231, 20);
-            this.textBox1.TabIndex = 36;
+            this.textBoxValor.Location = new System.Drawing.Point(333, 42);
+            this.textBoxValor.Name = "textBoxValor";
+            this.textBoxValor.Size = new System.Drawing.Size(231, 20);
+            this.textBoxValor.TabIndex = 36;
             // 
             // buttonReset
             // 
@@ -244,11 +244,11 @@ namespace GerenciadorSistemas
             this.Controls.Add(this.buttonRemover);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.DataGridViewItemPesquisar);
+            this.Controls.Add(this.DataGridViewFilter);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormFiltroPesquisa";
             this.Text = "Filtro Pesquisa";
-            ((System.ComponentModel.ISupportInitialize)(this.DataGridViewItemPesquisar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGridViewFilter)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -256,17 +256,17 @@ namespace GerenciadorSistemas
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView DataGridViewItemPesquisar;
+        private System.Windows.Forms.DataGridView DataGridViewFilter;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox comboBoxAcao;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox comboBoxRelacao;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBoxColuna;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxValor;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonRemover;
         private System.Windows.Forms.Button buttonAdicionar;
