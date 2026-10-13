@@ -7,13 +7,26 @@ namespace GerenciadorSistemas
 {
     public partial class Form1
     {
+        private FormPesquisar _formularioPesquisa;
+
         private void buttonPesquisar_Click(object sender, EventArgs e)
         {
             try
             {
-                using (var formulario = new FormPesquisar(CriarSnapshotPesquisa, SelecionarResultadoPesquisa,
-                    ObterImagemPesquisa))
-                    formulario.ShowDialog(this);
+                if (_formularioPesquisa == null || _formularioPesquisa.IsDisposed)
+                {
+                    _formularioPesquisa = new FormPesquisar(CriarSnapshotPesquisa, SelecionarResultadoPesquisa,
+                        ObterImagemPesquisa);
+                    _formularioPesquisa.FormClosed += (s, args) => _formularioPesquisa = null;
+                    _formularioPesquisa.Show(this);
+                }
+                else
+                {
+                    if (_formularioPesquisa.WindowState == FormWindowState.Minimized)
+                        _formularioPesquisa.WindowState = FormWindowState.Normal;
+                    _formularioPesquisa.BringToFront();
+                    _formularioPesquisa.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -84,6 +97,8 @@ namespace GerenciadorSistemas
                 pai.Expand();
             no.EnsureVisible();
             CarregarItemNosCamposEdicao(no);
+            Activate();
+            treeViewItens.Focus();
             return true;
         }
     }

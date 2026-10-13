@@ -32,11 +32,15 @@ using System.Runtime.InteropServices;
 // É possível especificar todos os valores ou usar como padrão os Números de Build e da Revisão
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.6")]
-[assembly: AssemblyFileVersion("2.6")]
+[assembly: AssemblyVersion("2.6.1")]
+[assembly: AssemblyFileVersion("2.6.1")]
 
 /*
 
+
+v2.6.1
+  - Click duplo em um Row de DataGridViewFilter carrega os valores do filtro nos controles comboBoxColuna, comboBoxRelacao, textBoxValor, comboBoxAcao para que o usuário possa editar o filtro e aplicar novamente.
+Permitir que o duplo click em um Row de DataGridViewItemPesquisar continue selecionando o item em treeViewItens mas não perca o resultado da pesquisa. ou seja, o formPesquisar deve continuar aberto e com o resultado da pesquisa exibido no DataGridViewItemPesquisar.
 
 v2.6
     implementado Pesquisa global de itens com filtros avançados

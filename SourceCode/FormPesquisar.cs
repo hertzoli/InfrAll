@@ -136,7 +136,7 @@ namespace GerenciadorSistemas
             try
             {
                 if (_selecionar != null && _selecionar((string)DataGridViewItemPesquisar.Rows[e.RowIndex].Tag))
-                    Close();
+                    Owner?.Activate();
             }
             catch (Exception ex) { MostrarErro(ex); }
         }

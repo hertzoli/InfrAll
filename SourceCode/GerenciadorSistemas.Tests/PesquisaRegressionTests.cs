@@ -125,9 +125,13 @@ namespace GerenciadorSistemas
                 typeof(PesquisaRegressionTests).GetMethod("Snapshot", BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(tipoItem));
             var construtor = assembly.GetType("GerenciadorSistemas.FormPesquisar")
                 .GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic).Single();
-            using (var formulario = (Form)construtor.Invoke(new object[] { obter, new Func<string, bool>(id => false), null }))
+            string idSelecionado = null;
+            using (var principal = new Form())
+            using (var formulario = (Form)construtor.Invoke(new object[] { obter,
+                new Func<string, bool>(id => { idSelecionado = id; return true; }), null }))
             {
-                formulario.Show();
+                principal.Show();
+                formulario.Show(principal);
                 Application.DoEvents();
                 var texto = (TextBox)Campo(formulario, "textBoxPesquisar");
                 var grid = (DataGridView)Campo(formulario, "DataGridViewItemPesquisar");
@@ -137,6 +141,13 @@ namespace GerenciadorSistemas
                 ((Button)Campo(formulario, "buttonPesquisar")).PerformClick();
                 AguardarPesquisa(formulario);
                 Verificar(grid.Rows.Count == 1 && (string)grid.Rows[0].Tag == "id123", "Publica resultado com ID");
+                DispararDuploClique(grid, -1, 1);
+                Verificar(idSelecionado == null, "Cabeçalho não navega");
+                DispararDuploClique(grid, 0, 1);
+                Verificar(idSelecionado == "id123" && formulario.Visible && !formulario.IsDisposed,
+                    "Duplo clique navega sem fechar pesquisa");
+                Verificar(principal.Enabled && grid.Rows.Count == 1 && texto.Text == "srv",
+                    "Janela principal acessível e resultado preservado");
                 texto.Text = "outro texto não submetido";
                 var tipoFiltro = assembly.GetType("GerenciadorSistemas.FiltroPesquisa");
                 var lista = (System.Collections.IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(tipoFiltro));
@@ -159,6 +170,11 @@ namespace GerenciadorSistemas
                 formulario.Close();
             }
         }
+        private static void DispararDuploClique(DataGridView grid, int linha, int coluna)
+        {
+            typeof(DataGridView).GetMethod("OnCellDoubleClick", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(grid, new object[] { new DataGridViewCellEventArgs(coluna, linha) });
+        }
         private static void VerificarCicloFiltros(Assembly assembly)
         {
             Type tipoFiltro = assembly.GetType("GerenciadorSistemas.FiltroPesquisa");
@@ -178,6 +194,22 @@ namespace GerenciadorSistemas
                 ((Button)Campo(formulario, "buttonAdicionar")).PerformClick();
                 var grid = (DataGridView)Campo(formulario, "DataGridViewFilter");
                 Verificar(grid.Rows.Count == 1 && _aplicacoes == 0, "Adicionar não aplica");
+                DispararDuploClique(grid, -1, 1);
+                Verificar(grid.Rows.Count == 1, "Cabeçalho não remove filtro");
+                ((ComboBox)Campo(formulario, "comboBoxColuna")).SelectedIndex = 8;
+                ((TextBox)Campo(formulario, "textBoxValor")).Text = "01/01/2026";
+                ((ComboBox)Campo(formulario, "comboBoxAcao")).SelectedIndex = 1;
+                DispararDuploClique(grid, 0, 1);
+                Verificar(grid.Rows.Count == 0 && _aplicacoes == 0, "Duplo clique retira somente da lista de trabalho");
+                Verificar(((ComboBox)Campo(formulario, "comboBoxColuna")).SelectedIndex == 1
+                    && ((ComboBox)Campo(formulario, "comboBoxRelacao")).SelectedItem.ToString() == "é"
+                    && ((TextBox)Campo(formulario, "textBoxValor")).Text == "srv"
+                    && ((ComboBox)Campo(formulario, "comboBoxAcao")).SelectedIndex == 0,
+                    "Carrega coluna, relação, valor e ação do filtro");
+                ((TextBox)Campo(formulario, "textBoxValor")).Text = "srv editado";
+                ((Button)Campo(formulario, "buttonAdicionar")).PerformClick();
+                Verificar(grid.Rows.Count == 1 && (string)grid.Rows[0].Cells[3].Value == "srv editado",
+                    "Filtro editado pode ser adicionado novamente");
                 ((Button)Campo(formulario, "buttonAplicar")).PerformClick();
                 Verificar(_aplicacoes == 1 && formulario.Visible, "Aplicar mantém diálogo");
                 grid.Rows[0].Cells[0].Value = false;
@@ -192,6 +224,9 @@ namespace GerenciadorSistemas
                 Application.DoEvents();
                 var grid = (DataGridView)Campo(formulario, "DataGridViewFilter");
                 grid.Rows[0].Cells[0].Value = false;
+                DispararDuploClique(grid, 0, 1);
+                ((Button)Campo(formulario, "buttonAdicionar")).PerformClick();
+                Verificar(!Convert.ToBoolean(grid.Rows[0].Cells[0].Value), "Editar preserva filtro desabilitado");
                 ((Button)Campo(formulario, "buttonOK")).PerformClick();
                 var atual = (System.Collections.IList)_ultimoAplicado;
                 Verificar(_aplicacoes == 2 && !formulario.Visible && !(bool)tipoFiltro.GetProperty("Habilitado").GetValue(atual[0]),

@@ -8,6 +8,7 @@ namespace GerenciadorSistemas
     public partial class FormFiltroPesquisa : Form
     {
         private readonly Action<List<FiltroPesquisa>> _aplicar;
+        private bool _habilitadoAoAdicionar = true;
 
         public FormFiltroPesquisa()
         {
@@ -50,6 +51,7 @@ namespace GerenciadorSistemas
                     grid.CommitEdit(DataGridViewDataErrorContexts.Commit);
             });
             grid.SelectionChanged += (s, e) => buttonRemover.Enabled = grid.SelectedRows.Count > 0;
+            grid.CellDoubleClick += Filtro_DoubleClick;
             buttonRemover.Enabled = false;
             buttonAdicionar.Click += (s, e) => ExecutarSeguro(Adicionar);
             buttonRemover.Click += (s, e) => ExecutarSeguro(() =>
@@ -72,13 +74,34 @@ namespace GerenciadorSistemas
             DataGridViewFilter.Rows[indice].Tag = filtro;
         }
 
+        private void Filtro_DoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= DataGridViewFilter.Rows.Count)
+                return;
+
+            ExecutarSeguro(() =>
+            {
+                DataGridViewFilter.EndEdit();
+                DataGridViewRow linha = DataGridViewFilter.Rows[e.RowIndex];
+                var filtro = (FiltroPesquisa)linha.Tag;
+                comboBoxColuna.SelectedIndex = filtro.Coluna;
+                comboBoxRelacao.SelectedItem = filtro.Relacao;
+                textBoxValor.Text = filtro.Valor;
+                comboBoxAcao.SelectedIndex = filtro.Excluir ? 1 : 0;
+                _habilitadoAoAdicionar = Convert.ToBoolean(linha.Cells[0].Value);
+                DataGridViewFilter.Rows.Remove(linha);
+                textBoxValor.Focus();
+                textBoxValor.SelectAll();
+            });
+        }
+
         private void Adicionar()
         {
             if (comboBoxAcao.SelectedIndex < 0)
                 throw new ArgumentException("Selecione uma ação.");
             var filtro = new FiltroPesquisa
             {
-                Habilitado = true, Coluna = comboBoxColuna.SelectedIndex,
+                Habilitado = _habilitadoAoAdicionar, Coluna = comboBoxColuna.SelectedIndex,
                 Relacao = comboBoxRelacao.SelectedItem as string, Valor = textBoxValor.Text,
                 Excluir = comboBoxAcao.SelectedIndex == 1
             };
@@ -87,6 +110,7 @@ namespace GerenciadorSistemas
                 && f.Valor == filtro.Valor && f.Excluir == filtro.Excluir))
                 throw new ArgumentException("Este filtro já existe.");
             AdicionarLinha(filtro);
+            _habilitadoAoAdicionar = true;
         }
 
         private List<FiltroPesquisa> LerFiltros()
